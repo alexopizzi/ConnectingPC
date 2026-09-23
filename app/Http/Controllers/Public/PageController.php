@@ -24,7 +24,6 @@ final class PageController extends Controller
         'privacy' => ['nav.privacy', 'pages/privacy'],
         'accessibilita' => ['nav.accessibility', 'pages/accessibility'],
         // Sezioni in preparazione (sostituite da rotte dedicate quando implementate)
-        'mappa' => ['nav.map', 'public/section'],
         'associazioni-comunita' => ['nav.communities', 'public/section'],
         'mediatori' => ['nav.mediators', 'public/section'],
     ];

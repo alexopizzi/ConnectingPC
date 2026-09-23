@@ -203,6 +203,15 @@ final class CatalogRepository
             $ids,
         );
         $languages = $this->groupedColumn("SELECT DISTINCT service_id AS k, language_code AS v FROM service_languages WHERE service_id IN ($in)", $ids);
+        // Coordinate della sede principale (per l'ordinamento per distanza nel browser, D-006)
+        $coordinates = [];
+        foreach ($this->database->fetchAll(
+            "SELECT ss.service_id, si.lat, si.lng FROM service_sites ss JOIN sites si ON si.id = ss.site_id
+              WHERE ss.service_id IN ($in) AND si.is_public_place = 1 AND si.lat IS NOT NULL ORDER BY ss.is_main DESC",
+            $ids,
+        ) as $row) {
+            $coordinates[(int) $row['service_id']] ??= [(float) $row['lat'], (float) $row['lng']];
+        }
         $categories = $this->categories($locale);
         $categoryNames = array_column($categories, 'name', 'id');
 
@@ -223,10 +232,99 @@ final class CatalogRepository
                 'mediation' => (string) $row['mediation'],
                 'towns' => $towns[$id] ?? [],
                 'languages' => $languages[$id] ?? [],
+                'lat' => $coordinates[$id][0] ?? null,
+                'lng' => $coordinates[$id][1] ?? null,
             ];
         }
 
         return $result;
+    }
+
+    /**
+     * Punti della mappa: sedi pubbliche con coordinate dei servizi selezionati, ciascuna con i propri servizi.
+     *
+     * @param list<int> $serviceIds
+     * @return list<array<string, mixed>>
+     */
+    public function mapPoints(array $serviceIds, string $locale): array
+    {
+        if ($serviceIds === []) {
+            return [];
+        }
+        $in = implode(',', array_fill(0, count($serviceIds), '?'));
+        $rows = $this->database->fetchAll(
+            "SELECT ss.service_id, si.id AS site_id, si.name AS site_name, si.address_line, si.lat, si.lng, si.step_free_access,
+                    t.name AS town, o.id AS organization_id, o.name AS organization_name, s.mediation, s.primary_category_id,
+                    COALESCE(p.icon, c.icon) AS icon
+               FROM service_sites ss
+               JOIN sites si ON si.id = ss.site_id AND si.publication_status = 'published' AND si.is_public_place = 1
+                              AND si.lat IS NOT NULL AND si.lng IS NOT NULL
+               JOIN territories t ON t.id = si.territory_id
+               JOIN services s ON s.id = ss.service_id
+               JOIN organizations o ON o.id = s.organization_id
+               JOIN categories c ON c.id = s.primary_category_id
+               LEFT JOIN categories p ON p.id = c.parent_id
+              WHERE ss.service_id IN ($in)",
+            $serviceIds,
+        );
+        $names = $this->serviceTexts(array_values(array_unique(array_map(static fn (array $r): int => (int) $r['service_id'], $rows))), $locale, ['name'], []);
+
+        $points = [];
+        foreach ($rows as $row) {
+            $siteId = (int) $row['site_id'];
+            $points[$siteId] ??= [
+                'id' => $siteId,
+                'lat' => (float) $row['lat'],
+                'lng' => (float) $row['lng'],
+                'name' => (string) ($row['site_name'] ?? $row['organization_name']),
+                'organization' => (string) $row['organization_name'],
+                'organization_id' => (int) $row['organization_id'],
+                'address' => trim($row['address_line'] . ', ' . $row['town'], ', '),
+                'icon' => (string) ($row['icon'] ?? 'default'),
+                'mediation' => false,
+                'step_free' => $row['step_free_access'] === 'yes',
+                'services' => [],
+            ];
+            $points[$siteId]['mediation'] = $points[$siteId]['mediation'] || in_array($row['mediation'], ['available', 'on_request'], true);
+            $serviceId = (int) $row['service_id'];
+            $points[$siteId]['services'][] = ['id' => $serviceId, 'name' => $names[$serviceId]['name']['text'] ?? '#' . $serviceId];
+        }
+
+        return array_values($points);
+    }
+
+    /**
+     * Suggerimenti durante la digitazione: bisogni e servizi (massimo $limit).
+     *
+     * @return list<array{type: string, label: string, code?: string, id?: int}>
+     */
+    public function suggestions(string $query, string $locale, int $limit = 8): array
+    {
+        $normalized = TextNormalizer::normalize($query);
+        if (mb_strlen($normalized) < 2) {
+            return [];
+        }
+        $suggestions = [];
+        foreach ($this->needs($locale) as $need) {
+            if (str_contains(TextNormalizer::normalize($need['label']['text']), $normalized)) {
+                $suggestions[] = ['type' => 'need', 'label' => $need['label']['text'], 'code' => $need['code']];
+            }
+        }
+        $needCodes = $this->database->fetchColumn(
+            "SELECT DISTINCT n.code FROM search_terms st JOIN needs n ON n.id = st.target_id
+              WHERE st.target_type = 'need' AND st.locale IN (?, 'it') AND st.term LIKE ?",
+            [$locale, addcslashes($normalized, '%_\\') . '%'],
+        );
+        foreach ($this->needs($locale) as $need) {
+            if (in_array($need['code'], $needCodes, true) && !in_array($need['code'], array_column($suggestions, 'code'), true)) {
+                $suggestions[] = ['type' => 'need', 'label' => $need['label']['text'], 'code' => $need['code']];
+            }
+        }
+        foreach ($this->serviceSummaries(array_slice($this->searchServiceIds(['q' => $query], $locale), 0, $limit), $locale) as $service) {
+            $suggestions[] = ['type' => 'service', 'label' => $service['name']['text'], 'id' => $service['id']];
+        }
+
+        return array_slice($suggestions, 0, $limit);
     }
 
     /** @return array<string, mixed>|null scheda completa di un servizio pubblicato */

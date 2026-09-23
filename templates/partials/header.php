@@ -3,7 +3,7 @@
 $nav = [
     ['route' => 'public.search', 'params' => [], 'label' => 'nav.search'],
     ['route' => 'public.services', 'params' => [], 'label' => 'nav.services'],
-    ['route' => 'public.section', 'params' => ['section' => 'mappa'], 'label' => 'nav.map'],
+    ['route' => 'public.map', 'params' => [], 'label' => 'nav.map'],
     ['route' => 'public.section', 'params' => ['section' => 'associazioni-comunita'], 'label' => 'nav.communities'],
     ['route' => 'public.section', 'params' => ['section' => 'mediatori'], 'label' => 'nav.mediators'],
     ['route' => 'public.section', 'params' => ['section' => 'partecipa'], 'label' => 'nav.participate'],

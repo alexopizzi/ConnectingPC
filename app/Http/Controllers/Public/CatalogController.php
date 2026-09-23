@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Public;
 
+use App\Core\Env;
+use App\Domain\Catalog\CatalogFilters;
 use App\Domain\Catalog\CatalogRepository;
 use App\Http\Controller;
 use App\Http\HttpException;
@@ -11,22 +13,21 @@ use App\Http\Request;
 use App\Http\Response;
 
 /**
- * Catalogo pubblico: percorso per bisogno, elenco dei servizi con filtri, ricerca, schede di servizio
- * e organizzazione (vault "62", "65"). Solo contenuti pubblicati e recapiti pubblici.
+ * Catalogo pubblico: percorso per bisogno, elenco dei servizi con filtri, ricerca, mappa, schede di servizio
+ * e organizzazione (vault "61", "62", "65"). Solo contenuti pubblicati e recapiti pubblici.
  */
 final class CatalogController extends Controller
 {
     private const PER_PAGE = 20;
+    private const MAP_LIST_LIMIT = 200;
 
     public function need(Request $request): Response
     {
-        $catalog = $this->catalog();
-        $need = $catalog->need((string) $request->attribute('code'), $this->view()->locale())
+        $need = $this->catalog()->need((string) $request->attribute('code'), $this->view()->locale())
             ?? throw new HttpException(404);
 
         return $this->listing($request, ['need' => $need['code']], 'public.need', [
             'pageTitle' => $need['label']['text'],
-            'heading' => $need['label'],
             'need' => $need,
         ]);
     }
@@ -41,10 +42,33 @@ final class CatalogController extends Controller
         return $this->listing($request, [], 'public.search', ['pageTitle' => $this->t('nav.search'), 'isSearch' => true]);
     }
 
-    public function service(Request $request): Response
+    /** Mappa con elenco equivalente sempre visibile (la mappa non è mai l'unico accesso, RF-09). */
+    public function map(Request $request): Response
     {
         $locale = $this->view()->locale();
-        $service = $this->catalog()->service((int) $request->attribute('id'), $locale) ?? throw new HttpException(404);
+        $catalog = $this->catalog();
+        $filters = CatalogFilters::fromRequest($request);
+        $ids = $catalog->searchServiceIds($filters, $locale);
+
+        return $this->render('public/map', [
+            'pageTitle' => $this->t('nav.map'),
+            'filters' => $filters,
+            'query' => CatalogFilters::toQuery($filters),
+            'total' => count($ids),
+            'services' => $catalog->serviceSummaries(array_slice($ids, 0, self::MAP_LIST_LIMIT), $locale),
+            'map' => [
+                'tiles' => (string) Env::get('MAP_TILE_URL', 'https://tile.openstreetmap.org/{z}/{x}/{y}.png'),
+                'attribution' => (string) Env::get('MAP_TILE_ATTRIBUTION', '© OpenStreetMap contributors'),
+                'center' => (string) Env::get('MAP_DEFAULT_CENTER', '45.0526,9.6930'),
+                'zoom' => (int) Env::get('MAP_DEFAULT_ZOOM', '10'),
+            ],
+            ...$this->filterOptions($locale),
+        ]);
+    }
+
+    public function service(Request $request): Response
+    {
+        $service = $this->catalog()->service((int) $request->attribute('id'), $this->view()->locale()) ?? throw new HttpException(404);
 
         return $this->render('public/service', [
             'pageTitle' => $service['texts']['name']['text'],
@@ -73,55 +97,41 @@ final class CatalogController extends Controller
     {
         $locale = $this->view()->locale();
         $catalog = $this->catalog();
-        $filters = [...$this->filters($request), ...$fixed];
+        $filters = [...CatalogFilters::fromRequest($request), ...$fixed];
 
         $ids = $catalog->searchServiceIds($filters, $locale);
         $total = count($ids);
         $pages = max(1, (int) ceil($total / self::PER_PAGE));
         $page = min(max(1, $request->int('page', 1)), $pages);
-        $services = $catalog->serviceSummaries(array_slice($ids, ($page - 1) * self::PER_PAGE, self::PER_PAGE), $locale);
-
-        // Parametri da conservare nei link di paginazione e nel modulo dei filtri
-        $query = array_filter([
-            'q' => $filters['q'],
-            'categoria' => $filters['category'] ?? '',
-            'comune' => $filters['territory'] ? (string) $filters['territory'] : '',
-            'lingua' => $filters['language'] ?? '',
-            'mediazione' => $filters['mediation'] ? '1' : '',
-            'gratuito' => $filters['free'] ? '1' : '',
-        ], static fn (string $v): bool => $v !== '');
+        $query = CatalogFilters::toQuery($filters);
+        unset($query['bisogno']);
 
         return $this->render('public/services', [
             ...$data,
-            'services' => $services,
+            'services' => $catalog->serviceSummaries(array_slice($ids, ($page - 1) * self::PER_PAGE, self::PER_PAGE), $locale),
             'total' => $total,
             'page' => $page,
             'pages' => $pages,
             'filters' => $filters,
             'query' => $query,
+            'mapQuery' => CatalogFilters::toQuery($filters),
             'routeName' => $routeName,
             'routeParams' => isset($fixed['need']) ? ['code' => $fixed['need']] : [],
+            ...$this->filterOptions($locale),
+        ]);
+    }
+
+    /** @return array<string, mixed> */
+    private function filterOptions(string $locale): array
+    {
+        $catalog = $this->catalog();
+        $this->view()->share('municipality_centroids', $catalog->municipalities());
+
+        return [
             'categories' => array_values(array_filter($catalog->categories($locale), static fn (array $c): bool => $c['parent_id'] === null)),
             'municipalities' => $catalog->municipalitiesWithServices(),
             'languages' => $catalog->spokenLanguages(),
             'needs' => $catalog->needs($locale, true),
-        ]);
-    }
-
-    /** @return array{q: string, category: ?string, territory: ?int, language: ?string, mediation: bool, free: bool} */
-    private function filters(Request $request): array
-    {
-        $category = $request->string('categoria');
-        $language = $request->string('lingua');
-        $territory = $request->int('comune');
-
-        return [
-            'q' => mb_substr($request->string('q'), 0, 200),
-            'category' => preg_match('/^[a-z_]{2,60}$/', $category) ? $category : null,
-            'territory' => $territory > 0 ? $territory : null,
-            'language' => preg_match('/^[a-z]{2,3}$/', $language) ? $language : null,
-            'mediation' => $request->string('mediazione') === '1',
-            'free' => $request->string('gratuito') === '1',
         ];
     }
 

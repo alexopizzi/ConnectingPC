@@ -32,5 +32,6 @@ $title = isset($pageTitle) && $pageTitle !== null && $pageTitle !== '' ? $pageTi
 </main>
 
 <?= $this->partial('footer') ?>
+<script src="<?= $this->e($this->asset('js/suggest.js')) ?>" defer></script>
 </body>
 </html>

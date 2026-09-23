@@ -8,7 +8,8 @@
     <h3 class="service-card__title">
         <a href="<?= $this->e($this->route('public.service', ['id' => $service['id']])) ?>"><?= $this->localized($service['name']) ?></a>
     </h3>
-    <p class="muted"><?= $this->e($service['organization_name']) ?><?= $service['towns'] !== [] ? ' · ' . $this->e(implode(', ', $service['towns'])) : '' ?></p>
+    <p class="muted"><?= $this->e($service['organization_name']) ?><?= $service['towns'] !== [] ? ' · ' . $this->e(implode(', ', $service['towns'])) : '' ?>
+        <span class="distance" data-distance></span></p>
     <?php if ($service['summary'] !== null): ?>
         <p><?= $this->localized($service['summary']) ?></p>
     <?php endif; ?>

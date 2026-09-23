@@ -5,6 +5,15 @@ Formato: [Keep a Changelog](https://keepachangelog.com/it/1.1.0/) · Versioni: [
 
 ## [Non rilasciato]
 
+## [0.6.0] - 2026-09-24
+### Aggiunto
+- Mappa dei servizi (`/{lingua}/mappa`) con Leaflet 1.9.4 e Leaflet.markercluster 1.5.3 ospitati localmente, marker raggruppati, popup con i servizi della sede e "Portami qui", elenco equivalente sempre visibile, collegamento "salta la mappa", limiti dell'area della provincia.
+- Geolocalizzazione facoltativa solo nel browser ("Usa la mia posizione" o scelta del comune): ordinamento per distanza nell'elenco e sulla mappa; la posizione non viene mai inviata al server.
+- Proxy con cache delle tile OSM (`/tiles/{z}/{x}/{y}.png`) limitato alla provincia, attivo con `MAP_TILE_URL=/tiles/{z}/{x}/{y}.png`.
+- API pubbliche in sola lettura: `/api/v1/map/points`, `/api/v1/search/suggest`, `/api/v1/needs`, `/api/v1/services`; middleware `throttle`.
+- Suggerimenti di ricerca durante la digitazione (bisogni e servizi).
+- Filtri condivisi fra elenco, mappa e API (`CatalogFilters`), parametro `bisogno`.
+
 ## [0.5.0] - 2026-09-24
 ### Aggiunto
 - Tassonomia allineata alla guida FAMI 966 "Servizi utili a Piacenza e provincia": 15 aree, 45 sottocategorie, 15 bisogni (nuovi: trasporti, sicurezza) in 4 lingue.

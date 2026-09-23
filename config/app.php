@@ -29,6 +29,7 @@ return [
         'auth' => App\Http\Middleware\Authenticate::class,
         'guest' => App\Http\Middleware\RedirectIfAuthenticated::class,
         'can' => App\Http\Middleware\Authorize::class,
+        'throttle' => App\Http\Middleware\ThrottleRequests::class,
     ],
 
     // Valori predefiniti delle impostazioni modificabili in admin (tabella settings)
