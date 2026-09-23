@@ -10,6 +10,7 @@ $links = ['progetto' => 'nav.project', 'contatti' => 'nav.contacts', 'privacy' =
                 <li><a href="<?= $this->e($this->route('public.section', ['section' => $section])) ?>"><?= $this->e($this->t($label)) ?></a></li>
             <?php endforeach; ?>
         </ul>
+        <p><a href="<?= $this->e($this->route('auth.login')) ?>"><?= $this->e($this->t('footer.login')) ?></a></p>
         <p class="site-footer__version"><?= $this->e($this->t('footer.version', ['version' => App\Core\App::version()])) ?></p>
     </div>
 </footer>

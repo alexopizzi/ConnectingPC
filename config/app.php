@@ -26,6 +26,9 @@ return [
         'locale' => App\Http\Middleware\SetLocale::class,
         'session' => App\Http\Middleware\StartSession::class,
         'csrf' => App\Http\Middleware\VerifyCsrf::class,
+        'auth' => App\Http\Middleware\Authenticate::class,
+        'guest' => App\Http\Middleware\RedirectIfAuthenticated::class,
+        'can' => App\Http\Middleware\Authorize::class,
     ],
 
     // Valori predefiniti delle impostazioni modificabili in admin (tabella settings)

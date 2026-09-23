@@ -23,6 +23,9 @@ docker compose exec app vendor/bin/phpunit
 ```
 Elenco dei comandi: `docker compose exec app php bin/console help`.
 
+Dati dimostrativi fittizi (solo sviluppo): `docker compose exec app php bin/console setup --demo`.
+Utenti di prova: `superadmin@connectingpc.test`, `admin@…`, `redattore@…`, `traduttore.ar@…`, `referente.ponte@…`, `utente.orizzonti@…` — password `Prova-ConnectingPC-2026`. Accesso da http://localhost:8090/it/accedi.
+
 | Servizio | URL |
 |---|---|
 | Applicazione | http://localhost:8090 |

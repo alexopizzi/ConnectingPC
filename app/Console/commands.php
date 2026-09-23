@@ -96,6 +96,43 @@ return static function (Application $console): void {
         return 0;
     });
 
+    $console->register('user:create-admin', 'Crea un super amministratore e stampa il link di attivazione (--email= --name= [--locale=it])', static function (Input $in, Output $out, Container $c): int {
+        $email = App\Domain\Users\UserRepository::normalizeEmail((string) $in->option('email', ''));
+        $name = trim((string) $in->option('name', ''));
+        $locale = (string) $in->option('locale', 'it');
+        if (filter_var($email, FILTER_VALIDATE_EMAIL) === false || $name === '') {
+            $out->error('Uso: php bin/console user:create-admin --email=nome@dominio.it --name="Nome Cognome"');
+
+            return 1;
+        }
+        $db = $c->get(Database::class);
+        if ($db->fetchValue('SELECT id FROM users WHERE email = ?', [$email]) !== null) {
+            $out->error('Esiste già un utente con questa email.');
+
+            return 1;
+        }
+
+        $token = $db->transaction(static function (Database $db) use ($c, $email, $name, $locale): string {
+            $id = $db->insert('users', ['email' => $email, 'display_name' => $name, 'preferred_locale' => $locale, 'status' => 'invited']);
+            $roleId = (int) $db->fetchValue("SELECT id FROM roles WHERE code = 'super_admin'");
+            if ($roleId === 0) {
+                throw new RuntimeException('Ruoli non presenti: eseguire prima `php bin/console setup`.');
+            }
+            $db->insert('role_assignments', ['user_id' => $id, 'role_id' => $roleId, 'scope_type' => 'global', 'scope_key' => '']);
+            $audit = $c->get(App\Audit\AuditLogger::class);
+            $audit->log('user.created', 'user', $id, ['email' => $email, 'role' => 'super_admin', 'via' => 'console']);
+
+            return $c->get(App\Auth\TokenService::class)->issue($id, 'invite', App\Auth\TokenService::INVITE_TTL);
+        });
+
+        $link = $c->get(App\Core\UrlGenerator::class)->absoluteRoute('auth.invitation', ['locale' => $locale, 'token' => $token]);
+        $out->line('Super amministratore creato. Link di attivazione (valido 72 ore, uso singolo):');
+        $out->line($link);
+        $out->line('Il link è un segreto: trasmetterlo solo alla persona interessata.');
+
+        return 0;
+    });
+
     $console->register('setup', 'Prima installazione o aggiornamento: migrate + seed + i18n:import', static function (Input $in, Output $out, Container $c) use ($console): int {
         foreach (['migrate', 'seed', 'i18n:import'] as $command) {
             $out->line("== $command");

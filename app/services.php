@@ -3,7 +3,20 @@
 declare(strict_types=1);
 
 use App\Audit\AuditLogger;
+use App\Auth\AccountMailer;
+use App\Auth\AccountService;
+use App\Auth\Auth;
+use App\Auth\LoginService;
+use App\Auth\TokenService;
+use App\Authorization\DatabaseAuthorizationData;
+use App\Authorization\Gate;
 use App\Core\App;
+use App\Core\Mailer;
+use App\Domain\Users\UserRepository;
+use App\Domain\Users\UserService;
+use App\Security\PasswordHasher;
+use App\Security\PasswordPolicy;
+use App\Security\RateLimiter;
 use App\Core\Config;
 use App\Core\Container;
 use App\Core\Database;
@@ -111,4 +124,75 @@ return static function (Container $c): void {
     ));
 
     $c->set(ErrorRenderer::class, static fn (Container $c) => new ErrorRenderer($c));
+
+    // --- Sicurezza, autenticazione, autorizzazione (v0.3.0) ---
+
+    $c->set(PasswordHasher::class, static fn () => new PasswordHasher());
+
+    $c->set(PasswordPolicy::class, static fn () => new PasswordPolicy(APP_BASE_PATH . '/config/common-passwords.txt'));
+
+    $c->set(RateLimiter::class, static fn (Container $c) => new RateLimiter(
+        $c->get(Database::class),
+        (string) Env::get('APP_KEY', 'connectingpc'),
+    ));
+
+    $c->set(TokenService::class, static fn (Container $c) => new TokenService($c->get(Database::class)));
+
+    $c->set(Mailer::class, static fn (Container $c) => new Mailer($c->get(Logger::class)));
+
+    $c->set(UserRepository::class, static fn (Container $c) => new UserRepository($c->get(Database::class)));
+
+    $c->set(DatabaseAuthorizationData::class, static fn (Container $c) => new DatabaseAuthorizationData($c->get(Database::class)));
+
+    $c->set(Gate::class, static fn (Container $c) => new Gate(
+        $c->get(DatabaseAuthorizationData::class),
+        (string) $c->get(SettingsRepository::class)->get('publication.default_policy', 'direct'),
+        (array) $c->get(Config::class)->get('permissions.organization_edit_permissions', []),
+        (array) $c->get(Config::class)->get('permissions.organization_publish_permissions', []),
+    ));
+
+    $c->set(Auth::class, static fn (Container $c) => new Auth(
+        $c->get(Session::class),
+        $c->get(UserRepository::class),
+        $c->get(Csrf::class),
+        $c->get(AuditLogger::class),
+        (int) $c->get(Config::class)->get('app.session.absolute_hours', 12),
+    ));
+
+    $c->set(LoginService::class, static fn (Container $c) => new LoginService(
+        $c->get(UserRepository::class),
+        $c->get(PasswordHasher::class),
+        $c->get(RateLimiter::class),
+        $c->get(Gate::class),
+        $c->get(DatabaseAuthorizationData::class),
+        $c->get(Auth::class),
+        $c->get(AuditLogger::class),
+    ));
+
+    $c->set(AccountMailer::class, static fn (Container $c) => new AccountMailer(
+        $c->get(Mailer::class),
+        $c->get(Translator::class),
+        $c->get(UrlGenerator::class),
+        $c->get(LocaleRegistry::class),
+    ));
+
+    $c->set(AccountService::class, static fn (Container $c) => new AccountService(
+        $c->get(Database::class),
+        $c->get(UserRepository::class),
+        $c->get(TokenService::class),
+        $c->get(PasswordHasher::class),
+        $c->get(PasswordPolicy::class),
+        $c->get(RateLimiter::class),
+        $c->get(AccountMailer::class),
+        $c->get(AuditLogger::class),
+    ));
+
+    $c->set(UserService::class, static fn (Container $c) => new UserService(
+        $c->get(Database::class),
+        $c->get(UserRepository::class),
+        $c->get(Gate::class),
+        $c->get(DatabaseAuthorizationData::class),
+        $c->get(AuditLogger::class),
+        (array) $c->get(Config::class)->get('permissions.protected_roles', []),
+    ));
 };

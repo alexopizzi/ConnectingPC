@@ -237,4 +237,16 @@ input[type="email"], input[type="tel"], input[type="url"], .ltr { direction: ltr
 .stats li { padding: var(--space-4); border: 1px solid var(--line); border-radius: var(--radius-lg); background: var(--bg); }
 .stats strong { display: block; font-size: 1.8rem; }
 .inline-form { display: inline; }
+.filters { display: flex; flex-wrap: wrap; gap: var(--space-3); align-items: flex-end; margin-block-end: var(--space-4); }
+.filters .field { min-inline-size: 12rem; }
+.pagination { display: flex; gap: var(--space-3); align-items: center; margin-block: var(--space-4); flex-wrap: wrap; }
+.details { display: grid; grid-template-columns: max-content 1fr; gap: var(--space-2) var(--space-4); margin-block-end: var(--space-4); }
+.details dt { font-weight: 700; }
+.details dd { margin: 0; }
+.card-list { list-style: none; padding: 0; margin: 0 0 var(--space-4); display: grid; gap: var(--space-3); }
+.card { padding: var(--space-4); border: 1px solid var(--line); border-radius: var(--radius-lg); background: var(--bg); }
+.card h3 { margin-block-end: var(--space-1); }
+.table--matrix td { text-align: center; }
+.auth-page { max-inline-size: 36rem; }
+code { font-size: .9em; }
 .user-menu { display: flex; align-items: center; gap: var(--space-3); flex-wrap: wrap; }

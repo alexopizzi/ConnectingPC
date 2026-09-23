@@ -23,9 +23,12 @@ final class ErrorRenderer
     public function render(Request $request, int $status, ?Throwable $debug = null): Response
     {
         $requestId = $this->container->get(Logger::class)->requestId();
+        // 419 (pagina scaduta, CSRF) non è un codice standard: Apache lo trasforma in 500 (P-009).
+        // Si mostra il testo specifico ma si risponde 403.
+        $httpStatus = $status === 419 ? 403 : $status;
 
         if (str_starts_with($request->path, '/api/') || $request->path === '/health') {
-            return Response::json(['error' => ['code' => $status, 'request_id' => $requestId]], $status);
+            return Response::json(['error' => ['code' => $status, 'request_id' => $requestId]], $httpStatus);
         }
 
         try {
@@ -47,14 +50,14 @@ final class ErrorRenderer
                 'pageTitle' => $view->t('error.' . $known . '.title'),
             ], 'layouts/public');
 
-            return Response::html($html, $status);
+            return Response::html($html, $httpStatus);
         } catch (Throwable $e) {
             $this->container->get(Logger::class)->error('Errore nel rendering della pagina di errore', [
                 'exception' => $e::class,
                 'message' => $e->getMessage(),
             ]);
 
-            return new Response('Error ' . $status . ' — ' . $requestId, $status, ['Content-Type' => 'text/plain; charset=utf-8']);
+            return new Response('Error ' . $status . ' — ' . $requestId, $httpStatus, ['Content-Type' => 'text/plain; charset=utf-8']);
         }
     }
 }

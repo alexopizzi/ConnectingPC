@@ -5,6 +5,20 @@ Formato: [Keep a Changelog](https://keepachangelog.com/it/1.1.0/) · Versioni: [
 
 ## [Non rilasciato]
 
+## [0.3.0] - 2026-09-23
+### Aggiunto
+- Migrazioni `0002_users_rbac` (utenti, ruoli, permessi, assegnazioni con ambito, token monouso) e `0003_organizations` (tipi e organizzazioni con assi di stato separati).
+- Ruoli e permessi da `config/permissions.php` (nuovo permesso `portal.access`); `Gate` con ambito globale/organizzazione/categoria/territorio/lingua, stato dell'organizzazione e politica di pubblicazione (diretta predefinita).
+- Autenticazione: account solo su invito (link monouso 72 h), login con rate limiting, recupero password (link 60 min), sessioni con scadenza per inattività e `session_version`, email localizzate via SMTP (PHPMailer; Mailpit in locale).
+- Area amministrativa: cruscotto, utenti (crea e invita, stato, ruoli con ambito, reinvio invito), matrice ruoli/permessi, audit log con filtri.
+- Area riservata delle organizzazioni: cruscotto con le proprie organizzazioni.
+- Comando `user:create-admin` per il primo super amministratore.
+- Dati dimostrativi fittizi (`setup --demo`, vietati in produzione): 3 organizzazioni e 7 utenti, uno per ruolo.
+- Test: Gate, regole password, login e rate limiting, token di invito e recupero (28 test).
+
+### Corretto
+- Il codice 419 (pagina scaduta) viene inviato come 403: Apache trasformava 419 in 500.
+
 ## [0.2.0] - 2026-09-23
 ### Aggiunto
 - Core applicativo: container dei servizi, configurazione (`config/`), accesso al database con strict mode e UTC, logger su file con identificativo di richiesta, cache su file.

@@ -59,6 +59,32 @@ abstract class Controller
         return Response::redirect($url);
     }
 
+    /**
+     * Traduce gli errori del Validator (o liste di chiavi) nella lingua corrente.
+     *
+     * @param array<string, list<array{key: string, params: array<string, string|int>}|string>> $errors
+     * @return array<string, list<string>>
+     */
+    protected function translateErrors(array $errors): array
+    {
+        $translated = [];
+        foreach ($errors as $field => $list) {
+            foreach ($list as $error) {
+                $translated[$field][] = is_string($error) ? $this->t($error) : $this->t($error['key'], $error['params']);
+            }
+        }
+
+        return $translated;
+    }
+
+    /** @return array<string, mixed>|null */
+    protected function user(Request $request): ?array
+    {
+        $user = $request->attribute('user');
+
+        return is_array($user) ? $user : null;
+    }
+
     protected function view(): View
     {
         return $this->container->get(View::class);
