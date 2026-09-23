@@ -247,6 +247,44 @@ input[type="email"], input[type="tel"], input[type="url"], .ltr { direction: ltr
 .card { padding: var(--space-4); border: 1px solid var(--line); border-radius: var(--radius-lg); background: var(--bg); }
 .card h3 { margin-block-end: var(--space-1); }
 .table--matrix td { text-align: center; }
+
+/* ---------- Catalogo (v0.4.0) ---------- */
+@media (min-width: 60rem) { .tile-grid--needs { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+.breadcrumb { font-size: .95rem; margin-block-end: var(--space-3); }
+.lead { font-size: 1.15rem; }
+.lead-org { color: var(--text-muted); }
+.badges { list-style: none; padding: 0; margin: var(--space-2) 0; display: flex; flex-wrap: wrap; gap: var(--space-2); }
+.chip-list { list-style: none; padding: 0; margin: 0; display: flex; flex-wrap: wrap; gap: var(--space-2); }
+.chip {
+  display: inline-flex; align-items: center; gap: var(--space-1); min-block-size: var(--touch); padding-inline: var(--space-3);
+  border: 1px solid var(--line); border-radius: 999px; text-decoration: none; color: var(--text); background: var(--bg);
+}
+.chip:hover { border-color: var(--primary); }
+.service-card__title { font-size: 1.15rem; }
+.service-card__title a { text-decoration: none; }
+.service-card__title a:hover { text-decoration: underline; }
+.service-section { margin-block-start: var(--space-6); }
+.service-section h2 { border-block-end: 2px solid var(--line); padding-block-end: var(--space-2); }
+.site-card { padding: var(--space-4); border: 1px solid var(--line); border-radius: var(--radius-lg); margin-block-end: var(--space-4); background: var(--bg); }
+.site-card__address { font-weight: 600; }
+.site-card__actions { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+.opening-status { font-weight: 700; }
+.opening-status.is-open { color: var(--success); }
+.opening-status.is-open::before { content: "● "; }
+.opening-status.is-closed { color: var(--text-muted); }
+.opening-status.is-closed::before { content: "○ "; }
+.hours-table { max-inline-size: 28rem; margin-block: var(--space-3); }
+.hours-table th { font-weight: 600; }
+.contact-list { list-style: none; padding: 0; margin: var(--space-3) 0; display: grid; gap: var(--space-2); }
+.contact-list a { display: inline-flex; align-items: center; min-block-size: var(--touch); }
+.rich-text ul { padding-inline-start: var(--space-5); }
+.filters-panel { margin-block: var(--space-4); padding: var(--space-3) var(--space-4); border: 1px solid var(--line); border-radius: var(--radius-lg); background: var(--surface); }
+.filters-panel > summary { cursor: pointer; font-weight: 700; min-block-size: var(--touch); display: flex; align-items: center; }
+.filters__actions { display: flex; align-items: center; gap: var(--space-4); flex-wrap: wrap; }
+.results-count { font-weight: 700; }
+.inline-search { display: flex; flex-wrap: wrap; gap: var(--space-2); align-items: flex-end; }
+.inline-search label { inline-size: 100%; font-weight: 700; }
+.inline-search select { min-block-size: var(--touch); padding: var(--space-2) var(--space-3); font: inherit; border: 2px solid var(--text-muted); border-radius: var(--radius); background: var(--bg); color: var(--text); flex: 1 1 14rem; }
 .auth-page { max-inline-size: 36rem; }
 code { font-size: .9em; }
 .user-menu { display: flex; align-items: center; gap: var(--space-3); flex-wrap: wrap; }

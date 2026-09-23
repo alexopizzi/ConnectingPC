@@ -12,6 +12,7 @@ use App\Authorization\DatabaseAuthorizationData;
 use App\Authorization\Gate;
 use App\Core\App;
 use App\Core\Mailer;
+use App\Domain\Catalog\CatalogRepository;
 use App\Domain\Users\UserRepository;
 use App\Domain\Users\UserService;
 use App\Security\PasswordHasher;
@@ -186,6 +187,8 @@ return static function (Container $c): void {
         $c->get(AccountMailer::class),
         $c->get(AuditLogger::class),
     ));
+
+    $c->set(CatalogRepository::class, static fn (Container $c) => new CatalogRepository($c->get(Database::class)));
 
     $c->set(UserService::class, static fn (Container $c) => new UserService(
         $c->get(Database::class),

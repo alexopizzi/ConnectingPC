@@ -41,6 +41,18 @@ final class RouterTest extends TestCase
         self::assertNull($this->router->match('GET', '/it/servizi/0'));
     }
 
+    public function testInlineRegexWithQuantifierBraces(): void
+    {
+        $router = new Router();
+        $router->get('/{locale}/bisogni/{code:[a-z_]{2,50}}', static fn () => null)->name('need');
+        $router->get('/x/{id}/r/{assignment:[1-9][0-9]{0,9}}', static fn () => null)->name('revoke');
+
+        self::assertSame(['locale' => 'it', 'code' => 'documents'], $router->match('GET', '/it/bisogni/documents')['params']);
+        self::assertNull($router->match('GET', '/it/bisogni/x'));
+        self::assertSame('/x/3/r/12', $router->path('revoke', ['id' => 3, 'assignment' => 12]));
+        self::assertSame(['id' => '3', 'assignment' => '12'], $router->match('GET', '/x/3/r/12')['params']);
+    }
+
     public function testMethodNotAllowed(): void
     {
         try {

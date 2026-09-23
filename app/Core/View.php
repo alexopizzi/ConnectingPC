@@ -170,6 +170,115 @@ final class View
         return (string) $formatter->format($date);
     }
 
+    // --- Contenuti multilingua (vault "60") -----------------------------------------------
+
+    /**
+     * Testo breve localizzato; se è un ripiego in altra lingua viene marcato con lang/dir.
+     *
+     * @param array{text: string, lang: string, fallback: bool}|null $value
+     */
+    public function localized(?array $value): string
+    {
+        if ($value === null) {
+            return '';
+        }
+        $text = $this->e($value['text']);
+        if (!$value['fallback']) {
+            return $text;
+        }
+
+        return '<span lang="' . $this->e($value['lang']) . '" dir="' . $this->e($this->locales->direction($value['lang'])) . '">' . $text . '</span>';
+    }
+
+    /**
+     * Testo lungo: paragrafi e righe che iniziano con "- " come elenco puntato. Nessun HTML dell'utente.
+     *
+     * @param array{text: string, lang: string, fallback: bool}|null $value
+     */
+    public function richText(?array $value): string
+    {
+        if ($value === null) {
+            return '';
+        }
+        $html = '';
+        $list = [];
+        $flush = function () use (&$list, &$html): void {
+            if ($list !== []) {
+                $html .= '<ul>' . implode('', array_map(fn (string $i): string => '<li>' . $this->e($i) . '</li>', $list)) . '</ul>';
+                $list = [];
+            }
+        };
+        foreach (preg_split('/\R/u', trim($value['text'])) ?: [] as $line) {
+            $line = trim($line);
+            if (str_starts_with($line, '- ')) {
+                $list[] = substr($line, 2);
+                continue;
+            }
+            $flush();
+            if ($line !== '') {
+                $html .= '<p>' . $this->e($line) . '</p>';
+            }
+        }
+        $flush();
+
+        $attributes = $value['fallback']
+            ? ' lang="' . $this->e($value['lang']) . '" dir="' . $this->e($this->locales->direction($value['lang'])) . '"'
+            : '';
+
+        return '<div class="rich-text"' . $attributes . '>' . $html . '</div>';
+    }
+
+    /** Nome di una lingua parlata nella lingua dell'interfaccia (ICU). */
+    public function languageName(string $code): string
+    {
+        $name = \Locale::getDisplayLanguage($code, $this->locale());
+        $name = $name === '' || $name === $code ? $code : $name;
+
+        return mb_strtoupper(mb_substr($name, 0, 1)) . mb_substr($name, 1);
+    }
+
+    /** Nome del giorno della settimana (1 = lunedì) nella lingua corrente. */
+    public function weekdayName(int $weekday): string
+    {
+        $formatter = new \IntlDateFormatter($this->locale(), \IntlDateFormatter::NONE, \IntlDateFormatter::NONE, 'UTC', null, 'EEEE');
+        // 2024-01-01 era un lunedì
+        $date = new \DateTimeImmutable('2024-01-0' . max(1, min(7, $weekday)) . ' 12:00:00', new \DateTimeZone('UTC'));
+        $name = (string) $formatter->format($date);
+
+        return mb_strtoupper(mb_substr($name, 0, 1)) . mb_substr($name, 1);
+    }
+
+    /**
+     * Stato di apertura in questo momento (fuso di visualizzazione).
+     *
+     * @param list<array{weekday: int, opens: string, closes: string, appointment: bool}> $hours
+     * @return array{open: bool, until: ?string}|null null se non ci sono orari
+     */
+    public function openingStatus(array $hours): ?array
+    {
+        if ($hours === []) {
+            return null;
+        }
+        $now = new \DateTimeImmutable('now', new \DateTimeZone(Env::get('APP_TIMEZONE', 'Europe/Rome')));
+        $day = (int) $now->format('N');
+        $time = $now->format('H:i');
+        foreach ($hours as $slot) {
+            if ($slot['weekday'] === $day && $slot['opens'] <= $time && $time < $slot['closes']) {
+                return ['open' => true, 'until' => $slot['closes']];
+            }
+        }
+
+        return ['open' => false, 'until' => null];
+    }
+
+    public function icon(string $name): string
+    {
+        static $icons = null;
+        $icons ??= require APP_BASE_PATH . '/config/icons.php';
+
+        return $icons[$name] ?? $icons['default'];
+    }
+
     // --- Interni --------------------------------------------------------------------------
 
     /** @param array<string, mixed> $data */

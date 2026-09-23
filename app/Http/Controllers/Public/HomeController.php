@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Public;
 
+use App\Domain\Catalog\CatalogRepository;
 use App\Http\Controller;
 use App\Http\Request;
 use App\Http\Response;
@@ -23,6 +24,12 @@ final class HomeController extends Controller
 
     public function index(Request $request): Response
     {
-        return $this->render('public/home', ['pageTitle' => null]);
+        $catalog = $this->container->get(CatalogRepository::class);
+        $this->view()->share('spoken_languages', $catalog->spokenLanguages());
+
+        return $this->render('public/home', [
+            'pageTitle' => null,
+            'needs' => $catalog->needs($this->view()->locale(), true),
+        ]);
     }
 }

@@ -5,6 +5,19 @@ Formato: [Keep a Changelog](https://keepachangelog.com/it/1.1.0/) · Versioni: [
 
 ## [Non rilasciato]
 
+## [0.4.0] - 2026-09-23
+### Aggiunto
+- Migrazione `0004_catalog`: territori, bisogni, categorie, sedi, servizi e traduzioni, lingue parlate, contatti con visibilità, orari, dizionario di ricerca.
+- Dati di base: 46 comuni della provincia di Piacenza, 13 bisogni e 42 categorie in 4 lingue, 31 lingue parlate, dizionario di sinonimi in it/en/fr/ar.
+- Catalogo pubblico: home con i bisogni e il filtro "qualcuno che parla la mia lingua"; elenco dei servizi con filtri (argomento, comune, lingua, mediatore, gratuito); percorso per bisogno; ricerca con sinonimi e testi normalizzati (anche in arabo); scheda servizio con orari e stato "aperto ora", contatti cliccabili e "Portami qui"; scheda organizzazione.
+- Ripiego delle traduzioni campo per campo sulla lingua sorgente, marcato con `lang`/`dir` e avviso.
+- Catalogo dimostrativo fittizio (`setup --demo`): 14 enti, 22 sedi, 18 servizi.
+- Test del catalogo (34 test in totale).
+
+### Corretto
+- Rotte con quantificatori tra graffe nella regex (`{code:[a-z_]{2,50}}`), che causavano 404.
+- Nomi qualificati `App\…` risolti sull'alias `App` in `services.php` e `commands.php`.
+
 ## [0.3.0] - 2026-09-23
 ### Aggiunto
 - Migrazioni `0002_users_rbac` (utenti, ruoli, permessi, assegnazioni con ambito, token monouso) e `0003_organizations` (tipi e organizzazioni con assi di stato separati).

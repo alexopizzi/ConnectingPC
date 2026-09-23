@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+use App\Audit\AuditLogger;
+use App\Auth\TokenService;
 use App\Console\Application;
 use App\Console\Input;
 use App\Console\Output;
@@ -10,8 +12,10 @@ use App\Core\Container;
 use App\Core\Database;
 use App\Core\EnvironmentCheck;
 use App\Core\FileCache;
+use App\Core\UrlGenerator;
 use App\Database\Migrator;
 use App\Database\Seeder;
+use App\Domain\Users\UserRepository;
 use App\I18n\LocaleRegistry;
 use App\I18n\TranslationImporter;
 
@@ -97,7 +101,7 @@ return static function (Application $console): void {
     });
 
     $console->register('user:create-admin', 'Crea un super amministratore e stampa il link di attivazione (--email= --name= [--locale=it])', static function (Input $in, Output $out, Container $c): int {
-        $email = App\Domain\Users\UserRepository::normalizeEmail((string) $in->option('email', ''));
+        $email = UserRepository::normalizeEmail((string) $in->option('email', ''));
         $name = trim((string) $in->option('name', ''));
         $locale = (string) $in->option('locale', 'it');
         if (filter_var($email, FILTER_VALIDATE_EMAIL) === false || $name === '') {
@@ -119,13 +123,13 @@ return static function (Application $console): void {
                 throw new RuntimeException('Ruoli non presenti: eseguire prima `php bin/console setup`.');
             }
             $db->insert('role_assignments', ['user_id' => $id, 'role_id' => $roleId, 'scope_type' => 'global', 'scope_key' => '']);
-            $audit = $c->get(App\Audit\AuditLogger::class);
+            $audit = $c->get(AuditLogger::class);
             $audit->log('user.created', 'user', $id, ['email' => $email, 'role' => 'super_admin', 'via' => 'console']);
 
-            return $c->get(App\Auth\TokenService::class)->issue($id, 'invite', App\Auth\TokenService::INVITE_TTL);
+            return $c->get(TokenService::class)->issue($id, 'invite', TokenService::INVITE_TTL);
         });
 
-        $link = $c->get(App\Core\UrlGenerator::class)->absoluteRoute('auth.invitation', ['locale' => $locale, 'token' => $token]);
+        $link = $c->get(UrlGenerator::class)->absoluteRoute('auth.invitation', ['locale' => $locale, 'token' => $token]);
         $out->line('Super amministratore creato. Link di attivazione (valido 72 ore, uso singolo):');
         $out->line($link);
         $out->line('Il link è un segreto: trasmetterlo solo alla persona interessata.');

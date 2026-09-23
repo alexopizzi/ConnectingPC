@@ -24,6 +24,7 @@ docker compose exec app vendor/bin/phpunit
 Elenco dei comandi: `docker compose exec app php bin/console help`.
 
 Dati dimostrativi fittizi (solo sviluppo): `docker compose exec app php bin/console setup --demo`.
+Catalogo di prova: 14 enti, 22 sedi e 18 servizi fittizi, da http://localhost:8090/it/servizi o dalla ricerca (es. `devo rinnovare il permesso`).
 Utenti di prova: `superadmin@connectingpc.test`, `admin@…`, `redattore@…`, `traduttore.ar@…`, `referente.ponte@…`, `utente.orizzonti@…` — password `Prova-ConnectingPC-2026`. Accesso da http://localhost:8090/it/accedi.
 
 | Servizio | URL |

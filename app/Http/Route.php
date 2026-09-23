@@ -39,8 +39,9 @@ final class Route
         public readonly mixed $handler,
     ) {
         $parameters = [];
+        // La regex inline può contenere quantificatori con graffe: {id:[0-9]{1,5}}
         $regex = preg_replace_callback(
-            '/\{([a-z_]+)(?::([^}]+))?\}/',
+            '/\{([a-z_]+)(?::((?:[^{}]|\{[^{}]*\})+))?\}/',
             static function (array $m) use (&$parameters): string {
                 $parameters[] = $m[1];
                 $pattern = $m[2] ?? (self::DEFAULT_PATTERNS[$m[1]] ?? '[^/]+');

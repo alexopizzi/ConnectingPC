@@ -86,7 +86,7 @@ final class Router
             if (!array_key_exists($parameter, $params)) {
                 throw new InvalidArgumentException("Parametro mancante '$parameter' per la rotta $name");
             }
-            $path = preg_replace('/\{' . $parameter . '(?::[^}]+)?\}/', rawurlencode((string) $params[$parameter]), $path) ?? $path;
+            $path = preg_replace('/\{' . $parameter . '(?::(?:[^{}]|\{[^{}]*\})+)?\}/', rawurlencode((string) $params[$parameter]), $path) ?? $path;
             unset($params[$parameter]);
         }
 

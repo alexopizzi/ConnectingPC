@@ -2,7 +2,7 @@
 /** @var App\Core\View $this */
 $nav = [
     ['route' => 'public.search', 'params' => [], 'label' => 'nav.search'],
-    ['route' => 'public.section', 'params' => ['section' => 'servizi'], 'label' => 'nav.services'],
+    ['route' => 'public.services', 'params' => [], 'label' => 'nav.services'],
     ['route' => 'public.section', 'params' => ['section' => 'mappa'], 'label' => 'nav.map'],
     ['route' => 'public.section', 'params' => ['section' => 'associazioni-comunita'], 'label' => 'nav.communities'],
     ['route' => 'public.section', 'params' => ['section' => 'mediatori'], 'label' => 'nav.mediators'],
