@@ -6,7 +6,8 @@ Piattaforma pubblica e multilingua per la mappatura, la ricerca e la gestione de
 > Prima di lavorare leggi [`AGENTS.md`](AGENTS.md).
 
 ## Stato
-Versione **0.1.0**: analisi iniziale e scheletro infrastrutturale. Nessuna funzionalità applicativa. Vedi [`CHANGELOG.md`](CHANGELOG.md).
+Versione corrente in [`VERSION`](VERSION); storico in [`CHANGELOG.md`](CHANGELOG.md). Fase attuale: analisi completata e scheletro infrastrutturale, senza funzionalità applicative.
+Lingue: italiano, inglese, francese, arabo. Area: Piacenza e provincia.
 
 ## Stack
 PHP 8.3 · MariaDB 11.4 · Apache (`.htaccess`) · HTML server-side + JavaScript vanilla · Leaflet/OpenStreetMap.
