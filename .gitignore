@@ -1,0 +1,38 @@
+# Configurazione con segreti
+/.env
+/.env.*
+!/.env.example
+
+# Dipendenze e build
+/vendor/
+/dist/
+/node_modules/
+
+# Dati di runtime (le cartelle restano grazie ai .gitkeep)
+/storage/logs/*
+/storage/cache/*
+/storage/sessions/*
+/storage/uploads/*
+/storage/tiles/*
+/storage/maintenance/*
+!/storage/**/.gitkeep
+
+# Backup e dump: mai nel repository
+/backups/
+*.sql.gz
+*.dump
+
+# Test e strumenti
+/.phpunit.cache/
+/.php-cs-fixer.cache
+*.log
+
+# Editor e sistema operativo
+/.idea/
+/.vscode/
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Impostazioni locali degli assistenti
+/.claude/settings.local.json

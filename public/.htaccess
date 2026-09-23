@@ -1,0 +1,36 @@
+# ConnectingPC — document root (public/)
+# Compatibile con Apache + PHP FastCGI (Aruba/Plesk): nessuna direttiva php_value qui.
+
+Options -Indexes
+DirectoryIndex index.php
+
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    # HTTPS obbligatorio in produzione: decommentare quando il certificato è attivo.
+    # RewriteCond %{HTTPS} !=on
+    # RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
+    # Segnale per la verifica dei requisiti (EnvironmentCheck): le regole sono applicate.
+    RewriteRule ^ - [E=CPC_REWRITE:1]
+
+    # Tutto ciò che non è un file esistente passa dal front controller.
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteRule ^ index.php [L]
+</IfModule>
+
+# File nascosti e sensibili mai serviti
+<FilesMatch "(^\.|\.(sql|log|ini|env|bak|lock|md|dist|sh)$)">
+    Require all denied
+</FilesMatch>
+
+<IfModule mod_headers.c>
+    Header always set X-Content-Type-Options "nosniff"
+    Header always set X-Frame-Options "DENY"
+    Header always set Referrer-Policy "strict-origin-when-cross-origin"
+    Header always set Permissions-Policy "geolocation=(self), camera=(), microphone=(), payment=()"
+    Header always set Content-Security-Policy "default-src 'self'; img-src 'self' data: https://tile.openstreetmap.org; style-src 'self'; script-src 'self'; connect-src 'self'; font-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'"
+    # HSTS da attivare solo dopo la verifica di HTTPS in produzione:
+    # Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains"
+    Header unset X-Powered-By
+</IfModule>

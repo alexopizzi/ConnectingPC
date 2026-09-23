@@ -1,0 +1,75 @@
+# Ambiente di SVILUPPO locale di ConnectingPC.
+# Docker NON è usato in produzione (hosting condiviso Aruba Business).
+# Documentazione: vault "35 - Sviluppo locale, Docker, Git e versioni".
+name: connectingpc
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: docker/php/Dockerfile
+    container_name: connectingpc-app
+    ports:
+      - "${APP_PORT:-8090}:80"
+    volumes:
+      - ./:/var/www/html
+    env_file:
+      - .env
+    environment:
+      # Valori specifici della rete Docker: prevalgono su .env
+      DB_HOST: db
+      DB_PORT: "3306"
+      MAIL_HOST: mailpit
+      MAIL_PORT: "1025"
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+
+  db:
+    # Stessa versione della produzione Aruba (MariaDB 11.4)
+    image: mariadb:11.4
+    container_name: connectingpc-db
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_uca1400_ai_ci
+      - --default-time-zone=+00:00
+    environment:
+      MARIADB_DATABASE: ${DB_NAME:-connectingpc}
+      MARIADB_USER: ${DB_USER:-connectingpc}
+      MARIADB_PASSWORD: ${DB_PASS:-connectingpc_dev}
+      MARIADB_ROOT_PASSWORD: ${DB_ROOT_PASS:-connectingpc_root_dev}
+    ports:
+      - "${DB_FORWARD_PORT:-3310}:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+    restart: unless-stopped
+
+  phpmyadmin:
+    image: phpmyadmin:5
+    container_name: connectingpc-phpmyadmin
+    environment:
+      PMA_HOST: db
+      PMA_PORT: "3306"
+      UPLOAD_LIMIT: 64M
+    ports:
+      - "${PMA_PORT:-8091}:80"
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+
+  mailpit:
+    image: axllent/mailpit:latest
+    container_name: connectingpc-mailpit
+    ports:
+      - "${MAILPIT_PORT:-8025}:8025"
+    restart: unless-stopped
+
+volumes:
+  db_data:

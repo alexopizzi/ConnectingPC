@@ -1,0 +1,18 @@
+# Fine riga LF per tutti i file di testo (il codice gira su Linux e nei container)
+* text=auto eol=lf
+
+*.sh      text eol=lf
+bin/*     text eol=lf
+*.ps1     text eol=crlf
+*.bat     text eol=crlf
+*.cmd     text eol=crlf
+
+*.png     binary
+*.jpg     binary
+*.jpeg    binary
+*.webp    binary
+*.gif     binary
+*.ico     binary
+*.woff    binary
+*.woff2   binary
+*.zip     binary

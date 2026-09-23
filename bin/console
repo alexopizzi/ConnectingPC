@@ -1,0 +1,58 @@
+#!/usr/bin/env php
+<?php
+
+declare(strict_types=1);
+
+/*
+ * Console di ConnectingPC.
+ * v0.1.0: version, env:check, key:generate.
+ * Previsti (vault "33 - Struttura delle directory"): migrate, seed, user:create-admin,
+ * search:rebuild, schedule:run, backup:run, release:build.
+ */
+
+if (PHP_SAPI !== 'cli') {
+    exit(1);
+}
+
+require dirname(__DIR__) . '/app/bootstrap.php';
+
+use App\Core\App;
+use App\Core\EnvironmentCheck;
+
+$command = $argv[1] ?? 'help';
+$options = array_slice($argv, 2);
+
+switch ($command) {
+    case 'version':
+        fwrite(STDOUT, App::version() . PHP_EOL);
+        exit(0);
+
+    case 'env:check':
+        $results = (new EnvironmentCheck())->run(in_array('--network', $options, true));
+        $symbols = [EnvironmentCheck::OK => '[ OK ]', EnvironmentCheck::WARN => '[WARN]', EnvironmentCheck::FAIL => '[FAIL]'];
+        fwrite(STDOUT, 'ConnectingPC ' . App::version() . ' — ambiente: ' . App::environment() . PHP_EOL . PHP_EOL);
+        foreach ($results as $row) {
+            fwrite(STDOUT, sprintf("%s %-48s %s\n", $symbols[$row['status']], $row['check'], $row['detail']));
+        }
+        $failed = EnvironmentCheck::hasFailures($results);
+        fwrite(STDOUT, PHP_EOL . ($failed ? 'Esito: requisiti NON soddisfatti.' : 'Esito: requisiti soddisfatti.') . PHP_EOL);
+        exit($failed ? 1 : 0);
+
+    case 'key:generate':
+        // Stampa la chiave: va copiata a mano in .env (il comando non modifica file con segreti).
+        fwrite(STDOUT, 'APP_KEY=base64:' . base64_encode(random_bytes(32)) . PHP_EOL);
+        exit(0);
+
+    case 'help':
+    default:
+        fwrite(STDOUT, <<<TXT
+        Uso: php bin/console <comando> [opzioni]
+
+        Comandi:
+          version              Mostra la versione dell'applicazione
+          env:check [--network] Verifica i requisiti dell'ambiente (con --network anche l'HTTP in uscita)
+          key:generate         Genera un valore casuale per APP_KEY
+
+        TXT);
+        exit($command === 'help' ? 0 : 1);
+}

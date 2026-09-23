@@ -1,0 +1,14 @@
+# Rete di sicurezza: se la document root punta per errore alla radice del progetto,
+# ogni richiesta viene servita da public/ (così .env, storage/ e app/ non sono raggiungibili).
+# Configurazione corretta: document root = public/ (vault "81 - Deploy in produzione e rollback").
+
+Options -Indexes
+
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteRule ^(.*)$ public/$1 [L]
+</IfModule>
+
+<IfModule !mod_rewrite.c>
+    Require all denied
+</IfModule>

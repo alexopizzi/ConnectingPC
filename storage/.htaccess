@@ -1,0 +1,2 @@
+# storage/ non deve mai essere servita via web.
+Require all denied

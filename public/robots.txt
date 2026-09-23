@@ -1,0 +1,3 @@
+# Fase di sviluppo: nessuna indicizzazione. Da rivedere per il rilascio 1.0.
+User-agent: *
+Disallow: /
