@@ -46,9 +46,11 @@ Se non riesci a leggere il vault, **fermati e chiedi** come accedervi: non proce
 
 ## 4. Ambiente di sviluppo (Docker)
 ```bash
-cp .env.example .env
+cp .env.example .env                                  # poi: APP_KEY da `php bin/console key:generate`
 docker compose up -d --build
+docker compose exec app php bin/console setup         # migrazioni + seed + stringhe UI
 docker compose exec app php bin/console env:check
+docker compose exec app vendor/bin/phpunit            # test (database connectingpc_test)
 ```
 App http://localhost:8090 · phpMyAdmin http://localhost:8091 · Mailpit http://localhost:8025 · MariaDB `localhost:3310`.
 Dettagli: vault `35 - Sviluppo locale, Docker, Git e versioni.md`.

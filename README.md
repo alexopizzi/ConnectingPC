@@ -17,8 +17,11 @@ Produzione su hosting condiviso Aruba Business (Plesk). Docker solo per lo svilu
 ```bash
 cp .env.example .env
 docker compose up -d --build
+docker compose exec app php bin/console setup
 docker compose exec app php bin/console env:check
+docker compose exec app vendor/bin/phpunit
 ```
+Elenco dei comandi: `docker compose exec app php bin/console help`.
 
 | Servizio | URL |
 |---|---|

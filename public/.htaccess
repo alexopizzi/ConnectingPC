@@ -24,13 +24,12 @@ DirectoryIndex index.php
     Require all denied
 </FilesMatch>
 
+# Le risposte dinamiche ricevono gli header di sicurezza da PHP (App\Security\SecurityHeaders);
+# qui si coprono i file statici. "setifempty" evita duplicati sulle risposte di PHP.
 <IfModule mod_headers.c>
-    Header always set X-Content-Type-Options "nosniff"
-    Header always set X-Frame-Options "DENY"
-    Header always set Referrer-Policy "strict-origin-when-cross-origin"
-    Header always set Permissions-Policy "geolocation=(self), camera=(), microphone=(), payment=()"
-    Header always set Content-Security-Policy "default-src 'self'; img-src 'self' data: https://tile.openstreetmap.org; style-src 'self'; script-src 'self'; connect-src 'self'; font-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'"
-    # HSTS da attivare solo dopo la verifica di HTTPS in produzione:
-    # Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains"
+    Header setifempty X-Content-Type-Options "nosniff"
+    Header setifempty X-Frame-Options "DENY"
+    Header setifempty Referrer-Policy "strict-origin-when-cross-origin"
+    Header setifempty Content-Security-Policy "default-src 'none'; img-src 'self'; style-src 'self'; font-src 'self'; frame-ancestors 'none'"
     Header unset X-Powered-By
 </IfModule>

@@ -5,6 +5,24 @@ Formato: [Keep a Changelog](https://keepachangelog.com/it/1.1.0/) · Versioni: [
 
 ## [Non rilasciato]
 
+## [0.2.0] - 2026-09-23
+### Aggiunto
+- Core applicativo: container dei servizi, configurazione (`config/`), accesso al database con strict mode e UTC, logger su file con identificativo di richiesta, cache su file.
+- HTTP: `Request`, `Response`, router con gruppi e parametri vincolati, kernel con middleware (`locale`, `session`, `csrf`), pagine di errore localizzate, header di sicurezza (CSP, nosniff, frame, referrer, permissions).
+- Multilingua: lingue it/en/fr/ar (arabo RTL), lingua nell'URL, `/` → lingua del browser, selettore con nomi nativi, `hreflang`, traduttore ICU con plurali, stringhe UI in `lang/` importate nel database con stato di traduzione.
+- Layout pubblico provvisorio accessibile e mobile-first; home con ricerca, accessi rapidi, blocco emergenza e invito a partecipare; sezioni pubbliche "in preparazione".
+- Audit log (`AuditLogger`) con differenze, redazione dei segreti e IP pseudonimizzato.
+- Migrazioni SQL versionate (`0001_core`), seed idempotenti (lingue, impostazioni: pubblicazione diretta predefinita).
+- Console: `setup`, `migrate`, `migrate:status`, `seed`, `i18n:import`, `cache:clear`, `env:check`, `key:generate`, `version`.
+- PHPUnit con database di test separato (`connectingpc_test`); 16 test.
+- Dipendenze: PHPMailer 6 (email, dalla 0.3.0), PHPUnit 11 (sviluppo).
+
+### Modificato
+- `public/.htaccess`: header di sicurezza con `setifempty` (solo file statici); la pagina tecnica dello scheletro è sostituita dal layout pubblico; `/health` gestito dal router.
+
+### Note
+- Le traduzioni en/fr/ar sono bozze prodotte dall'IA, da far revisionare a madrelingua.
+
 ## [0.1.1] - 2026-09-23
 ### Modificato
 - Documentazione (vault): registrate le decisioni del committente — pubblicazione diretta delle organizzazioni accreditate limitata ai propri dati (D-022), lingue italiano/inglese/francese/arabo (D-023), area Piacenza e provincia (D-024), titolare del trattamento rinviato a fine progetto (D-025).

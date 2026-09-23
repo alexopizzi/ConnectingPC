@@ -3,15 +3,15 @@
 declare(strict_types=1);
 
 /*
- * Bootstrap comune a web (public/index.php) e CLI (bin/console).
- * Vedi vault: "30 - Architettura applicativa".
+ * Bootstrap comune a web (public/index.php), CLI (bin/console) e test.
+ * Restituisce il container dei servizi. Vedi vault: "30 - Architettura applicativa".
  */
 
-define('APP_BASE_PATH', dirname(__DIR__));
+defined('APP_BASE_PATH') || define('APP_BASE_PATH', dirname(__DIR__));
 
 $composerAutoload = APP_BASE_PATH . '/vendor/autoload.php';
 if (is_file($composerAutoload)) {
-    require $composerAutoload;
+    require_once $composerAutoload;
 } else {
     // Fallback PSR-4 finché `composer install` non è stato eseguito.
     spl_autoload_register(static function (string $class): void {
@@ -36,3 +36,8 @@ ini_set('log_errors', '1');
 if (is_dir(APP_BASE_PATH . '/storage/logs') && is_writable(APP_BASE_PATH . '/storage/logs')) {
     ini_set('error_log', APP_BASE_PATH . '/storage/logs/php-' . gmdate('Y-m-d') . '.log');
 }
+
+$container = new App\Core\Container();
+(require APP_BASE_PATH . '/app/services.php')($container);
+
+return $container;
