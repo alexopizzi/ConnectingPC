@@ -57,8 +57,13 @@ $action = $this->route($routeName, $routeParams);
                 <label for="f-comune"><?= $this->e($this->t('catalog.filter.municipality')) ?></label>
                 <select id="f-comune" name="comune">
                     <option value=""><?= $this->e($this->t('catalog.filter.any_municipality')) ?></option>
-                    <?php foreach ($municipalities as $municipality): ?>
-                        <option value="<?= $municipality['id'] ?>"<?= $filters['territory'] === $municipality['id'] ? ' selected' : '' ?>><?= $this->e($municipality['name']) ?></option>
+                    <?php foreach ($municipalities as $district): ?>
+                        <optgroup label="<?= $this->e($district['name']) ?>">
+                            <option value="<?= $district['id'] ?>"<?= $filters['territory'] === $district['id'] ? ' selected' : '' ?>><?= $this->e($this->t('catalog.filter.whole_district', ['district' => $district['name']])) ?></option>
+                            <?php foreach ($district['municipalities'] as $municipality): ?>
+                                <option value="<?= $municipality['id'] ?>"<?= $filters['territory'] === $municipality['id'] ? ' selected' : '' ?>><?= $this->e($municipality['name']) ?></option>
+                            <?php endforeach; ?>
+                        </optgroup>
                     <?php endforeach; ?>
                 </select>
             </div>

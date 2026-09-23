@@ -4,33 +4,38 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Public;
 
+use App\Domain\Settings\SettingsRepository;
 use App\Http\Controller;
 use App\Http\HttpException;
 use App\Http\Request;
 use App\Http\Response;
 
 /**
- * Sezioni pubbliche previste dall'architettura e non ancora implementate: pagina "in preparazione"
- * invece di un 404, così la navigazione è già completa (sostituite nelle versioni successive).
+ * Pagine informative (Partecipa, Il progetto, Contatti, Privacy, Accessibilità).
+ * Testi nelle stringhe UI (page.*): contenuti PROVVISORI da validare con il committente (titolare: D-025).
  */
 final class PageController extends Controller
 {
-    /** Segmento URL => chiave di traduzione del titolo */
+    /** Segmento URL => [chiave del titolo, template] */
     public const SECTIONS = [
-        'mappa' => 'nav.map',
-        'associazioni-comunita' => 'nav.communities',
-        'mediatori' => 'nav.mediators',
-        'partecipa' => 'nav.participate',
-        'progetto' => 'nav.project',
-        'contatti' => 'nav.contacts',
-        'privacy' => 'nav.privacy',
-        'accessibilita' => 'nav.accessibility',
+        'partecipa' => ['nav.participate', 'pages/participate'],
+        'progetto' => ['nav.project', 'pages/project'],
+        'contatti' => ['nav.contacts', 'pages/contacts'],
+        'privacy' => ['nav.privacy', 'pages/privacy'],
+        'accessibilita' => ['nav.accessibility', 'pages/accessibility'],
+        // Sezioni in preparazione (sostituite da rotte dedicate quando implementate)
+        'mappa' => ['nav.map', 'public/section'],
+        'associazioni-comunita' => ['nav.communities', 'public/section'],
+        'mediatori' => ['nav.mediators', 'public/section'],
     ];
 
     public function section(Request $request): Response
     {
-        $key = self::SECTIONS[(string) $request->attribute('section')] ?? throw new HttpException(404);
+        [$titleKey, $template] = self::SECTIONS[(string) $request->attribute('section')] ?? throw new HttpException(404);
 
-        return $this->render('public/section', ['pageTitle' => $this->t($key)]);
+        return $this->render($template, [
+            'pageTitle' => $this->t($titleKey),
+            'managers' => (array) $this->container->get(SettingsRepository::class)->get('contacts.managers', []),
+        ]);
     }
 }

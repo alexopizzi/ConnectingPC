@@ -1,0 +1,79 @@
+<?php
+
+declare(strict_types=1);
+
+/*
+ * Pagine informative — ITALIANO. Testi PROVVISORI ("riempitivi") da validare con il committente.
+ * Unite alle stringhe UI da lang/it.php (vedi TranslationLoader::fromFile).
+ */
+return [
+    'page.provisional' => 'Testo provvisorio: sarà validato dai gestori della piattaforma.',
+    'page.managers.title' => 'Contatti dei gestori della piattaforma',
+    'page.managers.hours' => 'Orari',
+
+    'page.participate.intro' => 'ConnectingPC raccoglie i servizi per le persone straniere di Piacenza e provincia. Se il tuo ente o la tua associazione offre servizi, informazioni o attività, puoi entrare nella rete.',
+    'page.participate.who_title' => 'Chi può partecipare',
+    'page.participate.who_text' => 'Enti pubblici, scuole, servizi sanitari e sociali, associazioni, cooperative, patronati, sindacati, enti del Terzo Settore, associazioni create da cittadini stranieri, centri culturali e reti informali riconosciute dal progetto.',
+    'page.participate.benefits_title' => 'Perché partecipare',
+    'page.participate.benefit1' => 'Le persone trovano più facilmente i tuoi servizi, anche in inglese, francese e arabo.',
+    'page.participate.benefit2' => 'Meno richieste arrivano a uffici non competenti.',
+    'page.participate.benefit3' => 'Puoi aggiornare direttamente orari, contatti e servizi della tua organizzazione.',
+    'page.participate.benefit4' => 'Fai parte della rete territoriale coordinata con la Prefettura e gli enti locali.',
+    'page.participate.data_title' => 'Quali dati vengono pubblicati',
+    'page.participate.data_text' => 'Nome e descrizione dell’organizzazione, sedi, orari, recapiti di ufficio, servizi offerti e lingue parlate. I dati personali dei referenti non vengono pubblicati senza consenso.',
+    'page.participate.how_title' => 'Come funziona',
+    'page.participate.step.contact' => 'Contatti i gestori della piattaforma ai recapiti qui sotto.',
+    'page.participate.step.verify' => 'I gestori verificano l’identità e l’attività dell’organizzazione.',
+    'page.participate.step.profile' => 'Insieme compilate la scheda dell’organizzazione (profilo, sedi, servizi).',
+    'page.participate.step.account' => 'Il referente riceve un’email di invito per attivare l’account personale.',
+    'page.participate.step.enable' => 'Dopo l’abilitazione, l’organizzazione gestisce e pubblica direttamente le proprie informazioni.',
+    'page.participate.publication' => 'Ogni organizzazione può modificare solo le informazioni che la riguardano. I gestori controllano le modifiche e possono intervenire se ci sono errori.',
+    'page.participate.already' => 'La tua organizzazione ha già un account? Accedi all’area riservata',
+
+    'page.project.intro' => 'ConnectingPC è una piattaforma per aiutare le persone straniere a trovare il servizio giusto e per mettere in rete istituzioni, Terzo Settore e comunità del territorio di Piacenza.',
+    'page.project.goals_title' => 'Obiettivi',
+    'page.project.goal1' => 'Rendere le persone più autonome nel trovare l’ufficio o il servizio che serve.',
+    'page.project.goal2' => 'Ridurre i contatti verso uffici non competenti.',
+    'page.project.goal3' => 'Migliorare il coordinamento fra enti pubblici e privato sociale.',
+    'page.project.goal4' => 'Valorizzare mediatori, operatori e associazioni di comunità.',
+    'page.project.goal5' => 'Favorire la partecipazione delle comunità straniere alla rete territoriale.',
+    'page.project.network_title' => 'La rete',
+    'page.project.network_text' => 'Partecipano la Prefettura di Piacenza (Area IV), gli enti locali, i servizi pubblici, le associazioni, le cooperative, i patronati, i sindacati, i mediatori e le associazioni create da cittadini stranieri.',
+    'page.project.area_title' => 'Il territorio',
+    'page.project.area_text' => 'Piacenza e provincia, organizzata nei tre distretti di Ponente, Città di Piacenza e Levante.',
+
+    'page.contacts.intro' => 'Per informazioni sulla piattaforma o per segnalare un dato errato scrivi o telefona ai gestori. Per i singoli servizi usa i contatti indicati nelle schede.',
+    'page.contacts.useful_title' => 'Numeri utili',
+    'page.contacts.n112' => 'Emergenza (polizia, ambulanza, vigili del fuoco)',
+    'page.contacts.n1522' => 'Antiviolenza e stalking',
+    'page.contacts.n_trafficking' => 'Numero verde antitratta',
+    'page.contacts.numbers_note' => 'Le chiamate a questi numeri sono gratuite.',
+
+    'page.privacy.draft' => 'Bozza di informativa: il titolare del trattamento è in corso di definizione. Il testo definitivo sarà pubblicato prima dell’apertura del servizio.',
+    'page.privacy.controller_title' => 'Titolare del trattamento',
+    'page.privacy.controller_text' => '[Da definire] — Denominazione, indirizzo e contatti del titolare e, se nominato, del responsabile della protezione dei dati.',
+    'page.privacy.data_title' => 'Quali dati trattiamo',
+    'page.privacy.data_text' => 'Chi consulta il sito non deve registrarsi. Non usiamo cookie di profilazione né strumenti di statistica di terze parti. Il server registra dati tecnici per la sicurezza, conservati per un periodo limitato.',
+    'page.privacy.cookies_title' => 'Cookie',
+    'page.privacy.cookies_text' => 'Le pagine pubbliche non usano cookie. Solo l’area riservata usa un cookie tecnico di sessione, necessario per l’accesso.',
+    'page.privacy.location_title' => 'Posizione',
+    'page.privacy.location_text' => 'Se scegli “Usa la mia posizione”, la posizione è usata solo nel tuo browser per ordinare i servizi per distanza. Non viene inviata al server né salvata.',
+    'page.privacy.organizations_title' => 'Dati di organizzazioni, referenti e mediatori',
+    'page.privacy.organizations_text' => 'I dati di contatto delle persone sono visibili solo ai gestori, salvo consenso alla pubblicazione. I recapiti di ufficio sono pubblicati per consentire l’accesso ai servizi.',
+    'page.privacy.rights_title' => 'I tuoi diritti',
+    'page.privacy.rights_text' => 'Puoi chiedere accesso, rettifica, cancellazione o limitazione dei tuoi dati e revocare il consenso scrivendo ai gestori. Puoi presentare reclamo al Garante per la protezione dei dati personali.',
+
+    'page.accessibility.draft' => 'Bozza di dichiarazione: sarà completata dopo la verifica di conformità.',
+    'page.accessibility.intro' => 'Vogliamo che ConnectingPC sia usabile da tutte le persone. Il sito è progettato secondo le linee guida WCAG 2.2, livello AA.',
+    'page.accessibility.features_title' => 'Cosa abbiamo fatto',
+    'page.accessibility.feature1' => 'Il sito si usa completamente con la tastiera e con i lettori di schermo.',
+    'page.accessibility.feature2' => 'Testi semplici, icone sempre accompagnate da parole, contrasti adeguati.',
+    'page.accessibility.feature3' => 'Il sito è disponibile in italiano, inglese, francese e arabo (da destra a sinistra).',
+    'page.accessibility.feature4' => 'La mappa ha sempre un elenco equivalente dei servizi.',
+    'page.accessibility.feature5' => 'Le pagine funzionano su smartphone e si possono ingrandire fino al 400%.',
+    'page.accessibility.feature6' => 'Non serve condividere la posizione per usare il sito.',
+    'page.accessibility.limits_title' => 'Limiti noti',
+    'page.accessibility.limits_text' => 'Alcuni contenuti non sono ancora tradotti in tutte le lingue e vengono mostrati in italiano. Le traduzioni sono in revisione.',
+    'page.accessibility.feedback_title' => 'Segnala un problema',
+    'page.accessibility.feedback_text' => 'Se trovi una difficoltà nell’uso del sito, scrivi ai gestori: risponderemo e correggeremo il problema appena possibile.',
+];

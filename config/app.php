@@ -36,7 +36,14 @@ return [
         'publication.default_policy' => 'direct',   // D-022
         'quality.review_interval_days' => 180,
         'quality.warning_days' => 30,
-        'contacts.managers' => [],                  // Q-02: recapiti ufficiali dei gestori
+        // Q-02: recapiti ufficiali dei gestori — PROVVISORI (riempitivo), modificabili in admin → Impostazioni
+        'contacts.managers' => [
+            'name' => 'Gestori della piattaforma ConnectingPC',
+            'email' => 'gestori@example.org',
+            'phone' => '+39 0523 000 000',
+            'hours' => 'Lunedì–venerdì 9:00–13:00',
+            'address' => 'Indirizzo da definire, Piacenza',
+        ],
         'search.log_zero_results' => false,         // Q-15
     ],
 ];

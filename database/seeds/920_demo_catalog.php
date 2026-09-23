@@ -198,7 +198,7 @@ return static function (Container $c): void {
             'ar' => ['name' => 'لمّ شمل الأسرة والجنسية', 'summary' => 'معلومات لاستقدام أفراد أسرتك إلى إيطاليا أو لطلب الجنسية الإيطالية.'],
         ],
         [
-            'org' => 'patronato', 'sites' => ['piacenza', 'podenzano'], 'category' => 'residence_permit', 'categories' => ['residence_permit', 'welfare_paperwork'],
+            'org' => 'patronato', 'sites' => ['piacenza', 'podenzano'], 'category' => 'caf', 'categories' => ['caf', 'residence_permit'],
             'needs' => ['documents' => 7, 'admin_procedures' => 9], 'access' => 'in_person', 'booking' => 'recommended', 'cost' => 'partly_free', 'mediation' => 'not_available',
             'languages' => [['ar', 'staff'], ['sq', 'staff'], ['ro', 'staff']],
             'it' => [
@@ -233,7 +233,7 @@ return static function (Container $c): void {
             'ar' => ['name' => 'التسجيل في مركز التوظيف وعروض العمل', 'summary' => 'سجّل كباحث عن عمل واطّلع على عروض العمل.'],
         ],
         [
-            'org' => 'orizzonti', 'sites' => ['piacenza', 'fiorenzuola'], 'category' => 'job_orientation', 'categories' => ['job_orientation', 'vocational_training'],
+            'org' => 'orizzonti', 'sites' => ['piacenza', 'fiorenzuola'], 'category' => 'job_orientation', 'categories' => ['job_orientation', 'work_training'],
             'needs' => ['work' => 9, 'training' => 6], 'access' => 'in_person,phone', 'booking' => 'required', 'cost' => 'free', 'mediation' => 'available',
             'languages' => [['en', 'staff'], ['es', 'staff'], ['sq', 'staff'], ['ar', 'mediator']],
             'it' => [
@@ -266,7 +266,7 @@ return static function (Container $c): void {
             'ar' => ['name' => 'مكتب السكن: البحث عن شقة للإيجار', 'summary' => 'نساعدك في البحث عن سكن للإيجار وفهم العقد.'],
         ],
         [
-            'org' => 'comune', 'sites' => ['sociali'], 'category' => 'housing_emergency', 'categories' => ['housing_emergency', 'social_services'],
+            'org' => 'comune', 'sites' => ['sociali'], 'category' => 'personal_services', 'categories' => ['personal_services', 'housing_emergency'],
             'needs' => ['housing' => 8, 'social_support' => 9], 'access' => 'in_person,phone', 'booking' => 'required', 'cost' => 'free', 'mediation' => 'on_request',
             'languages' => [],
             'it' => [
@@ -303,7 +303,7 @@ return static function (Container $c): void {
             'territories' => ['Piacenza'],
         ],
         [
-            'org' => 'ambulatorio', 'sites' => ['sede'], 'category' => 'primary_care', 'categories' => ['primary_care'],
+            'org' => 'ambulatorio', 'sites' => ['sede'], 'category' => 'other_clinics', 'categories' => ['other_clinics', 'health_card'],
             'needs' => ['health' => 10], 'access' => 'in_person', 'booking' => 'not_needed', 'cost' => 'free', 'mediation' => 'available',
             'languages' => [['en', 'staff'], ['fr', 'staff'], ['ar', 'mediator']],
             'it' => [
@@ -320,7 +320,7 @@ return static function (Container $c): void {
             'ar' => ['name' => 'عيادة لمن ليس لديه طبيب أسرة', 'summary' => 'فحوصات طبية مجانية لمن لا يملك بعد بطاقة صحية أو طبيب أسرة.'],
         ],
         [
-            'org' => 'consultorio', 'sites' => ['piacenza', 'bobbio'], 'category' => 'family_counselling', 'categories' => ['family_counselling', 'maternity'],
+            'org' => 'consultorio', 'sites' => ['piacenza', 'bobbio'], 'category' => 'family_counselling', 'categories' => ['family_counselling', 'ausl'],
             'needs' => ['health' => 8, 'family' => 10], 'access' => 'in_person,phone', 'booking' => 'recommended', 'cost' => 'free', 'mediation' => 'available',
             'languages' => [['en', 'staff'], ['ar', 'mediator'], ['ur', 'mediator']],
             'it' => [
@@ -337,7 +337,7 @@ return static function (Container $c): void {
             'ar' => ['name' => 'مركز الاستشارة الأسرية: الحمل وصحة النساء والشباب', 'summary' => 'متابعة الحمل ووسائل منع الحمل ودعم النساء والأزواج والشباب.'],
         ],
         [
-            'org' => 'antiviolenza', 'sites' => ['sede'], 'category' => 'anti_violence', 'categories' => ['anti_violence'],
+            'org' => 'antiviolenza', 'sites' => ['sede'], 'category' => 'protection', 'categories' => ['protection'],
             'needs' => ['family' => 10, 'legal' => 6], 'access' => 'phone,in_person', 'booking' => 'not_needed', 'cost' => 'free', 'mediation' => 'available',
             'languages' => [['en', 'staff'], ['fr', 'staff'], ['es', 'staff'], ['ar', 'mediator']],
             'it' => [
@@ -369,7 +369,7 @@ return static function (Container $c): void {
             'ar' => ['name' => 'استشارة قانونية أولى مجانية', 'summary' => 'يستمع إليك محامٍ متطوع ويشرح لك حقوقك.'],
         ],
         [
-            'org' => 'cpia', 'sites' => ['piacenza', 'fiorenzuola'], 'category' => 'italian_courses', 'categories' => ['italian_courses', 'adult_education'],
+            'org' => 'cpia', 'sites' => ['piacenza', 'fiorenzuola'], 'category' => 'italian_courses', 'categories' => ['italian_courses', 'evening_schools'],
             'needs' => ['italian_language' => 10, 'training' => 8], 'access' => 'in_person', 'booking' => 'required', 'cost' => 'free', 'mediation' => 'not_available',
             'languages' => [['en', 'staff'], ['fr', 'staff']],
             'it' => [
@@ -436,7 +436,7 @@ return static function (Container $c): void {
             'ar' => ['name' => 'مواد غذائية وملابس للأسر المحتاجة', 'summary' => 'تسوّق مجاني ببطاقة نقاط وملابس للكبار والأطفال.'],
         ],
         [
-            'org' => 'comune', 'sites' => ['anagrafe'], 'category' => 'school_enrolment', 'categories' => ['school_enrolment', 'early_childhood'],
+            'org' => 'comune', 'sites' => ['anagrafe'], 'category' => 'preschool_enrolment', 'categories' => ['preschool_enrolment', 'study_services'],
             'needs' => ['school_children' => 10], 'access' => 'in_person,online', 'booking' => 'required', 'cost' => 'partly_free', 'mediation' => 'on_request',
             'languages' => [], 'online_url' => 'https://example.org/comune/iscrizioni',
             'it' => [
@@ -453,7 +453,7 @@ return static function (Container $c): void {
             'ar' => ['name' => 'التسجيل في الحضانة وروضة الأطفال والمطعم والنقل المدرسي', 'summary' => 'معلومات ومساعدة لتسجيل أطفالك في الحضانة وروضة الأطفال والخدمات المدرسية.'],
         ],
         [
-            'org' => 'sospeso', 'sites' => ['sede'], 'category' => 'community_associations', 'categories' => ['community_associations'],
+            'org' => 'sospeso', 'sites' => ['sede'], 'category' => 'community_associations', 'categories' => ['community_associations', 'after_school'],
             'needs' => ['community' => 8], 'access' => 'in_person', 'booking' => 'not_needed', 'cost' => 'free', 'mediation' => 'not_available',
             'languages' => [['uk', 'staff'], ['ru', 'staff']],
             'it' => [

@@ -5,6 +5,15 @@ Formato: [Keep a Changelog](https://keepachangelog.com/it/1.1.0/) · Versioni: [
 
 ## [Non rilasciato]
 
+## [0.5.0] - 2026-09-24
+### Aggiunto
+- Tassonomia allineata alla guida FAMI 966 "Servizi utili a Piacenza e provincia": 15 aree, 45 sottocategorie, 15 bisogni (nuovi: trasporti, sicurezza) in 4 lingue.
+- Territori: 3 distretti socio-sanitari (Ponente, Città di Piacenza, Levante), codici ISTAT e centroidi dei 46 comuni (`database/seeds/data/municipalities.php`); filtro "comune o intero distretto".
+- Contenuti di riempimento fittizi (`930_demo_filler`): un servizio di prova per ogni sottocategoria in ogni distretto (totale 53 enti, 60 sedi, 122 servizi).
+- Pagine informative con testi provvisori in 4 lingue: Partecipa, Il progetto, Contatti (numeri utili), Privacy (bozza, titolare da definire), Accessibilità (bozza di dichiarazione).
+- Recapiti provvisori dei gestori nelle impostazioni (`contacts.managers`).
+- Moduli di stringhe UI in `lang/<modulo>/<lingua>.php`.
+
 ## [0.4.0] - 2026-09-23
 ### Aggiunto
 - Migrazione `0004_catalog`: territori, bisogni, categorie, sedi, servizi e traduzioni, lingue parlate, contatti con visibilità, orari, dizionario di ricerca.

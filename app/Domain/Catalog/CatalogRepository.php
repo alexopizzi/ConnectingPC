@@ -69,17 +69,40 @@ final class CatalogRepository
         ], $rows);
     }
 
-    /** @return list<array{id: int, name: string}> comuni con almeno una sede pubblicata */
+    /**
+     * Distretti con i rispettivi comuni che hanno almeno una sede pubblicata.
+     *
+     * @return list<array{id: int, name: string, municipalities: list<array{id: int, name: string}>}>
+     */
     public function municipalitiesWithServices(): array
     {
-        return array_map(static fn (array $r): array => ['id' => (int) $r['id'], 'name' => (string) $r['name']], $this->database->fetchAll(
-            "SELECT DISTINCT t.id, t.name FROM territories t
+        $rows = $this->database->fetchAll(
+            "SELECT DISTINCT t.id, t.name, d.id AS district_id, d.name AS district_name FROM territories t
+               JOIN territories d ON d.id = t.parent_id AND d.type = 'district'
                JOIN sites si ON si.territory_id = t.id AND si.publication_status = 'published'
                JOIN service_sites ss ON ss.site_id = si.id
                JOIN services s ON s.id = ss.service_id
                JOIN organizations o ON o.id = s.organization_id
-              WHERE " . self::PUBLIC_SERVICE . ' ORDER BY t.name'
-        ));
+              WHERE " . self::PUBLIC_SERVICE . ' ORDER BY d.id, t.name'
+        );
+        $districts = [];
+        foreach ($rows as $row) {
+            $id = (int) $row['district_id'];
+            $districts[$id] ??= ['id' => $id, 'name' => (string) $row['district_name'], 'municipalities' => []];
+            $districts[$id]['municipalities'][] = ['id' => (int) $row['id'], 'name' => (string) $row['name']];
+        }
+
+        return array_values($districts);
+    }
+
+    /** @return list<array{id: int, name: string, lat: ?float, lng: ?float}> comuni della provincia con centroide */
+    public function municipalities(): array
+    {
+        return array_map(static fn (array $r): array => [
+            'id' => (int) $r['id'], 'name' => (string) $r['name'],
+            'lat' => $r['centroid_lat'] === null ? null : (float) $r['centroid_lat'],
+            'lng' => $r['centroid_lng'] === null ? null : (float) $r['centroid_lng'],
+        ], $this->database->fetchAll("SELECT id, name, centroid_lat, centroid_lng FROM territories WHERE type = 'municipality' ORDER BY name"));
     }
 
     /** @return list<string> codici delle lingue parlate nei servizi pubblicati */
@@ -121,7 +144,10 @@ final class CatalogRepository
             $params[] = $filters['category'];
         }
         if (!empty($filters['territory'])) {
-            $where[] = 's.id IN (SELECT ss.service_id FROM service_sites ss JOIN sites si ON si.id = ss.site_id WHERE si.territory_id = ?)';
+            // Comune oppure distretto (i comuni del distretto sono figli nella gerarchia dei territori)
+            $where[] = 's.id IN (SELECT ss.service_id FROM service_sites ss JOIN sites si ON si.id = ss.site_id
+                                   JOIN territories t ON t.id = si.territory_id WHERE t.id = ? OR t.parent_id = ?)';
+            $params[] = (int) $filters['territory'];
             $params[] = (int) $filters['territory'];
         }
         if (!empty($filters['language'])) {

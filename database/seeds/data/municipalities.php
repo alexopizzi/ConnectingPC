@@ -1,0 +1,57 @@
+<?php
+
+declare(strict_types=1);
+
+/*
+ * Comuni della provincia di Piacenza: codice ISTAT (elenco ufficiale ISTAT, scaricato il 2026-09-24),
+ * distretto socio-sanitario (Ponente, Città di Piacenza, Levante) e centroide (OpenStreetMap/Nominatim, ODbL).
+ * Generato una tantum: non modificare a mano senza aggiornare la fonte.
+ */
+return [
+    ['Agazzano', '033001', 'ponente', 44.945661, 9.518564],
+    ['Alseno', '033002', 'levante', 44.896935, 9.965317],
+    ['Alta Val Tidone', '033049', 'ponente', 44.919977, 9.347182],
+    ['Besenzone', '033003', 'levante', 44.987157, 9.953578],
+    ['Bettola', '033004', 'levante', 44.779319, 9.577543],
+    ['Bobbio', '033005', 'ponente', 44.769273, 9.386281],
+    ['Borgonovo Val Tidone', '033006', 'ponente', 45.001193, 9.462879],
+    ['Cadeo', '033007', 'levante', 44.975746, 9.851316],
+    ['Calendasco', '033008', 'ponente', 45.087322, 9.597479],
+    ['Caorso', '033010', 'levante', 45.049599, 9.874375],
+    ['Carpaneto Piacentino', '033011', 'levante', 44.915212, 9.788095],
+    ['Castel San Giovanni', '033013', 'ponente', 45.059067, 9.434178],
+    ["Castell'Arquato", '033012', 'levante', 44.85118, 9.867118],
+    ['Castelvetro Piacentino', '033014', 'levante', 45.100335, 9.986716],
+    ['Cerignale', '033015', 'ponente', 44.677853, 9.350765],
+    ['Coli', '033016', 'ponente', 44.744756, 9.414565],
+    ['Corte Brugnatella', '033017', 'ponente', 44.715767, 9.360289],
+    ['Cortemaggiore', '033018', 'levante', 44.996353, 9.931072],
+    ['Farini', '033019', 'levante', 44.712837, 9.569286],
+    ['Ferriere', '033020', 'levante', 44.644144, 9.497457],
+    ["Fiorenzuola d'Arda", '033021', 'levante', 44.928084, 9.910722],
+    ['Gazzola', '033022', 'ponente', 44.960062, 9.548964],
+    ['Gossolengo', '033023', 'ponente', 45.001107, 9.616207],
+    ['Gragnano Trebbiense', '033024', 'ponente', 45.013163, 9.568964],
+    ['Gropparello', '033025', 'levante', 44.807547, 9.711578],
+    ["Lugagnano Val d'Arda", '033026', 'levante', 44.821994, 9.828482],
+    ["Monticelli d'Ongina", '033027', 'levante', 45.089511, 9.933165],
+    ['Morfasso', '033028', 'levante', 44.722802, 9.702468],
+    ['Ottone', '033030', 'ponente', 44.623249, 9.33266],
+    ['Piacenza', '033032', 'piacenza', 45.053475, 9.694746],
+    ['Pianello Val Tidone', '033033', 'ponente', 44.94666, 9.405161],
+    ['Piozzano', '033034', 'ponente', 44.926261, 9.496064],
+    ['Podenzano', '033035', 'levante', 44.956363, 9.684967],
+    ["Ponte dell'Olio", '033036', 'levante', 44.867361, 9.642268],
+    ['Pontenure', '033037', 'levante', 44.999267, 9.788429],
+    ['Rivergaro', '033038', 'ponente', 44.910251, 9.596521],
+    ['Rottofreno', '033039', 'ponente', 45.057688, 9.550215],
+    ['San Giorgio Piacentino', '033040', 'levante', 44.954163, 9.736869],
+    ['San Pietro in Cerro', '033041', 'levante', 45.0215, 9.948488],
+    ['Sarmato', '033042', 'ponente', 45.059763, 9.491314],
+    ['Travo', '033043', 'ponente', 44.86246, 9.545366],
+    ['Vernasca', '033044', 'levante', 44.799438, 9.830668],
+    ['Vigolzone', '033045', 'levante', 44.914662, 9.669368],
+    ["Villanova sull'Arda", '033046', 'levante', 45.026005, 9.997061],
+    ['Zerba', '033047', 'ponente', 44.666153, 9.287164],
+    ['Ziano Piacentino', '033048', 'ponente', 45.001462, 9.40156],
+];

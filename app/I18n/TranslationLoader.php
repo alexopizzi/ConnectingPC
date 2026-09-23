@@ -54,13 +54,19 @@ final class TranslationLoader
         if (!preg_match('/^[a-z]{2,3}(-[A-Za-z0-9]{2,8})?$/', $locale)) {
             return [];
         }
-        $file = $this->langDirectory . '/' . $locale . '.php';
-        if (!is_file($file)) {
-            return [];
+        // lang/{locale}.php più i moduli lang/{modulo}/{locale}.php (es. pages, map, mediators)
+        $files = [$this->langDirectory . '/' . $locale . '.php', ...(glob($this->langDirectory . '/*/' . $locale . '.php') ?: [])];
+        $messages = [];
+        foreach ($files as $file) {
+            if (is_file($file)) {
+                $loaded = require $file;
+                if (is_array($loaded)) {
+                    $messages = [...$messages, ...array_map('strval', $loaded)];
+                }
+            }
         }
-        $messages = require $file;
 
-        return is_array($messages) ? array_map('strval', $messages) : [];
+        return $messages;
     }
 
     public function forget(): void

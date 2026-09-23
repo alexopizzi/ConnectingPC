@@ -20,5 +20,8 @@ return [
     'family' => '👪',
     'community' => '👥',
     'training' => '🎓',
+    'tax' => '🧾',
+    'transport' => '🚌',
+    'safety' => '🛡️',
     'default' => '📌',
 ];

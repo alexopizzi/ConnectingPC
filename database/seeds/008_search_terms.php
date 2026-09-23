@@ -50,10 +50,10 @@ return static function (Container $c): void {
             'ar' => ['مدرسه', 'تسجيل', 'طفل', 'اطفال', 'ابني', 'حضانه', 'روضه'],
         ],
         'admin_procedures' => [
-            'it' => ['residenza', 'anagrafe', 'codice fiscale', 'isee', 'patronato', 'pratica', 'certificato', 'bonus', 'assegno unico'],
-            'en' => ['residence registration', 'registry office', 'tax code', 'certificate', 'benefits', 'paperwork'],
-            'fr' => ['residence', 'etat civil', 'code fiscal', 'certificat', 'allocation', 'demarches'],
-            'ar' => ['تسجيل الاقامه', 'السجل المدني', 'الرمز الضريبي', 'شهاده', 'اعانه', 'معامله'],
+            'it' => ['residenza', 'anagrafe', 'codice fiscale', 'isee', 'patronato', 'pratica', 'certificato', 'bonus', 'assegno unico', 'carta d identita', 'tasse', 'caf', '730', 'dichiarazione dei redditi', 'spid'],
+            'en' => ['residence registration', 'registry office', 'tax code', 'certificate', 'benefits', 'paperwork', 'identity card', 'taxes', 'tax return', 'spid'],
+            'fr' => ['residence', 'etat civil', 'code fiscal', 'certificat', 'allocation', 'demarches', 'carte d identite', 'impots', 'declaration de revenus', 'spid'],
+            'ar' => ['تسجيل الاقامه', 'السجل المدني', 'الرمز الضريبي', 'شهاده', 'اعانه', 'معامله', 'بطاقه الهويه', 'ضرائب', 'التصريح الضريبي', 'spid'],
         ],
         'legal' => [
             'it' => ['avvocato', 'legale', 'consulenza legale', 'diritti', 'discriminazione', 'ricorso', 'denuncia'],
@@ -78,6 +78,18 @@ return static function (Container $c): void {
             'en' => ['violence', 'woman', 'women', 'pregnancy', 'pregnant', 'maternity', 'family'],
             'fr' => ['violence', 'femme', 'femmes', 'grossesse', 'enceinte', 'maternite', 'famille'],
             'ar' => ['عنف', 'امراه', 'نساء', 'حمل', 'حامل', 'امومه', 'اسره', 'عائله'],
+        ],
+        'transport' => [
+            'it' => ['autobus', 'bus', 'treno', 'biglietto', 'abbonamento', 'patente', 'trasporto', 'stazione'],
+            'en' => ['bus', 'train', 'ticket', 'pass', 'driving licence', 'transport', 'station'],
+            'fr' => ['bus', 'train', 'billet', 'abonnement', 'permis de conduire', 'transport', 'gare'],
+            'ar' => ['حافله', 'قطار', 'تذكره', 'اشتراك', 'رخصه القياده', 'نقل', 'محطه'],
+        ],
+        'safety' => [
+            'it' => ['emergenza', 'pericolo', 'polizia', 'carabinieri', 'ambulanza', '112', 'protezione', 'aiuto subito'],
+            'en' => ['emergency', 'danger', 'police', 'ambulance', 'protection'],
+            'fr' => ['urgence', 'danger', 'police', 'ambulance', 'protection'],
+            'ar' => ['طوارئ', 'خطر', 'شرطه', 'اسعاف', 'حمايه'],
         ],
         'community' => [
             'it' => ['associazione', 'associazioni', 'comunita', 'connazionali', 'centro culturale'],
