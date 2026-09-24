@@ -102,6 +102,9 @@ final class GateTest extends TestCase
 
         self::assertTrue($gate->allows($user, 'translations.approve', new ResourceScope(locale: 'ar')));
         self::assertFalse($gate->allows($user, 'translations.approve', new ResourceScope(locale: 'fr')));
-        self::assertFalse($gate->allows($user, 'translations.approve'));
+        // Senza risorsa: "in almeno una delle mie lingue" (serve per entrare nell'area amministrativa)
+        self::assertTrue($gate->allows($user, 'translations.approve'));
+        // Una risorsa di altro tipo non soddisfa l'ambito linguistico
+        self::assertFalse($gate->allows($user, 'translations.approve', ResourceScope::organization(1)));
     }
 }

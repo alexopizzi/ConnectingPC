@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Manage;
 
+use App\Domain\Geo\Geocoder;
+use App\Domain\Management\EditorialGuard;
 use App\Domain\Management\SiteEditor;
 use App\Http\HttpException;
 use App\Http\Request;
@@ -100,6 +102,30 @@ abstract class SiteController extends ManagementController
             fn () => $this->editor()->saveTexts($this->user($request), $id, $locale, $this->texts($request, SiteEditor::TEXT_FIELDS), $request->string('approve') === '1'),
             'manage.saved', 'sites.show', ['id' => $id, 'lingua' => $locale],
         );
+    }
+
+    /**
+     * Proposte di coordinate per un indirizzo (RF-40): JSON per il modulo della sede. Solo per chi può
+     * modificare le sedi dell'organizzazione; la posizione va poi confermata a mano sulla mappa.
+     */
+    public function geocode(Request $request): Response
+    {
+        $organizationId = (int) $request->attribute('id');
+        if (!$this->container->get(EditorialGuard::class)->allows($this->user($request), 'org.sites.edit', $organizationId)) {
+            return Response::json(['error' => ['code' => 'forbidden', 'message' => $this->t('manage.error.forbidden')]], 403);
+        }
+        $town = (string) $this->db()->fetchValue("SELECT name FROM territories WHERE id = ? AND type = 'municipality'", [$request->int('territory_id')]);
+        try {
+            $results = $this->container->get(Geocoder::class)->search(
+                mb_substr($request->string('address_line'), 0, 255),
+                mb_substr($request->string('postal_code'), 0, 10),
+                $town,
+            );
+        } catch (\RuntimeException) {
+            return Response::json(['error' => ['code' => 'unavailable', 'message' => $this->t('manage.geocode.unavailable')]], 503);
+        }
+
+        return Response::json(['results' => $results]);
     }
 
     /** @return array<string, string> */

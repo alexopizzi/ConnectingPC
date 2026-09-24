@@ -72,6 +72,7 @@ return static function (Router $r): void {
 
             $r->get('/organizzazioni/{id}/sedi/nuova', [Admin\SiteController::class, 'create'])->name('admin.sites.create');
             $r->post('/organizzazioni/{id}/sedi', [Admin\SiteController::class, 'store'])->name('admin.sites.store');
+            $r->post('/organizzazioni/{id}/geocodifica', [Admin\SiteController::class, 'geocode'])->name('admin.sites.geocode')->middleware('throttle:30,60');
             $r->get('/sedi/{id}', [Admin\SiteController::class, 'show'])->name('admin.sites.show');
             $r->post('/sedi/{id}', [Admin\SiteController::class, 'update'])->name('admin.sites.update');
             $r->post('/sedi/{id}/orari', [Admin\SiteController::class, 'saveHours'])->name('admin.sites.hours');
@@ -99,6 +100,12 @@ return static function (Router $r): void {
 
         $r->group(['middleware' => ['can:taxonomy.manage']], static function (Router $r): void {
             $r->get('/sinonimi', [Admin\CatalogToolsController::class, 'synonyms'])->name('admin.synonyms.index');
+            $r->get('/tassonomie', [Admin\TaxonomyController::class, 'index'])->name('admin.taxonomy.index');
+            $r->get('/tassonomie/{type:needs|categories|organization_types|communities|mediation_domains}', [Admin\TaxonomyController::class, 'list'])->name('admin.taxonomy.list');
+            $r->get('/tassonomie/{type:needs|categories|organization_types|communities|mediation_domains}/nuova', [Admin\TaxonomyController::class, 'create'])->name('admin.taxonomy.create');
+            $r->post('/tassonomie/{type:needs|categories|organization_types|communities|mediation_domains}', [Admin\TaxonomyController::class, 'store'])->name('admin.taxonomy.store');
+            $r->get('/tassonomie/{type:needs|categories|organization_types|communities|mediation_domains}/{id}', [Admin\TaxonomyController::class, 'edit'])->name('admin.taxonomy.edit');
+            $r->post('/tassonomie/{type:needs|categories|organization_types|communities|mediation_domains}/{id}', [Admin\TaxonomyController::class, 'update'])->name('admin.taxonomy.update');
             $r->post('/sinonimi', [Admin\CatalogToolsController::class, 'addSynonym'])->name('admin.synonyms.store');
             $r->post('/sinonimi/{id}/elimina', [Admin\CatalogToolsController::class, 'deleteSynonym'])->name('admin.synonyms.delete');
         });
@@ -114,6 +121,11 @@ return static function (Router $r): void {
             $r->get('/{id}', [Admin\InboundRequestController::class, 'show'])->name('admin.requests.show');
             $r->post('/{id}', [Admin\InboundRequestController::class, 'update'])->name('admin.requests.update');
         });
+        // Stringhe dell'interfaccia: i permessi per lingua li verifica UiStringEditor
+        $r->get('/stringhe', [Admin\UiStringController::class, 'index'])->name('admin.strings.index');
+        $r->post('/stringhe/{id}', [Admin\UiStringController::class, 'save'])->name('admin.strings.save');
+        $r->get('/esporta/servizi.csv', [Admin\ExportController::class, 'services'])->name('admin.export.services')->middleware('can:organizations.view_all');
+        $r->get('/esporta/organizzazioni.csv', [Admin\ExportController::class, 'organizations'])->name('admin.export.organizations')->middleware('can:organizations.view_all');
         $r->get('/modifiche-recenti', [Admin\CatalogToolsController::class, 'recentChanges'])->name('admin.recent.index')->middleware('can:content.review');
         $r->get('/qualita', [Admin\CatalogToolsController::class, 'quality'])->name('admin.quality.index')->middleware('can:quality.view');
         $r->get('/impostazioni', [Admin\CatalogToolsController::class, 'settings'])->name('admin.settings.index')->middleware('can:settings.manage');
@@ -150,6 +162,7 @@ return static function (Router $r): void {
 
             $r->get('/organizzazioni/{id}/sedi/nuova', [Portal\SiteController::class, 'create'])->name('portal.sites.create');
             $r->post('/organizzazioni/{id}/sedi', [Portal\SiteController::class, 'store'])->name('portal.sites.store');
+            $r->post('/organizzazioni/{id}/geocodifica', [Portal\SiteController::class, 'geocode'])->name('portal.sites.geocode')->middleware('throttle:30,60');
             $r->get('/sedi/{id}', [Portal\SiteController::class, 'show'])->name('portal.sites.show');
             $r->post('/sedi/{id}', [Portal\SiteController::class, 'update'])->name('portal.sites.update');
             $r->post('/sedi/{id}/orari', [Portal\SiteController::class, 'saveHours'])->name('portal.sites.hours');

@@ -13,6 +13,7 @@
     <h1><?= $this->e($this->t('admin.organizations.title')) ?></h1>
     <a class="button" href="<?= $this->e($this->route('admin.organizations.create')) ?>"><?= $this->e($this->t('admin.organizations.create')) ?></a>
 </div>
+<p><a href="<?= $this->e($this->route('admin.export.organizations')) ?>"><?= $this->e($this->t('admin.export.organizations')) ?></a></p>
 
 <form class="filters" method="get" action="<?= $this->e($this->route('admin.organizations.index')) ?>">
     <div class="field">

@@ -61,6 +61,19 @@ $hours = $site === null ? [] : [...$site['hours'], ...array_fill(0, 3, ['weekday
             </div>
             <?= $this->partial('manage/publication-select', ['current' => $value('publication_status', 'draft')]) ?>
         </div>
+        <div class="geocode" data-geocode="<?= $this->e($this->route($area . '.sites.geocode', ['id' => $orgId])) ?>"
+             data-searching-text="<?= $this->e($this->t('manage.geocode.searching')) ?>" data-none-text="<?= $this->e($this->t('manage.geocode.none')) ?>"
+             data-choose-text="<?= $this->e($this->t('manage.geocode.choose')) ?>" data-chosen-text="<?= $this->e($this->t('manage.geocode.chosen')) ?>"
+             data-moved-text="<?= $this->e($this->t('manage.geocode.moved')) ?>" data-error-text="<?= $this->e($this->t('manage.geocode.unavailable')) ?>">
+            <button class="button button--secondary" type="button" data-geocode-button><?= $this->e($this->t('manage.geocode.find')) ?></button>
+            <p class="field__hint"><?= $this->e($this->t('manage.geocode.hint')) ?></p>
+            <p role="status" data-geocode-status></p>
+            <ul class="plain-list" data-geocode-results></ul>
+            <div class="geocode__map" data-geocode-map hidden role="region" aria-label="<?= $this->e($this->t('manage.geocode.map_label')) ?>"
+                 data-tiles="<?= $this->e((string) App\Core\Env::get('MAP_TILE_URL', 'https://tile.openstreetmap.org/{z}/{x}/{y}.png')) ?>"
+                 data-attribution="<?= $this->e((string) App\Core\Env::get('MAP_TILE_ATTRIBUTION', '© OpenStreetMap contributors')) ?>"
+                 data-marker-label="<?= $this->e($this->t('manage.geocode.marker')) ?>"></div>
+        </div>
         <label class="checkbox"><input type="checkbox" name="is_public_place" value="1"<?= $value('is_public_place', '1') === '1' ? ' checked' : '' ?>> <?= $this->e($this->t('manage.field.is_public_place')) ?></label>
         <p class="field__hint"><?= $this->e($this->t('manage.field.is_public_place_hint')) ?></p>
         <?php if ($site !== null && $site['lat'] !== null): ?>
@@ -124,4 +137,7 @@ $hours = $site === null ? [] : [...$site['hours'], ...array_fill(0, 3, ['weekday
         ]) ?>
     </section>
 <?php endif; ?>
+<link rel="stylesheet" href="<?= $this->e($this->asset('vendor/leaflet/leaflet.css')) ?>">
+<script src="<?= $this->e($this->asset('vendor/leaflet/leaflet.js')) ?>" defer></script>
+<script src="<?= $this->e($this->asset('js/site-geocode.js')) ?>" defer></script>
 </div>

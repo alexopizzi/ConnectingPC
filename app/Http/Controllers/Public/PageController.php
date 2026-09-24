@@ -23,6 +23,7 @@ final class PageController extends Controller
         'contatti' => ['nav.contacts', 'pages/contacts'],
         'privacy' => ['nav.privacy', 'pages/privacy'],
         'accessibilita' => ['nav.accessibility', 'pages/accessibility'],
+        'note-legali' => ['nav.legal', 'pages/legal'],
     ];
 
     public function section(Request $request): Response

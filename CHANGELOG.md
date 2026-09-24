@@ -5,6 +5,18 @@ Formato: [Keep a Changelog](https://keepachangelog.com/it/1.1.0/) · Versioni: [
 
 ## [Non rilasciato]
 
+## [0.11.0] - 2026-09-24
+### Aggiunto
+- Admin: gestione delle tassonomie (bisogni, aree e sottocategorie, tipi di ente, comunità, ambiti di mediazione) con etichette nelle 4 lingue.
+- Admin: traduzione e approvazione delle stringhe dell'interfaccia per lingua, con controllo dei segnaposto ICU.
+- Geocodifica assistita delle sedi: "Trova sulla mappa" (Nominatim lato server, provincia di Piacenza, cache, una richiesta al secondo) e segnaposto trascinabile; variabile `GEOCODER_EMAIL`.
+- Esportazioni CSV di servizi e organizzazioni.
+- Pagina "Note legali" (bozza) nelle 4 lingue.
+- Test su tassonomie e stringhe (58 test).
+
+### Corretto
+- I ruoli con ambito lingua, categoria o territorio (es. traduttore) non potevano accedere all'area amministrativa: il Gate ora considera un ambito soddisfatto "in almeno uno dei propri ambiti" quando non c'è una risorsa.
+
 ## [0.10.0] - 2026-09-24
 ### Aggiunto
 - Migrazione `0006_requests_reviews`: registro delle richieste in ingresso e esiti della revisione.

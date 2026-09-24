@@ -11,6 +11,7 @@
 ?>
 <h1><?= $this->e($this->t('admin.services.title')) ?></h1>
 <p class="field__hint"><?= $this->e($this->t('admin.services.create_hint')) ?></p>
+<p><a href="<?= $this->e($this->route('admin.export.services')) ?>"><?= $this->e($this->t('admin.export.services')) ?></a></p>
 
 <form class="filters" method="get" action="<?= $this->e($this->route('admin.services.index')) ?>">
     <div class="field">

@@ -1,6 +1,6 @@
 <?php
 /** @var App\Core\View $this */
-$links = ['progetto' => 'nav.project', 'contatti' => 'nav.contacts', 'privacy' => 'nav.privacy', 'accessibilita' => 'nav.accessibility'];
+$links = ['progetto' => 'nav.project', 'contatti' => 'nav.contacts', 'privacy' => 'nav.privacy', 'accessibilita' => 'nav.accessibility', 'note-legali' => 'nav.legal'];
 ?>
 <footer class="site-footer">
     <div class="container">

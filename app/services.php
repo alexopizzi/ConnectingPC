@@ -24,6 +24,9 @@ use App\Domain\Management\RelatedRecords;
 use App\Domain\Management\ServiceEditor;
 use App\Domain\Management\SiteEditor;
 use App\Domain\Management\SynonymEditor;
+use App\Domain\Management\TaxonomyEditor;
+use App\Domain\Management\UiStringEditor;
+use App\Domain\Geo\Geocoder;
 use App\Domain\Mediators\MediatorRepository;
 use App\Domain\Users\UserRepository;
 use App\Domain\Users\UserService;
@@ -223,6 +226,15 @@ return static function (Container $c): void {
         $c->get(Database::class), $c->get(Gate::class), $c->get(AuditLogger::class),
         (int) $c->get(SettingsRepository::class)->get('requests.retention_months', 24),
     ));
+    $c->set(Geocoder::class, static fn (Container $c) => new Geocoder(
+        $c->get(FileCache::class),
+        rtrim((string) Env::get('GEOCODER_URL', 'https://nominatim.openstreetmap.org'), '/') . '/search',
+        (string) Env::get('GEOCODER_EMAIL', (string) Env::get('MAIL_FROM_ADDRESS', '')),
+        (string) Env::get('APP_URL', ''),
+        APP_BASE_PATH . '/storage/cache/geocoder.lock',
+    ));
+    $c->set(TaxonomyEditor::class, static fn (Container $c) => new TaxonomyEditor($c->get(Database::class), $c->get(Gate::class), $c->get(AuditLogger::class), $c->get(FileCache::class)));
+    $c->set(UiStringEditor::class, static fn (Container $c) => new UiStringEditor($c->get(Database::class), $c->get(Gate::class), $c->get(AuditLogger::class), $c->get(TranslationLoader::class)));
     $c->set(SynonymEditor::class, static fn (Container $c) => new SynonymEditor($c->get(Database::class), $c->get(Gate::class), $c->get(AuditLogger::class)));
 
     $c->set(UserService::class, static fn (Container $c) => new UserService(

@@ -96,9 +96,11 @@ final class Gate
             // Senza risorsa: "in almeno una delle mie organizzazioni" (es. accesso all'area riservata).
             'organization' => ($resource === null || $resource->organizationId === (int) $key)
                 && $this->organizationAllows((int) $key, $permission),
-            'category' => $resource !== null && in_array((int) $key, $resource->categoryIds, true),
-            'territory' => $resource !== null && in_array((int) $key, $resource->territoryIds, true),
-            'locale' => $resource !== null && $resource->locale === $key,
+            // Senza risorsa vale lo stesso principio: "in almeno uno dei miei ambiti" (es. un traduttore
+            // limitato all'arabo entra nell'area amministrativa); con una risorsa l'ambito deve coincidere.
+            'category' => $resource === null || in_array((int) $key, $resource->categoryIds, true),
+            'territory' => $resource === null || in_array((int) $key, $resource->territoryIds, true),
+            'locale' => $resource === null || $resource->locale === $key,
             default => false,
         };
     }
