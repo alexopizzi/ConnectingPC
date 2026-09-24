@@ -2,6 +2,7 @@
 /**
  * @var App\Core\View $this
  * @var list<array<string, mixed>> $organizations
+ * @var list<array<string, mixed>> $work contenuti in bozza, in revisione, respinti o da verificare
  * @var App\Authorization\Gate $gate
  * @var array<string, mixed> $user
  */
@@ -27,6 +28,21 @@
                         <p class="badge badge--warning"><?= $this->e($this->t('portal.edit_disabled')) ?></p>
                     <?php endif; ?>
                     <p><a class="button" href="<?= $this->e($this->route('portal.organizations.show', ['id' => (int) $organization['id']])) ?>"><?= $this->e($this->t($organization['portal_edit_enabled'] ? 'portal.dashboard.manage' : 'portal.dashboard.view')) ?></a></p>
+                </li>
+            <?php endforeach; ?>
+        </ul>
+    <?php endif; ?>
+
+    <?php if ($work !== []): ?>
+        <h2><?= $this->e($this->t('portal.dashboard.work')) ?></h2>
+        <ul class="plain-list">
+            <?php foreach ($work as $item): ?>
+                <li>
+                    <a href="<?= $this->e($this->route('portal.' . $item['entity_type'] . 's.show', ['id' => $item['entity_id']])) ?>"><?= $this->e($item['label']) ?></a>
+                    <span class="badge<?= in_array($item['status'], ['rejected', 'review_due'], true) ? ' badge--warning' : '' ?>"><?= $this->e($this->t('portal.work.' . $item['status'])) ?></span>
+                    <?php if ($item['note'] !== null): ?>
+                        <br><span class="muted"><?= $this->e($this->t('portal.work.note')) ?>: <?= $this->e($item['note']) ?></span>
+                    <?php endif; ?>
                 </li>
             <?php endforeach; ?>
         </ul>

@@ -43,6 +43,7 @@ $need ??= null;
         'categories' => $categories,
         'municipalities' => $municipalities,
         'languages' => $languages,
+        'orgTypes' => $orgTypes,
     ]) ?>
 
     <div class="results-bar">

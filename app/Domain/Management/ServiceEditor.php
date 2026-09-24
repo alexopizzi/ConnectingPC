@@ -30,6 +30,7 @@ final class ServiceEditor
         private readonly EditorialGuard $guard,
         private readonly RelatedRecords $related,
         private readonly AuditLogger $audit,
+        private readonly int $reviewIntervalDays = 180,
     ) {
     }
 
@@ -101,6 +102,10 @@ final class ServiceEditor
         if (!empty($data['mark_verified'])) {
             $after['verified_at'] = gmdate('Y-m-d H:i:s');
             $after['verified_by'] = (int) $actor['id'];
+            // Verifica rapida (RF-26): se non è indicata, la prossima revisione segue l'intervallo di piattaforma
+            if ($after['next_review_at'] === null || $after['next_review_at'] <= gmdate('Y-m-d')) {
+                $after['next_review_at'] = (new \DateTimeImmutable('today'))->modify('+' . $this->reviewIntervalDays . ' days')->format('Y-m-d');
+            }
         }
 
         $categories = array_map('intval', (array) ($data['categories'] ?? []));

@@ -15,6 +15,7 @@ use App\Core\FileCache;
 use App\Core\UrlGenerator;
 use App\Database\Migrator;
 use App\Database\Seeder;
+use App\Domain\Management\InboundRequestService;
 use App\Domain\Users\UserRepository;
 use App\I18n\LocaleRegistry;
 use App\I18n\TranslationImporter;
@@ -96,6 +97,14 @@ return static function (Application $console): void {
     $console->register('cache:clear', 'Svuota la cache applicativa (storage/cache)', static function (Input $in, Output $out, Container $c): int {
         $c->get(FileCache::class)->clear();
         $out->line('Cache svuotata.');
+
+        return 0;
+    });
+
+    // Da pianificare con un cron di Plesk (es. una volta al giorno): vault "71", "83"
+    $console->register('requests:purge', 'Cancella i dati personali delle richieste in ingresso chiuse e scadute', static function (Input $in, Output $out, Container $c): int {
+        $count = $c->get(InboundRequestService::class)->purgeExpired();
+        $out->line($count . ' richieste ripulite.');
 
         return 0;
     });

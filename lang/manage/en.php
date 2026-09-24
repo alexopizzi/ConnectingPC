@@ -4,6 +4,12 @@ declare(strict_types=1);
 
 /* Content management (forms shared by the admin area and the reserved area, v0.9.0) — en. Draft to be reviewed. */
 return [
+    'portal.dashboard.work' => 'To complete or check',
+    'portal.work.draft' => 'draft',
+    'portal.work.in_review' => 'being reviewed by the managers',
+    'portal.work.rejected' => 'rejected: correct it and send it again',
+    'portal.work.review_due' => 'to check: confirm the information is up to date',
+    'portal.work.note' => 'Managers’ note',
     'portal.dashboard.manage' => 'Manage the profile',
     'portal.dashboard.view' => 'View the profile',
     'portal.dashboard.manage_hint' => 'From your organisation’s page you can update the profile, texts and translations, contact details, sites with opening hours, services and mediators. With direct publication, changes appear on the website straight away.',
@@ -59,6 +65,8 @@ return [
     'manage.error.type_required' => 'Choose at least one type of mediation.',
     'manage.error.consent_required' => 'Without recorded consent, the mediator’s profile and contact details cannot be public.',
     'manage.error.change_request_required' => 'This content is published and your organisation publishes with review: for now, please ask the platform managers for changes (change requests will be available in the reserved area).',
+    'manage.error.note_required' => 'Write a note explaining the rejection.',
+    'manage.error.not_in_review' => 'This content is no longer in review.',
     'manage.warning.outside_province' => 'Warning: the coordinates are outside the province of Piacenza. Please check the position.',
 
     'manage.publication' => 'Publication',

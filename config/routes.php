@@ -102,10 +102,23 @@ return static function (Router $r): void {
             $r->post('/sinonimi', [Admin\CatalogToolsController::class, 'addSynonym'])->name('admin.synonyms.store');
             $r->post('/sinonimi/{id}/elimina', [Admin\CatalogToolsController::class, 'deleteSynonym'])->name('admin.synonyms.delete');
         });
+        $r->group(['middleware' => ['can:content.review']], static function (Router $r): void {
+            $r->get('/revisione', [Admin\ReviewController::class, 'index'])->name('admin.review.index');
+            $r->post('/revisione/{type:organization|site|service|mediator}/{id}', [Admin\ReviewController::class, 'decide'])->name('admin.review.decide');
+            $r->post('/revisione/{type:organization|site|service|mediator}/{id}/traduzione', [Admin\ReviewController::class, 'approveTranslation'])->name('admin.review.translation');
+        });
+        $r->group(['prefix' => '/richieste', 'middleware' => ['can:requests.manage']], static function (Router $r): void {
+            $r->get('', [Admin\InboundRequestController::class, 'index'])->name('admin.requests.index');
+            $r->get('/nuova', [Admin\InboundRequestController::class, 'create'])->name('admin.requests.create');
+            $r->post('', [Admin\InboundRequestController::class, 'store'])->name('admin.requests.store');
+            $r->get('/{id}', [Admin\InboundRequestController::class, 'show'])->name('admin.requests.show');
+            $r->post('/{id}', [Admin\InboundRequestController::class, 'update'])->name('admin.requests.update');
+        });
         $r->get('/modifiche-recenti', [Admin\CatalogToolsController::class, 'recentChanges'])->name('admin.recent.index')->middleware('can:content.review');
         $r->get('/qualita', [Admin\CatalogToolsController::class, 'quality'])->name('admin.quality.index')->middleware('can:quality.view');
         $r->get('/impostazioni', [Admin\CatalogToolsController::class, 'settings'])->name('admin.settings.index')->middleware('can:settings.manage');
         $r->post('/impostazioni', [Admin\CatalogToolsController::class, 'saveSettings'])->name('admin.settings.update')->middleware('can:settings.manage');
+        $r->post('/impostazioni/piattaforma', [Admin\CatalogToolsController::class, 'saveOptions'])->name('admin.settings.options')->middleware('can:settings.manage');
     });
 
     $r->group(['prefix' => '/{locale}', 'middleware' => ['locale']], static function (Router $r): void {

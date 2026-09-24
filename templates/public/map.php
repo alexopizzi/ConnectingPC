@@ -30,6 +30,7 @@ $serviceUrl = $this->route('public.service', ['id' => 0]);
         'categories' => $categories,
         'municipalities' => $municipalities,
         'languages' => $languages,
+        'orgTypes' => $orgTypes,
     ]) ?>
 
     <div class="results-bar">

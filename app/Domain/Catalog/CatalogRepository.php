@@ -109,6 +109,18 @@ final class CatalogRepository
         ], $this->database->fetchAll("SELECT id, name, centroid_lat, centroid_lng FROM territories WHERE type = 'municipality' ORDER BY name"));
     }
 
+    /** @return list<array{code: string, name: array{text: string, lang: string, fallback: bool}}> tipi di ente con servizi pubblicati */
+    public function organizationTypesWithServices(string $locale): array
+    {
+        $rows = $this->database->fetchAll(
+            'SELECT DISTINCT t.id, t.code, t.sort_order FROM organization_types t JOIN organizations o ON o.organization_type_id = t.id
+               JOIN services s ON s.organization_id = o.id WHERE ' . self::PUBLIC_SERVICE . ' ORDER BY t.sort_order'
+        );
+        $names = $this->taxonomyLabels('organization_type_translations', 'organization_type_id', 'name', array_column($rows, 'id'), $locale);
+
+        return array_map(static fn (array $r): array => ['code' => (string) $r['code'], 'name' => $names[(int) $r['id']]], $rows);
+    }
+
     /** @return list<string> codici delle lingue parlate nei servizi pubblicati */
     public function spokenLanguages(): array
     {
@@ -124,7 +136,7 @@ final class CatalogRepository
     /**
      * Ricerca con filtri. Restituisce gli id ordinati per pertinenza o per nome.
      *
-     * @param array{need?: ?string, category?: ?string, territory?: ?int, language?: ?string, mediation?: bool, free?: bool, q?: string} $filters
+     * @param array{need?: ?string, category?: ?string, territory?: ?int, language?: ?string, mediation?: bool, free?: bool, accessible?: bool, org_type?: ?string, access_mode?: ?string, q?: string} $filters
      * @return list<int>
      */
     public function searchServiceIds(array $filters, string $locale): array
@@ -165,6 +177,19 @@ final class CatalogRepository
         }
         if (!empty($filters['free'])) {
             $where[] = "s.cost_type = 'free'";
+        }
+        if (!empty($filters['accessible'])) {
+            // Almeno una sede pubblicata e aperta al pubblico con accesso senza gradini
+            $where[] = "s.id IN (SELECT ss.service_id FROM service_sites ss JOIN sites si ON si.id = ss.site_id
+                                  WHERE si.publication_status = 'published' AND si.is_public_place = 1 AND si.step_free_access = 'yes')";
+        }
+        if (!empty($filters['org_type'])) {
+            $where[] = 'o.organization_type_id IN (SELECT id FROM organization_types WHERE code = ?)';
+            $params[] = $filters['org_type'];
+        }
+        if (!empty($filters['access_mode'])) {
+            $where[] = 'FIND_IN_SET(?, s.access_modes) > 0';
+            $params[] = $filters['access_mode'];
         }
 
         $rows = $this->database->fetchAll(

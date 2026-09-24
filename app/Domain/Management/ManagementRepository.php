@@ -385,6 +385,55 @@ final class ManagementRepository
         return $this->labelled('SELECT id, name FROM organizations WHERE id IN (' . implode(',', array_fill(0, count($onlyIds), '?')) . ') ORDER BY name', $onlyIds);
     }
 
+    // --- Cruscotto dell'area riservata (RF-21) ---------------------------------------------
+
+    /**
+     * Contenuti delle organizzazioni indicate che richiedono attenzione: bozze, in revisione, respinti,
+     * servizi con revisione scaduta. Per i respinti, l'ultima nota del revisore.
+     *
+     * @param list<int> $organizationIds
+     * @return list<array{entity_type: string, entity_id: int, organization_id: int, label: string, status: string, note: ?string}>
+     */
+    public function pendingWork(array $organizationIds): array
+    {
+        if ($organizationIds === []) {
+            return [];
+        }
+        $in = implode(',', array_fill(0, count($organizationIds), '?'));
+        $rows = $this->database->fetchAll(
+            "SELECT 'organization' AS entity_type, o.id AS entity_id, o.id AS organization_id, o.name AS label, o.publication_status AS status
+               FROM organizations o WHERE o.id IN ($in) AND o.publication_status IN ('draft', 'in_review', 'rejected')
+             UNION ALL
+             SELECT 'site', si.id, si.organization_id, si.address_line, si.publication_status
+               FROM sites si WHERE si.organization_id IN ($in) AND si.publication_status IN ('draft', 'in_review', 'rejected')
+             UNION ALL
+             SELECT 'service', s.id, s.organization_id, COALESCE(t.name, CONCAT('#', s.id)),
+                    CASE WHEN s.publication_status = 'published' THEN 'review_due' ELSE s.publication_status END
+               FROM services s LEFT JOIN service_translations t ON t.service_id = s.id AND t.locale = s.source_locale
+              WHERE s.organization_id IN ($in)
+                AND (s.publication_status IN ('draft', 'in_review', 'rejected')
+                     OR (s.publication_status = 'published' AND s.next_review_at IS NOT NULL AND s.next_review_at <= CURRENT_DATE))
+             UNION ALL
+             SELECT 'mediator', m.id, m.organization_id, CONCAT(m.first_name, ' ', m.last_name), m.publication_status
+               FROM mediators m WHERE m.organization_id IN ($in) AND m.publication_status IN ('draft', 'in_review', 'rejected')
+             ORDER BY 5, 4",
+            [...$organizationIds, ...$organizationIds, ...$organizationIds, ...$organizationIds],
+        );
+        $notes = [];
+        foreach ($this->database->fetchAll(
+            "SELECT entity_type, entity_id, note FROM review_decisions WHERE organization_id IN ($in) AND decision = 'rejected' ORDER BY id",
+            $organizationIds,
+        ) as $d) {
+            $notes[$d['entity_type'] . ':' . $d['entity_id']] = $d['note'] === null ? null : (string) $d['note'];
+        }
+
+        return array_map(static fn (array $r): array => [
+            'entity_type' => (string) $r['entity_type'], 'entity_id' => (int) $r['entity_id'], 'organization_id' => (int) $r['organization_id'],
+            'label' => (string) $r['label'], 'status' => (string) $r['status'],
+            'note' => $r['status'] === 'rejected' ? ($notes[$r['entity_type'] . ':' . $r['entity_id']] ?? null) : null,
+        ], $rows);
+    }
+
     // --- Modifiche recenti delle organizzazioni (vault "53", controllo a posteriori) ------------
 
     /**

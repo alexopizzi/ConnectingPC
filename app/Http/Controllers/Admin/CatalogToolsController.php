@@ -80,6 +80,7 @@ final class CatalogToolsController extends ManagementController
         return $this->page('admin/tools/settings', [
             'pageTitle' => $this->t('admin.settings.title'),
             'managers' => (array) $this->container->get(SettingsRepository::class)->get('contacts.managers', []),
+            'options' => $this->platformOptions(),
         ]);
     }
 
@@ -103,5 +104,41 @@ final class CatalogToolsController extends ManagementController
         $this->flash('success', $this->t('manage.saved'));
 
         return $this->redirectTo('admin.settings.index');
+    }
+
+    /** Opzioni di piattaforma (RF-41): politica di pubblicazione predefinita, intervalli, conservazione. */
+    public function saveOptions(Request $request): Response
+    {
+        $this->container->get(Gate::class)->authorize($this->user($request), 'settings.manage');
+        $policy = $request->string('publication_default_policy');
+        $interval = $request->int('review_interval_days');
+        $retention = $request->int('retention_months');
+        if (!in_array($policy, ['direct', 'review'], true) || $interval < 30 || $interval > 730 || $retention < 1 || $retention > 60) {
+            $this->flash('error', $this->t('manage.error.invalid_value'));
+
+            return $this->redirectTo('admin.settings.index');
+        }
+        $settings = $this->container->get(SettingsRepository::class);
+        $before = $this->platformOptions();
+        $after = ['publication.default_policy' => $policy, 'quality.review_interval_days' => $interval, 'requests.retention_months' => $retention];
+        foreach ($after as $key => $value) {
+            $settings->set($key, $value, (int) $this->user($request)['id']);
+        }
+        $this->container->get(AuditLogger::class)->log('settings.updated', 'setting', null, AuditLogger::diff($before, $after));
+        $this->flash('success', $this->t('manage.saved'));
+
+        return $this->redirectTo('admin.settings.index');
+    }
+
+    /** @return array<string, mixed> */
+    private function platformOptions(): array
+    {
+        $settings = $this->container->get(SettingsRepository::class);
+
+        return [
+            'publication.default_policy' => (string) $settings->get('publication.default_policy', 'direct'),
+            'quality.review_interval_days' => (int) $settings->get('quality.review_interval_days', 180),
+            'requests.retention_months' => (int) $settings->get('requests.retention_months', 24),
+        ];
     }
 }

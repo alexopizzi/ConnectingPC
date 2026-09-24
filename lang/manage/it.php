@@ -4,6 +4,12 @@ declare(strict_types=1);
 
 /* Gestione dei contenuti (moduli condivisi fra area amministrativa e area riservata, v0.8.0) — it. */
 return [
+    'portal.dashboard.work' => 'Da completare o verificare',
+    'portal.work.draft' => 'bozza',
+    'portal.work.in_review' => 'in revisione dai gestori',
+    'portal.work.rejected' => 'respinto: correggi e invia di nuovo',
+    'portal.work.review_due' => 'da verificare: conferma che i dati sono aggiornati',
+    'portal.work.note' => 'Nota dei gestori',
     'portal.dashboard.manage' => 'Gestisci la scheda',
     'portal.dashboard.view' => 'Vedi la scheda',
     'portal.dashboard.manage_hint' => 'Dalla scheda della tua organizzazione puoi aggiornare profilo, testi e traduzioni, recapiti, sedi con orari, servizi e mediatori. Con la pubblicazione diretta le modifiche sono subito visibili sul sito.',
@@ -59,6 +65,8 @@ return [
     'manage.error.type_required' => 'Scegli almeno un tipo di mediazione.',
     'manage.error.consent_required' => 'Senza consenso registrato il profilo e i recapiti del mediatore non possono essere pubblici.',
     'manage.error.change_request_required' => 'Il contenuto è pubblicato e la tua organizzazione pubblica con revisione: per ora le modifiche vanno chieste ai gestori (le richieste di modifica arriveranno nell’area riservata).',
+    'manage.error.note_required' => 'Scrivi una nota per spiegare il rifiuto.',
+    'manage.error.not_in_review' => 'Il contenuto non è più in revisione.',
     'manage.warning.outside_province' => 'Attenzione: le coordinate sono fuori dalla provincia di Piacenza. Controlla la posizione.',
 
     'manage.publication' => 'Pubblicazione',

@@ -4,6 +4,12 @@ declare(strict_types=1);
 
 /* Gestion des contenus (formulaires communs à l'administration et à l'espace réservé, v0.9.0) — fr. Brouillon à relire. */
 return [
+    'portal.dashboard.work' => 'À compléter ou à vérifier',
+    'portal.work.draft' => 'brouillon',
+    'portal.work.in_review' => 'en vérification par les gestionnaires',
+    'portal.work.rejected' => 'refusé : corrigez et renvoyez',
+    'portal.work.review_due' => 'à vérifier : confirmez que les informations sont à jour',
+    'portal.work.note' => 'Note des gestionnaires',
     'portal.dashboard.manage' => 'Gérer la fiche',
     'portal.dashboard.view' => 'Voir la fiche',
     'portal.dashboard.manage_hint' => 'Depuis la fiche de votre organisation, vous pouvez mettre à jour le profil, les textes et traductions, les coordonnées, les lieux avec leurs horaires, les services et les médiateurs. Avec la publication directe, les modifications sont visibles tout de suite sur le site.',
@@ -59,6 +65,8 @@ return [
     'manage.error.type_required' => 'Choisissez au moins un type de médiation.',
     'manage.error.consent_required' => 'Sans consentement enregistré, le profil et les coordonnées du médiateur ne peuvent pas être publics.',
     'manage.error.change_request_required' => 'Ce contenu est publié et votre organisation publie avec vérification : pour l’instant, demandez les modifications aux gestionnaires (les demandes de modification arriveront dans l’espace réservé).',
+    'manage.error.note_required' => 'Écrivez une note pour expliquer le refus.',
+    'manage.error.not_in_review' => 'Ce contenu n’est plus en vérification.',
     'manage.warning.outside_province' => 'Attention : les coordonnées sont hors de la province de Plaisance. Vérifiez la position.',
 
     'manage.publication' => 'Publication',

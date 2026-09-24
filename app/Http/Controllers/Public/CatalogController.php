@@ -133,6 +133,7 @@ final class CatalogController extends Controller
             'categories' => array_values(array_filter($catalog->categories($locale), static fn (array $c): bool => $c['parent_id'] === null)),
             'municipalities' => $catalog->municipalitiesWithServices(),
             'languages' => $catalog->spokenLanguages(),
+            'orgTypes' => $catalog->organizationTypesWithServices($locale),
             'needs' => $catalog->needs($locale, true),
         ];
     }

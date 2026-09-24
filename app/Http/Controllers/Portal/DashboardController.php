@@ -6,6 +6,7 @@ namespace App\Http\Controllers\Portal;
 
 use App\Auth\Auth;
 use App\Authorization\Gate;
+use App\Domain\Management\ManagementRepository;
 use App\Http\Controller;
 use App\Http\HttpException;
 use App\Http\Request;
@@ -50,6 +51,7 @@ final class DashboardController extends Controller
         return $this->render('portal/dashboard', [
             'pageTitle' => $this->t('portal.dashboard.title'),
             'organizations' => $organizations,
+            'work' => $this->container->get(ManagementRepository::class)->pendingWork($organizationIds),
             'gate' => $gate,
             'user' => $user,
         ]);

@@ -37,6 +37,7 @@ return [
         'publication.default_policy' => 'direct',   // D-022
         'quality.review_interval_days' => 180,
         'quality.warning_days' => 30,
+        'requests.retention_months' => 24,          // conservazione dei dati delle richieste in ingresso (vault "71")
         // Q-02: recapiti ufficiali dei gestori — PROVVISORI (riempitivo), modificabili in admin → Impostazioni
         'contacts.managers' => [
             'name' => 'Gestori della piattaforma ConnectingPC',

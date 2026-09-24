@@ -5,6 +5,19 @@ Formato: [Keep a Changelog](https://keepachangelog.com/it/1.1.0/) · Versioni: [
 
 ## [Non rilasciato]
 
+## [0.10.0] - 2026-09-24
+### Aggiunto
+- Migrazione `0006_requests_reviews`: registro delle richieste in ingresso e esiti della revisione.
+- Admin: coda di revisione (approva e pubblica, respingi con nota; approvazione delle traduzioni da revisionare).
+- Admin: registro delle richieste ricevute (censimento, aggiornamenti, account, abilitazione, errori), con assegnazione ed esito; comando `requests:purge` per cancellare i dati personali scaduti.
+- Admin: opzioni di piattaforma (politica di pubblicazione predefinita, intervallo di verifica, conservazione delle richieste).
+- Area riservata: elenco dei contenuti in bozza, in revisione, respinti (con la nota dei gestori) e da verificare.
+- Filtri pubblici e API: sede senza gradini, tipo di ente, modalità di accesso.
+- Test su revisione, richieste e filtri (54 test).
+
+### Modificato
+- La conferma "informazioni aggiornate" di un servizio fissa la prossima revisione secondo l'intervallo impostato.
+
 ## [0.9.0] - 2026-09-24
 ### Aggiunto
 - Area riservata: gestione della propria organizzazione (profilo, testi e traduzioni, lingue, comunità, paesi, recapiti), delle sedi con orari, dei servizi e dei mediatori, con pubblicazione diretta secondo la politica dell'organizzazione.

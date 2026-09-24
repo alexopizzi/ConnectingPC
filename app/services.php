@@ -15,6 +15,8 @@ use App\Core\Mailer;
 use App\Domain\Catalog\CatalogRepository;
 use App\Domain\Communities\CommunityRepository;
 use App\Domain\Management\EditorialGuard;
+use App\Domain\Management\InboundRequestService;
+use App\Domain\Management\ReviewService;
 use App\Domain\Management\ManagementRepository;
 use App\Domain\Management\MediatorEditor;
 use App\Domain\Management\OrganizationEditor;
@@ -209,9 +211,18 @@ return static function (Container $c): void {
     $c->set(OrganizationEditor::class, static fn (Container $c) => new OrganizationEditor(
         $c->get(Database::class), $c->get(EditorialGuard::class), $c->get(RelatedRecords::class), $c->get(AuditLogger::class), $c->get(DatabaseAuthorizationData::class),
     ));
-    foreach ([SiteEditor::class, ServiceEditor::class, MediatorEditor::class] as $editor) {
+    $c->set(ServiceEditor::class, static fn (Container $c) => new ServiceEditor(
+        $c->get(Database::class), $c->get(EditorialGuard::class), $c->get(RelatedRecords::class), $c->get(AuditLogger::class),
+        (int) $c->get(SettingsRepository::class)->get('quality.review_interval_days', 180),
+    ));
+    foreach ([SiteEditor::class, MediatorEditor::class] as $editor) {
         $c->set($editor, static fn (Container $c) => new $editor($c->get(Database::class), $c->get(EditorialGuard::class), $c->get(RelatedRecords::class), $c->get(AuditLogger::class)));
     }
+    $c->set(ReviewService::class, static fn (Container $c) => new ReviewService($c->get(Database::class), $c->get(Gate::class), $c->get(AuditLogger::class)));
+    $c->set(InboundRequestService::class, static fn (Container $c) => new InboundRequestService(
+        $c->get(Database::class), $c->get(Gate::class), $c->get(AuditLogger::class),
+        (int) $c->get(SettingsRepository::class)->get('requests.retention_months', 24),
+    ));
     $c->set(SynonymEditor::class, static fn (Container $c) => new SynonymEditor($c->get(Database::class), $c->get(Gate::class), $c->get(AuditLogger::class)));
 
     $c->set(UserService::class, static fn (Container $c) => new UserService(
