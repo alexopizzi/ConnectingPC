@@ -13,6 +13,8 @@ use App\Authorization\Gate;
 use App\Core\App;
 use App\Core\Mailer;
 use App\Domain\Catalog\CatalogRepository;
+use App\Domain\Communities\CommunityRepository;
+use App\Domain\Mediators\MediatorRepository;
 use App\Domain\Users\UserRepository;
 use App\Domain\Users\UserService;
 use App\Security\PasswordHasher;
@@ -189,6 +191,8 @@ return static function (Container $c): void {
     ));
 
     $c->set(CatalogRepository::class, static fn (Container $c) => new CatalogRepository($c->get(Database::class)));
+    $c->set(CommunityRepository::class, static fn (Container $c) => new CommunityRepository($c->get(Database::class)));
+    $c->set(MediatorRepository::class, static fn (Container $c) => new MediatorRepository($c->get(Database::class)));
 
     $c->set(UserService::class, static fn (Container $c) => new UserService(
         $c->get(Database::class),

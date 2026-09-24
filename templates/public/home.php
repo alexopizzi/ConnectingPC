@@ -6,8 +6,8 @@
 $quick = [
     ['route' => 'public.services', 'params' => [], 'label' => 'home.quick.all_services', 'icon' => '📋'],
     ['route' => 'public.map', 'params' => [], 'label' => 'home.quick.map', 'icon' => '🗺️'],
-    ['route' => 'public.section', 'params' => ['section' => 'associazioni-comunita'], 'label' => 'home.quick.communities', 'icon' => '🤝'],
-    ['route' => 'public.need', 'params' => ['code' => 'mediation'], 'label' => 'home.quick.mediators', 'icon' => '💬'],
+    ['route' => 'public.communities', 'params' => [], 'label' => 'home.quick.communities', 'icon' => '🤝'],
+    ['route' => 'public.mediators', 'params' => [], 'label' => 'home.quick.mediators', 'icon' => '💬'],
 ];
 ?>
 <section class="hero">

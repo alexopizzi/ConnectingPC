@@ -55,7 +55,6 @@ return [
     'participate.text' => 'اكتشف كيف تضيف منظمتك إلى الشبكة.',
     'participate.cta' => 'انضم إلى الشبكة',
 
-    'section.soon' => 'هذا القسم قيد الإعداد.',
     'common.back_home' => 'العودة إلى الصفحة الرئيسية',
     'translation.fallback_notice' => 'هذه المعلومات غير متوفرة بعد باللغة {language}.',
 

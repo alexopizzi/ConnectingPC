@@ -54,7 +54,6 @@ return [
     'participate.text' => 'Find out how to add your organisation to the network.',
     'participate.cta' => 'Join the network',
 
-    'section.soon' => 'This section is being prepared.',
     'common.back_home' => 'Back to the home page',
     'translation.fallback_notice' => 'This information is not yet available in {language}.',
 

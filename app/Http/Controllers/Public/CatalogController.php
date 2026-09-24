@@ -7,6 +7,7 @@ namespace App\Http\Controllers\Public;
 use App\Core\Env;
 use App\Domain\Catalog\CatalogFilters;
 use App\Domain\Catalog\CatalogRepository;
+use App\Domain\Communities\CommunityRepository;
 use App\Http\Controller;
 use App\Http\HttpException;
 use App\Http\Request;
@@ -85,6 +86,7 @@ final class CatalogController extends Controller
         return $this->render('public/organization', [
             'pageTitle' => (string) $organization['name'],
             'organization' => $organization,
+            'profile' => $this->container->get(CommunityRepository::class)->profileOf($organization['id'], $locale),
             'services' => $catalog->serviceSummaries($organization['service_ids'], $locale),
         ]);
     }

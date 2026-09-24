@@ -54,7 +54,6 @@ return [
     'participate.text' => 'Découvrez comment ajouter votre organisation au réseau.',
     'participate.cta' => 'Rejoindre le réseau',
 
-    'section.soon' => 'Cette section est en préparation.',
     'common.back_home' => 'Retour à l’accueil',
     'translation.fallback_notice' => 'Cette information n’est pas encore disponible en {language}.',
 

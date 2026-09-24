@@ -4,8 +4,8 @@ $nav = [
     ['route' => 'public.search', 'params' => [], 'label' => 'nav.search'],
     ['route' => 'public.services', 'params' => [], 'label' => 'nav.services'],
     ['route' => 'public.map', 'params' => [], 'label' => 'nav.map'],
-    ['route' => 'public.section', 'params' => ['section' => 'associazioni-comunita'], 'label' => 'nav.communities'],
-    ['route' => 'public.section', 'params' => ['section' => 'mediatori'], 'label' => 'nav.mediators'],
+    ['route' => 'public.communities', 'params' => [], 'label' => 'nav.communities'],
+    ['route' => 'public.mediators', 'params' => [], 'label' => 'nav.mediators'],
     ['route' => 'public.section', 'params' => ['section' => 'partecipa'], 'label' => 'nav.participate'],
 ];
 $currentRoute = $this->shared('route_name');

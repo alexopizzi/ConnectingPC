@@ -23,9 +23,6 @@ final class PageController extends Controller
         'contatti' => ['nav.contacts', 'pages/contacts'],
         'privacy' => ['nav.privacy', 'pages/privacy'],
         'accessibilita' => ['nav.accessibility', 'pages/accessibility'],
-        // Sezioni in preparazione (sostituite da rotte dedicate quando implementate)
-        'associazioni-comunita' => ['nav.communities', 'public/section'],
-        'mediatori' => ['nav.mediators', 'public/section'],
     ];
 
     public function section(Request $request): Response

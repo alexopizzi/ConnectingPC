@@ -31,6 +31,16 @@
         </ul>
     <?php endif; ?>
 
+    <?php if ($gate->allows($user, 'restricted.view')): ?>
+        <h2><?= $this->e($this->t('portal.dashboard.tools')) ?></h2>
+        <ul class="card-list">
+            <li class="card">
+                <h3><a href="<?= $this->e($this->route('portal.mediators')) ?>"><?= $this->e($this->t('mediators.operators.title')) ?></a></h3>
+                <p class="muted"><?= $this->e($this->t('mediators.operators.intro')) ?></p>
+            </li>
+        </ul>
+    <?php endif; ?>
+
     <div class="callout">
         <p><?= $this->e($this->t('portal.dashboard.coming_soon')) ?></p>
     </div>

@@ -237,6 +237,14 @@ final class View
         return mb_strtoupper(mb_substr($name, 0, 1)) . mb_substr($name, 1);
     }
 
+    /** Nome del paese (ISO 3166-1 alpha-2) nella lingua corrente, da ICU. */
+    public function countryName(string $code): string
+    {
+        $name = \Locale::getDisplayRegion('und-' . $code, $this->locale());
+
+        return $name === '' ? $code : $name;
+    }
+
     /** Nome del giorno della settimana (1 = lunedì) nella lingua corrente. */
     public function weekdayName(int $weekday): string
     {

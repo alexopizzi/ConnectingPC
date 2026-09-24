@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Domain\Catalog;
 
 use App\Core\Database;
+use App\Domain\Content\ContentReader;
 use App\Domain\Search\TextNormalizer;
 
 /**
@@ -26,8 +27,11 @@ final class CatalogRepository
         AND (s.valid_to IS NULL OR s.valid_to >= CURRENT_DATE)
         AND o.publication_status = 'published' AND o.listing_status = 'listed'";
 
+    private readonly ContentReader $content;
+
     public function __construct(private readonly Database $database)
     {
+        $this->content = new ContentReader($database);
     }
 
     // --- Tassonomie ------------------------------------------------------------------------
@@ -473,19 +477,7 @@ final class CatalogRepository
      */
     private function publicContacts(string $ownerType, array $ownerIds): array
     {
-        if ($ownerIds === []) {
-            return [];
-        }
-        $in = implode(',', array_fill(0, count($ownerIds), '?'));
-
-        return array_map(static fn (array $r): array => [
-            'owner_id' => (int) $r['owner_id'], 'kind' => (string) $r['kind'], 'value' => (string) $r['value'],
-            'label_key' => $r['label_key'] === null ? null : (string) $r['label_key'],
-        ], $this->database->fetchAll(
-            "SELECT owner_id, kind, value, label_key FROM contact_points
-              WHERE owner_type = ? AND owner_id IN ($in) AND visibility = 'public' ORDER BY sort_order, id",
-            [$ownerType, ...$ownerIds],
-        ));
+        return $this->content->contacts($ownerType, $ownerIds);
     }
 
     /**
@@ -500,9 +492,6 @@ final class CatalogRepository
     }
 
     /**
-     * Campi tradotti con ripiego sulla lingua sorgente. I contenuti richiedono traduzioni approvate;
-     * la lingua sorgente è sempre usabile.
-     *
      * @param list<int|string> $ids
      * @param list<string> $fields
      * @param array<int|string, string> $sourceLocales
@@ -510,84 +499,16 @@ final class CatalogRepository
      */
     private function translatedFields(string $table, string $key, array $ids, string $locale, array $fields, array $sourceLocales, bool $allowMissing): array
     {
-        $result = [];
-        foreach ($ids as $id) {
-            $result[(int) $id] = array_fill_keys($fields, null);
-        }
-        if ($ids === []) {
-            return $result;
-        }
-        $in = implode(',', array_fill(0, count($ids), '?'));
-        $columns = implode(', ', array_map(static fn (string $f): string => Database::identifier($f), $fields));
-        $rows = $this->database->fetchAll(
-            'SELECT ' . Database::identifier($key) . ' AS entity_id, locale, status, ' . $columns . ' FROM ' . Database::identifier($table)
-            . ' WHERE ' . Database::identifier($key) . " IN ($in)",
-            array_values(array_map('intval', $ids)),
-        );
-
-        $byEntity = [];
-        foreach ($rows as $row) {
-            $byEntity[(int) $row['entity_id']][(string) $row['locale']] = $row;
-        }
-        foreach ($result as $id => $values) {
-            $source = $sourceLocales[$id] ?? 'it';
-            $requested = $byEntity[$id][$locale] ?? null;
-            if ($requested !== null && $locale !== $source && $requested['status'] !== 'approved') {
-                $requested = null;
-            }
-            $fallback = $byEntity[$id][$source] ?? null;
-            foreach ($fields as $field) {
-                $value = $requested[$field] ?? null;
-                $lang = $locale;
-                if (($value === null || $value === '') && $fallback !== null) {
-                    $value = $fallback[$field] ?? null;
-                    $lang = $source;
-                }
-                if ($value !== null && $value !== '') {
-                    $result[$id][$field] = ['text' => (string) $value, 'lang' => $lang, 'fallback' => $lang !== $locale];
-                }
-            }
-            if (!$allowMissing && $result[$id]['name'] === null) {
-                $result[$id]['name'] = ['text' => '#' . $id, 'lang' => $locale, 'fallback' => false];
-            }
-        }
-
-        return $result;
+        return $this->content->translatedFields($table, $key, $ids, $locale, $fields, $sourceLocales, $allowMissing);
     }
 
     /**
-     * Etichette di tassonomia: si mostrano anche se "da revisionare" (come le stringhe UI, D-028).
-     *
      * @param list<int|string> $ids
      * @return array<int, array{text: string, lang: string, fallback: bool}>
      */
     private function taxonomyLabels(string $table, string $key, string $field, array $ids, string $locale): array
     {
-        $result = [];
-        if ($ids === []) {
-            return $result;
-        }
-        $in = implode(',', array_fill(0, count($ids), '?'));
-        $rows = $this->database->fetchAll(
-            'SELECT ' . Database::identifier($key) . ' AS entity_id, locale, ' . Database::identifier($field) . " AS text
-               FROM " . Database::identifier($table) . ' WHERE ' . Database::identifier($key) . " IN ($in)
-                AND status <> 'draft' AND locale IN (?, 'it')",
-            [...array_values(array_map('intval', $ids)), $locale],
-        );
-        $texts = [];
-        foreach ($rows as $row) {
-            $texts[(int) $row['entity_id']][(string) $row['locale']] = (string) $row['text'];
-        }
-        foreach ($ids as $id) {
-            $id = (int) $id;
-            if (isset($texts[$id][$locale])) {
-                $result[$id] = ['text' => $texts[$id][$locale], 'lang' => $locale, 'fallback' => false];
-            } else {
-                $result[$id] = ['text' => $texts[$id]['it'] ?? '#' . $id, 'lang' => 'it', 'fallback' => $locale !== 'it'];
-            }
-        }
-
-        return $result;
+        return $this->content->taxonomyLabels($table, $key, $field, $ids, $locale);
     }
 
     /**

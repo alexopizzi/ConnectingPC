@@ -33,20 +33,7 @@ $activeCount = count(array_filter([$filters['category'] ?? null, $filters['terri
                 </select>
             </div>
         <?php endif; ?>
-        <div class="field">
-            <label for="f-comune"><?= $this->e($this->t('catalog.filter.municipality')) ?></label>
-            <select id="f-comune" name="comune">
-                <option value=""><?= $this->e($this->t('catalog.filter.any_municipality')) ?></option>
-                <?php foreach ($municipalities as $district): ?>
-                    <optgroup label="<?= $this->e($district['name']) ?>">
-                        <option value="<?= $district['id'] ?>"<?= ($filters['territory'] ?? null) === $district['id'] ? ' selected' : '' ?>><?= $this->e($this->t('catalog.filter.whole_district', ['district' => $district['name']])) ?></option>
-                        <?php foreach ($district['municipalities'] as $municipality): ?>
-                            <option value="<?= $municipality['id'] ?>"<?= ($filters['territory'] ?? null) === $municipality['id'] ? ' selected' : '' ?>><?= $this->e($municipality['name']) ?></option>
-                        <?php endforeach; ?>
-                    </optgroup>
-                <?php endforeach; ?>
-            </select>
-        </div>
+        <?= $this->partial('territory-select', ['id' => 'f-comune', 'selected' => $filters['territory'] ?? null, 'municipalities' => $municipalities]) ?>
         <div class="field">
             <label for="f-lingua"><?= $this->e($this->t('catalog.filter.language')) ?></label>
             <select id="f-lingua" name="lingua">

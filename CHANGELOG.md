@@ -5,6 +5,25 @@ Formato: [Keep a Changelog](https://keepachangelog.com/it/1.1.0/) · Versioni: [
 
 ## [Non rilasciato]
 
+## [0.7.0] - 2026-09-24
+### Aggiunto
+- Migrazione `0005_communities_mediators`: comunità con traduzioni e paesi, collegamenti organizzazione–comunità e organizzazione–paese, ambiti di mediazione, mediatori con traduzioni, lingue con livello, ambiti e territori.
+- Seed `009`: 17 comunità (nazionali, linguistiche, culturali, interculturali) e 8 ambiti di mediazione in 4 lingue.
+- Directory pubblica "Associazioni e comunità" (`/{lingua}/associazioni-comunita`): ricerca testuale (nome, comunità, paesi, lingue, attività) e filtri per comunità, paese, lingua, comune o distretto, tipo, "solo realtà create da cittadini stranieri".
+- Pagina pubblica dei mediatori (`/{lingua}/mediatori`): profili individuali solo con consenso registrato; gli altri mediatori compaiono solo in forma aggregata tramite l'organizzazione, con i recapiti dell'organizzazione.
+- Pagina dei mediatori per gli operatori (`/{lingua}/area-riservata/mediatori`, permesso `restricted.view`) con nome completo e recapiti riservati agli operatori; collegamento dal cruscotto dell'area riservata.
+- Scheda organizzazione: comunità, paesi collegati, attività e "come partecipare".
+- Dati dimostrativi fittizi (`940_demo_communities_mediators`): 10 associazioni di comunità e 15 mediatori che coprono tutti i casi di visibilità.
+- Stringhe del modulo `lang/communities` in it/en/fr/ar; nomi dei paesi da ICU (`View::countryName`).
+- Test di integrazione su ricerca della directory e regole di visibilità dei mediatori (40 test).
+
+### Modificato
+- Letture comuni (traduzioni con ripiego, etichette, recapiti per visibilità, gerarchia dei territori) spostate in `App\Domain\Content\ContentReader`, usato dal catalogo e dai nuovi repository.
+- Selettore di comune o distretto estratto nel partial `territory-select`.
+
+### Rimosso
+- Pagine segnaposto "in preparazione" di associazioni e mediatori e la stringa `section.soon`.
+
 ## [0.6.0] - 2026-09-24
 ### Aggiunto
 - Mappa dei servizi (`/{lingua}/mappa`) con Leaflet 1.9.4 e Leaflet.markercluster 1.5.3 ospitati localmente, marker raggruppati, popup con i servizi della sede e "Portami qui", elenco equivalente sempre visibile, collegamento "salta la mappa", limiti dell'area della provincia.

@@ -9,7 +9,9 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\PasswordController;
 use App\Http\Controllers\Portal;
 use App\Http\Controllers\Public\CatalogController;
+use App\Http\Controllers\Public\CommunityController;
 use App\Http\Controllers\Public\HomeController;
+use App\Http\Controllers\Public\MediatorController;
 use App\Http\Controllers\Public\PageController;
 use App\Http\Controllers\System\HealthController;
 use App\Http\Controllers\System\TileController;
@@ -74,6 +76,7 @@ return static function (Router $r): void {
         // Area riservata delle organizzazioni
         $r->group(['prefix' => '/area-riservata', 'middleware' => ['session', 'csrf', 'auth:portal'], 'area' => 'portal'], static function (Router $r): void {
             $r->get('', [Portal\DashboardController::class, 'index'])->name('portal.dashboard');
+            $r->get('/mediatori', [Portal\MediatorController::class, 'index'])->name('portal.mediators');
         });
 
         // Area pubblica: nessuna sessione, nessun cookie
@@ -85,6 +88,8 @@ return static function (Router $r): void {
             $r->get('/mappa', [CatalogController::class, 'map'])->name('public.map');
             $r->get('/servizi/{id}', [CatalogController::class, 'service'])->name('public.service');
             $r->get('/organizzazioni/{id}', [CatalogController::class, 'organization'])->name('public.organization');
+            $r->get('/associazioni-comunita', [CommunityController::class, 'index'])->name('public.communities');
+            $r->get('/mediatori', [MediatorController::class, 'index'])->name('public.mediators');
             $r->get('/{section:' . implode('|', array_keys(PageController::SECTIONS)) . '}', [PageController::class, 'section'])
                 ->name('public.section');
         });
