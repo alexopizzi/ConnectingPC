@@ -5,6 +5,17 @@ Formato: [Keep a Changelog](https://keepachangelog.com/it/1.1.0/) · Versioni: [
 
 ## [Non rilasciato]
 
+## [0.9.0] - 2026-09-24
+### Aggiunto
+- Area riservata: gestione della propria organizzazione (profilo, testi e traduzioni, lingue, comunità, paesi, recapiti), delle sedi con orari, dei servizi e dei mediatori, con pubblicazione diretta secondo la politica dell'organizzazione.
+- Revoca del consenso di un mediatore con un'azione dedicata, sempre disponibile (anche con politica di revisione).
+- Admin: "Modifiche recenti" delle organizzazioni, con le differenze registrate nell'audit log.
+- Stringhe di gestione (`lang/manage`) in inglese, francese e arabo (bozze da revisionare).
+
+### Modificato
+- Controller e template di gestione condivisi fra area amministrativa e area riservata (`App\Http\Controllers\Manage`, `templates/manage`); elenchi di opzioni (categorie, bisogni, comunità, ambiti) nella lingua dell'utente.
+- La scheda mostra solo i moduli che l'utente può usare; nell'area riservata le schede di altre organizzazioni rispondono 404.
+
 ## [0.8.0] - 2026-09-24
 ### Aggiunto
 - Area amministrativa del catalogo:

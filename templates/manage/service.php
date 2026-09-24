@@ -3,6 +3,7 @@
  * Creazione (service = null) e gestione di un servizio: accesso, categorie, bisogni, lingue, sedi, testi.
  *
  * @var App\Core\View $this
+ * @var 'admin'|'portal' $area
  * @var array<string, mixed> $organization
  * @var array<string, mixed>|null $service
  * @var list<array{id: int, label: string}> $organizationSites
@@ -22,13 +23,14 @@ $selectedCategories = $service['categories'] ?? [];
 $selectedNeeds = $service['needs'] ?? [];
 $selectedSites = $service['sites'] ?? [];
 $languageRows = [...($service['languages'] ?? []), ...array_fill(0, 3, ['code' => '', 'mode' => 'staff'])];
-$action = $service === null ? $this->route('admin.services.store', ['id' => $orgId]) : $this->route('admin.services.update', ['id' => (int) $service['id']]);
+$action = $service === null ? $this->route($area . '.services.store', ['id' => $orgId]) : $this->route($area . '.services.update', ['id' => (int) $service['id']]);
 ?>
-<p><a href="<?= $this->e($this->route('admin.organizations.show', ['id' => $orgId])) ?>#servizi"><?= $this->e($this->t('admin.back_to', ['name' => (string) $organization['name']])) ?></a></p>
+<div class="manage-page<?= $area === 'portal' ? ' container section' : '' ?>">
+<p><a href="<?= $this->e($this->route($area . '.organizations.show', ['id' => $orgId])) ?>#servizi"><?= $this->e($this->t('manage.back_to', ['name' => (string) $organization['name']])) ?></a></p>
 <div class="page-actions">
-    <h1><?= $this->e($service === null ? $this->t('admin.services.create') : (string) ($service['translations'][$service['source_locale']]['name'] ?? '#' . $service['id'])) ?></h1>
+    <h1><?= $this->e($service === null ? $this->t('manage.services.create') : (string) ($service['translations'][$service['source_locale']]['name'] ?? '#' . $service['id'])) ?></h1>
     <?php if ($service !== null && $service['publication_status'] === 'published'): ?>
-        <a class="button button--secondary" href="<?= $this->e($this->route('public.service', ['locale' => 'it', 'id' => (int) $service['id']])) ?>"><?= $this->e($this->t('admin.view_public')) ?></a>
+        <a class="button button--secondary" href="<?= $this->e($this->route('public.service', ['id' => (int) $service['id']])) ?>"><?= $this->e($this->t('manage.view_public')) ?></a>
     <?php endif; ?>
 </div>
 <?= $this->partial('form-errors') ?>
@@ -37,7 +39,7 @@ $action = $service === null ? $this->route('admin.services.store', ['id' => $org
     <form class="form form--wide" method="post" action="<?= $this->e($action) ?>">
         <?= $this->csrfField() ?>
         <?php if ($service === null): ?>
-            <?= $this->partial('field', ['name' => 'name', 'label' => $this->t('manage.field.service_name'), 'required' => true, 'hint' => $this->t('admin.services.name_hint')]) ?>
+            <?= $this->partial('field', ['name' => 'name', 'label' => $this->t('manage.field.service_name'), 'required' => true, 'hint' => $this->t('manage.services.name_hint')]) ?>
         <?php endif; ?>
         <div class="form-grid">
             <div class="field">
@@ -99,7 +101,7 @@ $action = $service === null ? $this->route('admin.services.store', ['id' => $org
         <fieldset class="field">
             <legend><?= $this->e($this->t('manage.field.sites')) ?></legend>
             <?php if ($organizationSites === []): ?>
-                <p class="muted"><?= $this->e($this->t('admin.services.no_sites')) ?></p>
+                <p class="muted"><?= $this->e($this->t('manage.services.no_sites')) ?></p>
             <?php endif; ?>
             <?php foreach ($organizationSites as $site): ?>
                 <div class="site-choice">
@@ -158,7 +160,7 @@ $action = $service === null ? $this->route('admin.services.store', ['id' => $org
 
         <?php if ($service !== null): ?>
             <label class="checkbox"><input type="checkbox" name="mark_verified" value="1"> <?= $this->e($this->t('manage.field.mark_verified')) ?></label>
-            <p class="muted"><?= $this->e($this->t('admin.organizations.verified_at', ['date' => $this->datetime($service['verified_at']) ?: '—'])) ?></p>
+            <p class="muted"><?= $this->e($this->t('manage.verified_at', ['date' => $this->datetime($service['verified_at']) ?: '—'])) ?></p>
         <?php endif; ?>
         <div><button class="button" type="submit"><?= $this->e($this->t('manage.save')) ?></button></div>
     </form>
@@ -168,8 +170,8 @@ $action = $service === null ? $this->route('admin.services.store', ['id' => $org
     <section id="testi" class="section">
         <h2><?= $this->e($this->t('manage.texts.title')) ?></h2>
         <?= $this->partial('manage/texts-form', [
-            'action' => $this->route('admin.services.texts', ['id' => (int) $service['id']]),
-            'showRoute' => 'admin.services.show',
+            'action' => $this->route($area . '.services.texts', ['id' => (int) $service['id']]),
+            'showRoute' => $area . '.services.show',
             'showParams' => ['id' => (int) $service['id']],
             'locales' => $locales,
             'locale' => $textLocale,
@@ -182,3 +184,4 @@ $action = $service === null ? $this->route('admin.services.store', ['id' => $org
         ]) ?>
     </section>
 <?php endif; ?>
+</div>

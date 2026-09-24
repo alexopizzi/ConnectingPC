@@ -132,7 +132,6 @@ return [
     'portal.dashboard.welcome' => 'مرحباً {name}.',
     'portal.dashboard.organizations' => 'منظماتك',
     'portal.dashboard.no_organizations' => 'لست مرتبطاً بأي منظمة مفعّلة.',
-    'portal.dashboard.coming_soon' => 'ستتمكن قريباً من إدارة الملف التعريفي والمقرات والمواعيد والخدمات الخاصة بمنظمتك من هنا.',
     'portal.policy.direct' => 'نشر مباشر: تظهر التعديلات فوراً.',
     'portal.policy.review' => 'يراجع مديرو المنصة التعديلات قبل نشرها.',
     'portal.edit_disabled' => 'التعديل غير مفعّل بعد',

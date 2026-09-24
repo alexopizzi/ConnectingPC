@@ -3,6 +3,7 @@
  * Creazione (site = null) e gestione di una sede: dati e coordinate, orari, recapiti, testi.
  *
  * @var App\Core\View $this
+ * @var 'admin'|'portal' $area
  * @var array<string, mixed> $organization
  * @var array<string, mixed>|null $site
  * @var list<array<string, mixed>> $municipalities
@@ -16,12 +17,13 @@ $selectedTown = (int) $value('territory_id');
 $weekdays = range(1, 7);
 $hours = $site === null ? [] : [...$site['hours'], ...array_fill(0, 3, ['weekday' => 1, 'opens' => '', 'closes' => '', 'appointment' => false])];
 ?>
-<p><a href="<?= $this->e($this->route('admin.organizations.show', ['id' => $orgId])) ?>#sedi"><?= $this->e($this->t('admin.back_to', ['name' => (string) $organization['name']])) ?></a></p>
-<h1><?= $this->e($site === null ? $this->t('admin.sites.create') : ($site['name'] ?: $site['address_line'])) ?></h1>
+<div class="manage-page<?= $area === 'portal' ? ' container section' : '' ?>">
+<p><a href="<?= $this->e($this->route($area . '.organizations.show', ['id' => $orgId])) ?>#sedi"><?= $this->e($this->t('manage.back_to', ['name' => (string) $organization['name']])) ?></a></p>
+<h1><?= $this->e($site === null ? $this->t('manage.sites.create') : ($site['name'] ?: $site['address_line'])) ?></h1>
 <?= $this->partial('form-errors') ?>
 
 <section class="section">
-    <form class="form form--wide" method="post" action="<?= $this->e($site === null ? $this->route('admin.sites.store', ['id' => $orgId]) : $this->route('admin.sites.update', ['id' => (int) $site['id']])) ?>">
+    <form class="form form--wide" method="post" action="<?= $this->e($site === null ? $this->route($area . '.sites.store', ['id' => $orgId]) : $this->route($area . '.sites.update', ['id' => (int) $site['id']])) ?>">
         <?= $this->csrfField() ?>
         <div class="form-grid">
             <?= $this->partial('field', ['name' => 'name', 'label' => $this->t('manage.field.site_name'), 'value' => $value('name')]) ?>
@@ -62,7 +64,7 @@ $hours = $site === null ? [] : [...$site['hours'], ...array_fill(0, 3, ['weekday
         <label class="checkbox"><input type="checkbox" name="is_public_place" value="1"<?= $value('is_public_place', '1') === '1' ? ' checked' : '' ?>> <?= $this->e($this->t('manage.field.is_public_place')) ?></label>
         <p class="field__hint"><?= $this->e($this->t('manage.field.is_public_place_hint')) ?></p>
         <?php if ($site !== null && $site['lat'] !== null): ?>
-            <p><a href="https://www.openstreetmap.org/?mlat=<?= $this->e($site['lat']) ?>&amp;mlon=<?= $this->e($site['lng']) ?>#map=18/<?= $this->e($site['lat']) ?>/<?= $this->e($site['lng']) ?>" rel="noopener noreferrer" target="_blank"><?= $this->e($this->t('admin.sites.check_on_map')) ?></a></p>
+            <p><a href="https://www.openstreetmap.org/?mlat=<?= $this->e($site['lat']) ?>&amp;mlon=<?= $this->e($site['lng']) ?>#map=18/<?= $this->e($site['lat']) ?>/<?= $this->e($site['lng']) ?>" rel="noopener noreferrer" target="_blank"><?= $this->e($this->t('manage.sites.check_on_map')) ?></a></p>
         <?php endif; ?>
         <div><button class="button" type="submit"><?= $this->e($this->t('manage.save')) ?></button></div>
     </form>
@@ -72,7 +74,7 @@ $hours = $site === null ? [] : [...$site['hours'], ...array_fill(0, 3, ['weekday
     $siteId = (int) $site['id']; ?>
     <section id="orari" class="section">
         <h2><?= $this->e($this->t('manage.hours.title')) ?></h2>
-        <form class="form form--wide" method="post" action="<?= $this->e($this->route('admin.sites.hours', ['id' => $siteId])) ?>">
+        <form class="form form--wide" method="post" action="<?= $this->e($this->route($area . '.sites.hours', ['id' => $siteId])) ?>">
             <?= $this->csrfField() ?>
             <div class="table-wrap">
                 <table class="table">
@@ -105,14 +107,14 @@ $hours = $site === null ? [] : [...$site['hours'], ...array_fill(0, 3, ['weekday
 
     <section id="recapiti" class="section">
         <h2><?= $this->e($this->t('manage.contacts.title')) ?></h2>
-        <?= $this->partial('manage/contacts-form', ['action' => $this->route('admin.sites.contacts', ['id' => $siteId]), 'contacts' => $site['contacts']]) ?>
+        <?= $this->partial('manage/contacts-form', ['action' => $this->route($area . '.sites.contacts', ['id' => $siteId]), 'contacts' => $site['contacts']]) ?>
     </section>
 
     <section id="testi" class="section">
         <h2><?= $this->e($this->t('manage.texts.title')) ?></h2>
         <?= $this->partial('manage/texts-form', [
-            'action' => $this->route('admin.sites.texts', ['id' => $siteId]),
-            'showRoute' => 'admin.sites.show',
+            'action' => $this->route($area . '.sites.texts', ['id' => $siteId]),
+            'showRoute' => $area . '.sites.show',
             'showParams' => ['id' => $siteId],
             'locales' => $locales,
             'locale' => $textLocale,
@@ -122,3 +124,4 @@ $hours = $site === null ? [] : [...$site['hours'], ...array_fill(0, 3, ['weekday
         ]) ?>
     </section>
 <?php endif; ?>
+</div>

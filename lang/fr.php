@@ -131,7 +131,6 @@ return [
     'portal.dashboard.welcome' => 'Bonjour {name}.',
     'portal.dashboard.organizations' => 'Vos organisations',
     'portal.dashboard.no_organizations' => 'Vous n’êtes lié à aucune organisation activée.',
-    'portal.dashboard.coming_soon' => 'Bientôt, vous pourrez gérer ici le profil, les adresses, les horaires et les services de votre organisation.',
     'portal.policy.direct' => 'Publication directe : les modifications sont visibles tout de suite.',
     'portal.policy.review' => 'Les modifications sont vérifiées par les gestionnaires avant publication.',
     'portal.edit_disabled' => 'Modification pas encore activée',

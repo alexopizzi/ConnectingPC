@@ -9,6 +9,7 @@ use App\Authorization\Gate;
 use App\Core\Validator;
 use App\Domain\Management\SynonymEditor;
 use App\Domain\Settings\SettingsRepository;
+use App\Http\Controllers\Manage\ManagementController;
 use App\Http\Request;
 use App\Http\Response;
 
@@ -18,6 +19,11 @@ use App\Http\Response;
  */
 final class CatalogToolsController extends ManagementController
 {
+    protected function area(): string
+    {
+        return 'admin';
+    }
+
     public function synonyms(Request $request): Response
     {
         $locale = in_array($request->string('lingua'), $this->contentLocales(), true) ? $request->string('lingua') : '';
@@ -36,7 +42,7 @@ final class CatalogToolsController extends ManagementController
     {
         return $this->attempt(
             fn () => $this->container->get(SynonymEditor::class)->add($this->user($request), $request->string('locale'), $request->string('term'), $request->int('need_id'), $request->int('weight', 8)),
-            'manage.saved', 'admin.synonyms.index', array_filter(['lingua' => $request->string('locale'), 'bisogno' => $request->int('need_id')]),
+            'manage.saved', 'synonyms.index', array_filter(['lingua' => $request->string('locale'), 'bisogno' => $request->int('need_id')]),
         );
     }
 
@@ -44,8 +50,21 @@ final class CatalogToolsController extends ManagementController
     {
         return $this->attempt(
             fn () => $this->container->get(SynonymEditor::class)->delete($this->user($request), (int) $request->attribute('id')),
-            'manage.deleted', 'admin.synonyms.index',
+            'manage.deleted', 'synonyms.index',
         );
+    }
+
+    public function recentChanges(Request $request): Response
+    {
+        $days = in_array($request->int('giorni', 7), [1, 7, 30, 90], true) ? $request->int('giorni', 7) : 7;
+        $organizationId = $request->int('organizzazione');
+
+        return $this->page('admin/tools/recent-changes', [
+            'pageTitle' => $this->t('admin.recent.title'),
+            'changes' => $this->management()->recentChanges($organizationId, $days),
+            'filters' => ['days' => $days, 'organization' => $organizationId],
+            'organizations' => $this->management()->organizationOptions(),
+        ]);
     }
 
     public function quality(Request $request): Response

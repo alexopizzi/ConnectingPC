@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace Tests\Integration;
 
+use App\Audit\AuditLogger;
 use App\Authorization\DatabaseAuthorizationData;
 use App\Database\Seeder;
+use App\Domain\Management\ManagementRepository;
 use App\Domain\Management\MediatorEditor;
 use App\Domain\Management\OrganizationEditor;
 use App\Domain\Management\RelatedRecords;
@@ -164,6 +166,42 @@ final class ManagementTest extends DatabaseTestCase
         $this->expectExceptionMessage('manage.error.forbidden');
         $editor->save($referent, $id, ['first_name' => 'Nuovo', 'last_name' => 'Mediatore', 'mediation_types' => ['cultural'],
             'organization_id' => $this->orgId('Cooperativa Esempio Orizzonti')]);
+    }
+
+    public function testConsentCanBeRevokedEvenWithReviewPolicy(): void
+    {
+        $referent = $this->user('referente.ponte@connectingpc.test');
+        $ponte = $this->orgId('Associazione Esempio Ponte');
+        $id = (int) $this->db->fetchValue('SELECT id FROM mediators WHERE organization_id = ? ORDER BY id LIMIT 1', [$ponte]);
+        $this->db->update('mediators', ['profile_visibility' => 'public', 'public_consent_at' => gmdate('Y-m-d H:i:s'), 'publication_status' => 'published'], ['id' => $id]);
+        $this->db->update('organizations', ['publication_policy' => 'review'], ['id' => $ponte]);
+        $this->container->get(DatabaseAuthorizationData::class)->forget();
+
+        $this->container->get(MediatorEditor::class)->revokeConsent($referent, $id);
+
+        $row = $this->db->fetchOne('SELECT profile_visibility, public_consent_at FROM mediators WHERE id = ?', [$id]);
+        self::assertSame('operators', $row['profile_visibility']);
+        self::assertNull($row['public_consent_at']);
+    }
+
+    public function testRecentChangesListOnlyOrganizationUsers(): void
+    {
+        $ponte = $this->orgId('Associazione Esempio Ponte');
+        $audit = $this->container->get(AuditLogger::class);
+        $editor = $this->container->get(OrganizationEditor::class);
+
+        $referent = $this->user('referente.ponte@connectingpc.test');
+        $audit->setActor((int) $referent['id'], $ponte);
+        $editor->saveContacts($referent, $ponte, [['kind' => 'email', 'value' => 'ponte@example.org', 'visibility' => 'public']]);
+
+        $admin = $this->user('admin@connectingpc.test');
+        $audit->setActor((int) $admin['id'], null);
+        $editor->saveContacts($admin, $ponte, [['kind' => 'email', 'value' => 'ponte@example.org', 'visibility' => 'public']]);
+
+        $changes = $this->container->get(ManagementRepository::class)->recentChanges($ponte, 1);
+        $users = array_unique(array_column($changes, 'user_name'));
+        self::assertContains((string) $referent['display_name'], $users);
+        self::assertNotContains((string) $admin['display_name'], $users);
     }
 
     public function testSiteAndRelatedRecordsValidation(): void

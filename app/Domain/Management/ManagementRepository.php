@@ -287,40 +287,67 @@ final class ManagementRepository
     // --- Opzioni per i moduli --------------------------------------------------------------
 
     /** @return list<array{id: int, name: string}> */
-    public function organizationTypes(): array
+    public function organizationTypes(string $locale = 'it'): array
     {
-        return $this->labelled('SELECT t.id, tt.name FROM organization_types t JOIN organization_type_translations tt ON tt.organization_type_id = t.id AND tt.locale = \'it\' ORDER BY t.sort_order');
+        return $this->labelled(
+            "SELECT t.id, COALESCE(l.name, i.name) AS name FROM organization_types t
+               JOIN organization_type_translations i ON i.organization_type_id = t.id AND i.locale = 'it'
+               LEFT JOIN organization_type_translations l ON l.organization_type_id = t.id AND l.locale = ? AND l.status <> 'draft'
+              ORDER BY t.sort_order",
+            [$locale],
+        );
     }
 
     /** @return list<array{id: int, name: string, parent: ?string}> categorie con l'area di appartenenza */
-    public function categories(): array
+    public function categories(string $locale = 'it'): array
     {
         return array_map(static fn (array $r): array => ['id' => (int) $r['id'], 'name' => (string) $r['name'], 'parent' => $r['parent'] === null ? null : (string) $r['parent']],
             $this->database->fetchAll(
-                "SELECT c.id, ct.name, pt.name AS parent FROM categories c
-                   JOIN category_translations ct ON ct.category_id = c.id AND ct.locale = 'it'
+                "SELECT c.id, COALESCE(cl.name, ci.name) AS name, COALESCE(pl.name, pi.name) AS parent FROM categories c
+                   JOIN category_translations ci ON ci.category_id = c.id AND ci.locale = 'it'
+                   LEFT JOIN category_translations cl ON cl.category_id = c.id AND cl.locale = ? AND cl.status <> 'draft'
                    LEFT JOIN categories p ON p.id = c.parent_id
-                   LEFT JOIN category_translations pt ON pt.category_id = p.id AND pt.locale = 'it'
-                  WHERE c.is_active = 1 ORDER BY COALESCE(p.sort_order, c.sort_order), c.parent_id IS NOT NULL, c.sort_order"
+                   LEFT JOIN category_translations pi ON pi.category_id = p.id AND pi.locale = 'it'
+                   LEFT JOIN category_translations pl ON pl.category_id = p.id AND pl.locale = ? AND pl.status <> 'draft'
+                  WHERE c.is_active = 1 ORDER BY COALESCE(p.sort_order, c.sort_order), c.parent_id IS NOT NULL, c.sort_order",
+                [$locale, $locale],
             ));
     }
 
     /** @return list<array{id: int, name: string}> */
-    public function needs(): array
+    public function needs(string $locale = 'it'): array
     {
-        return $this->labelled("SELECT n.id, nt.label AS name FROM needs n JOIN need_translations nt ON nt.need_id = n.id AND nt.locale = 'it' WHERE n.is_active = 1 ORDER BY n.sort_order");
+        return $this->labelled(
+            "SELECT n.id, COALESCE(l.label, i.label) AS name FROM needs n
+               JOIN need_translations i ON i.need_id = n.id AND i.locale = 'it'
+               LEFT JOIN need_translations l ON l.need_id = n.id AND l.locale = ? AND l.status <> 'draft'
+              WHERE n.is_active = 1 ORDER BY n.sort_order",
+            [$locale],
+        );
     }
 
     /** @return list<array{id: int, name: string}> */
-    public function communities(): array
+    public function communities(string $locale = 'it'): array
     {
-        return $this->labelled("SELECT c.id, ct.name FROM communities c JOIN community_translations ct ON ct.community_id = c.id AND ct.locale = 'it' WHERE c.is_active = 1 ORDER BY c.sort_order");
+        return $this->labelled(
+            "SELECT c.id, COALESCE(l.name, i.name) AS name FROM communities c
+               JOIN community_translations i ON i.community_id = c.id AND i.locale = 'it'
+               LEFT JOIN community_translations l ON l.community_id = c.id AND l.locale = ? AND l.status <> 'draft'
+              WHERE c.is_active = 1 ORDER BY c.sort_order",
+            [$locale],
+        );
     }
 
     /** @return list<array{id: int, name: string}> */
-    public function mediationDomains(): array
+    public function mediationDomains(string $locale = 'it'): array
     {
-        return $this->labelled("SELECT d.id, dt.name FROM mediation_domains d JOIN mediation_domain_translations dt ON dt.mediation_domain_id = d.id AND dt.locale = 'it' ORDER BY d.sort_order");
+        return $this->labelled(
+            "SELECT d.id, COALESCE(l.name, i.name) AS name FROM mediation_domains d
+               JOIN mediation_domain_translations i ON i.mediation_domain_id = d.id AND i.locale = 'it'
+               LEFT JOIN mediation_domain_translations l ON l.mediation_domain_id = d.id AND l.locale = ? AND l.status <> 'draft'
+              ORDER BY d.sort_order",
+            [$locale],
+        );
     }
 
     /** @return list<string> */
@@ -342,10 +369,51 @@ final class ManagementRepository
             $this->database->fetchAll("SELECT id, name, type FROM territories WHERE type IN ('province', 'district') ORDER BY type DESC, id"));
     }
 
-    /** @return list<array{id: int, name: string}> */
-    public function organizationOptions(): array
+    /**
+     * @param list<int>|null $onlyIds
+     * @return list<array{id: int, name: string}>
+     */
+    public function organizationOptions(?array $onlyIds = null): array
     {
-        return $this->labelled('SELECT id, name FROM organizations ORDER BY name');
+        if ($onlyIds === null) {
+            return $this->labelled('SELECT id, name FROM organizations ORDER BY name');
+        }
+        if ($onlyIds === []) {
+            return [];
+        }
+
+        return $this->labelled('SELECT id, name FROM organizations WHERE id IN (' . implode(',', array_fill(0, count($onlyIds), '?')) . ') ORDER BY name', $onlyIds);
+    }
+
+    // --- Modifiche recenti delle organizzazioni (vault "53", controllo a posteriori) ------------
+
+    /**
+     * Modifiche ai contenuti fatte dagli utenti delle organizzazioni (non dallo staff con ruolo globale).
+     *
+     * @return list<array<string, mixed>>
+     */
+    public function recentChanges(int $organizationId, int $days): array
+    {
+        $params = [max(1, min(365, $days))];
+        $organization = '';
+        if ($organizationId > 0) {
+            $organization = ' AND l.organization_id = ?';
+            $params[] = $organizationId;
+        }
+
+        return $this->database->fetchAll(
+            "SELECT l.id, l.occurred_at, l.action, l.entity_type, l.entity_id, l.changes, u.display_name AS user_name,
+                    o.id AS organization_id, o.name AS organization_name
+               FROM audit_log l
+               JOIN users u ON u.id = l.user_id
+               JOIN organizations o ON o.id = l.organization_id
+              WHERE l.occurred_at >= UTC_TIMESTAMP() - INTERVAL ? DAY
+                AND l.entity_type IN ('organization', 'site', 'service', 'mediator')
+                AND NOT EXISTS (SELECT 1 FROM role_assignments a WHERE a.user_id = l.user_id AND a.scope_type = 'global' AND a.revoked_at IS NULL)
+                $organization
+              ORDER BY l.id DESC LIMIT 300",
+            $params,
+        );
     }
 
     // --- Qualità dei dati (vault "72") -----------------------------------------------------
@@ -418,9 +486,12 @@ final class ManagementRepository
         return $result;
     }
 
-    /** @return list<array{id: int, name: string}> */
-    private function labelled(string $sql): array
+    /**
+     * @param list<int|string> $params
+     * @return list<array{id: int, name: string}>
+     */
+    private function labelled(string $sql, array $params = []): array
     {
-        return array_map(static fn (array $r): array => ['id' => (int) $r['id'], 'name' => (string) $r['name']], $this->database->fetchAll($sql));
+        return array_map(static fn (array $r): array => ['id' => (int) $r['id'], 'name' => (string) $r['name']], $this->database->fetchAll($sql, $params));
     }
 }

@@ -131,7 +131,6 @@ return [
     'portal.dashboard.welcome' => 'Hello {name}.',
     'portal.dashboard.organizations' => 'Your organisations',
     'portal.dashboard.no_organizations' => 'You are not linked to any enabled organisation.',
-    'portal.dashboard.coming_soon' => 'Soon you will be able to manage your organisation’s profile, locations, opening hours and services from here.',
     'portal.policy.direct' => 'Direct publication: changes are visible immediately.',
     'portal.policy.review' => 'Changes are checked by the platform managers before publication.',
     'portal.edit_disabled' => 'Editing not enabled yet',

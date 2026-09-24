@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace App\Http\Controllers\Admin;
+namespace App\Http\Controllers\Portal;
 
 use App\Http\Controllers\Manage\SiteController as ManageSiteController;
 
-/** Sedi in admin (scheda condivisa con l'area riservata). */
+/** Sedi della propria organizzazione nell'area riservata. */
 final class SiteController extends ManageSiteController
 {
     protected function area(): string
     {
-        return 'admin';
+        return 'portal';
     }
 }

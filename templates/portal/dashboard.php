@@ -26,6 +26,7 @@
                     <?php if (!$organization['portal_edit_enabled']): ?>
                         <p class="badge badge--warning"><?= $this->e($this->t('portal.edit_disabled')) ?></p>
                     <?php endif; ?>
+                    <p><a class="button" href="<?= $this->e($this->route('portal.organizations.show', ['id' => (int) $organization['id']])) ?>"><?= $this->e($this->t($organization['portal_edit_enabled'] ? 'portal.dashboard.manage' : 'portal.dashboard.view')) ?></a></p>
                 </li>
             <?php endforeach; ?>
         </ul>
@@ -42,7 +43,7 @@
     <?php endif; ?>
 
     <div class="callout">
-        <p><?= $this->e($this->t('portal.dashboard.coming_soon')) ?></p>
+        <p><?= $this->e($this->t('portal.dashboard.manage_hint')) ?></p>
     </div>
 
     <form class="section" method="post" action="<?= $this->e($this->route('auth.logout')) ?>">

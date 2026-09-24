@@ -340,3 +340,4 @@ fieldset.field { border: 1px solid var(--line); border-radius: var(--radius); pa
 .toc ul { display: flex; flex-wrap: wrap; gap: var(--space-2) var(--space-4); }
 .table input[type="text"], .table select { inline-size: 100%; min-inline-size: 8rem; }
 textarea { font: inherit; }
+pre.diff { white-space: pre-wrap; font-size: .8rem; max-inline-size: 40rem; background: var(--surface); padding: var(--space-2); border-radius: var(--radius); }

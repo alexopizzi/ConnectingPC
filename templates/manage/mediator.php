@@ -4,6 +4,7 @@
  * lingue, ambiti, zone, dati riservati agli amministratori, testi e recapiti.
  *
  * @var App\Core\View $this
+ * @var 'admin'|'portal' $area
  * @var array<string, mixed>|null $mediator
  * @var list<array{id: int, name: string}> $organizations
  * @var list<string> $languages
@@ -21,10 +22,11 @@ $types = $mediator === null ? [] : explode(',', (string) $mediator['mediation_ty
 $selectedDomains = $mediator['domains'] ?? [];
 $selectedTerritories = $mediator['territories'] ?? [];
 $languageRows = [...($mediator['languages'] ?? []), ...array_fill(0, 3, ['code' => '', 'level' => 'native'])];
-$action = $mediator === null ? $this->route('admin.mediators.store') : $this->route('admin.mediators.update', ['id' => (int) $mediator['id']]);
+$action = $mediator === null ? $this->route($area . '.mediators.store') : $this->route($area . '.mediators.update', ['id' => (int) $mediator['id']]);
 ?>
-<p><a href="<?= $this->e($this->route('admin.mediators.index')) ?>"><?= $this->e($this->t('admin.mediators.back')) ?></a></p>
-<h1><?= $this->e($mediator === null ? $this->t('admin.mediators.create') : $mediator['first_name'] . ' ' . $mediator['last_name']) ?></h1>
+<div class="manage-page<?= $area === 'portal' ? ' container section' : '' ?>">
+<p><?php if ($area === 'admin'): ?><a href="<?= $this->e($this->route('admin.mediators.index')) ?>"><?= $this->e($this->t('admin.mediators.back')) ?></a><?php else: ?><a href="<?= $this->e($this->route('portal.dashboard')) ?>"><?= $this->e($this->t('manage.back_to_dashboard')) ?></a><?php endif; ?></p>
+<h1><?= $this->e($mediator === null ? $this->t('manage.mediators.create') : $mediator['first_name'] . ' ' . $mediator['last_name']) ?></h1>
 <?= $this->partial('form-errors') ?>
 
 <section class="section">
@@ -37,9 +39,9 @@ $action = $mediator === null ? $this->route('admin.mediators.store') : $this->ro
             <div class="field">
                 <label for="f-org"><?= $this->e($this->t('manage.field.organization')) ?></label>
                 <select id="f-org" name="organization_id">
-                    <option value=""><?= $this->e($this->t('admin.common.none')) ?></option>
+                    <option value=""><?= $this->e($this->t('manage.none')) ?></option>
                     <?php foreach ($organizations as $organization): ?>
-                        <option value="<?= $organization['id'] ?>"<?= (int) $value('organization_id') === $organization['id'] ? ' selected' : '' ?>><?= $this->e($organization['name']) ?></option>
+                        <option value="<?= $organization['id'] ?>"<?= (int) $value('organization_id', (string) ($presetOrganization ?? '')) === $organization['id'] ? ' selected' : '' ?>><?= $this->e($organization['name']) ?></option>
                     <?php endforeach; ?>
                 </select>
             </div>
@@ -136,6 +138,7 @@ $action = $mediator === null ? $this->route('admin.mediators.store') : $this->ro
             </details>
         </fieldset>
 
+        <?php if ($area === 'admin'): ?>
         <fieldset class="field callout">
             <legend><?= $this->e($this->t('manage.field.admin_only')) ?></legend>
             <div class="field">
@@ -155,22 +158,33 @@ $action = $mediator === null ? $this->route('admin.mediators.store') : $this->ro
                 <textarea id="f-notes" name="admin_notes" rows="3"><?= $this->e($value('admin_notes')) ?></textarea>
             </div>
         </fieldset>
+        <?php endif; ?>
         <div><button class="button" type="submit"><?= $this->e($this->t('manage.save')) ?></button></div>
     </form>
 </section>
 
 <?php if ($mediator !== null): ?>
+    <?php if (!empty($mediator['public_consent_at'])): ?>
+        <section id="consenso" class="section callout">
+            <h2><?= $this->e($this->t('manage.mediators.revoke_title')) ?></h2>
+            <p><?= $this->e($this->t('manage.mediators.revoke_hint')) ?></p>
+            <form method="post" action="<?= $this->e($this->route($area . '.mediators.revoke', ['id' => (int) $mediator['id']])) ?>">
+                <?= $this->csrfField() ?>
+                <button class="button button--danger" type="submit"><?= $this->e($this->t('manage.mediators.revoke_consent')) ?></button>
+            </form>
+        </section>
+    <?php endif; ?>
     <section id="recapiti" class="section">
         <h2><?= $this->e($this->t('manage.contacts.title')) ?></h2>
-        <p class="field__hint"><?= $this->e($this->t('admin.mediators.contacts_hint')) ?></p>
-        <?= $this->partial('manage/contacts-form', ['action' => $this->route('admin.mediators.contacts', ['id' => (int) $mediator['id']]), 'contacts' => $mediator['contacts']]) ?>
+        <p class="field__hint"><?= $this->e($this->t('manage.mediators.contacts_hint')) ?></p>
+        <?= $this->partial('manage/contacts-form', ['action' => $this->route($area . '.mediators.contacts', ['id' => (int) $mediator['id']]), 'contacts' => $mediator['contacts']]) ?>
     </section>
 
     <section id="testi" class="section">
         <h2><?= $this->e($this->t('manage.texts.title')) ?></h2>
         <?= $this->partial('manage/texts-form', [
-            'action' => $this->route('admin.mediators.texts', ['id' => (int) $mediator['id']]),
-            'showRoute' => 'admin.mediators.show',
+            'action' => $this->route($area . '.mediators.texts', ['id' => (int) $mediator['id']]),
+            'showRoute' => $area . '.mediators.show',
             'showParams' => ['id' => (int) $mediator['id']],
             'locales' => $locales,
             'locale' => $textLocale,
@@ -180,3 +194,4 @@ $action = $mediator === null ? $this->route('admin.mediators.store') : $this->ro
         ]) ?>
     </section>
 <?php endif; ?>
+</div>

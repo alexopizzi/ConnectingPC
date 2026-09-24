@@ -94,6 +94,7 @@ return static function (Router $r): void {
             $r->post('/{id}', [Admin\MediatorController::class, 'update'])->name('admin.mediators.update');
             $r->post('/{id}/testi', [Admin\MediatorController::class, 'saveTexts'])->name('admin.mediators.texts');
             $r->post('/{id}/recapiti', [Admin\MediatorController::class, 'saveContacts'])->name('admin.mediators.contacts');
+            $r->post('/{id}/consenso/revoca', [Admin\MediatorController::class, 'revokeConsent'])->name('admin.mediators.revoke');
         });
 
         $r->group(['middleware' => ['can:taxonomy.manage']], static function (Router $r): void {
@@ -101,6 +102,7 @@ return static function (Router $r): void {
             $r->post('/sinonimi', [Admin\CatalogToolsController::class, 'addSynonym'])->name('admin.synonyms.store');
             $r->post('/sinonimi/{id}/elimina', [Admin\CatalogToolsController::class, 'deleteSynonym'])->name('admin.synonyms.delete');
         });
+        $r->get('/modifiche-recenti', [Admin\CatalogToolsController::class, 'recentChanges'])->name('admin.recent.index')->middleware('can:content.review');
         $r->get('/qualita', [Admin\CatalogToolsController::class, 'quality'])->name('admin.quality.index')->middleware('can:quality.view');
         $r->get('/impostazioni', [Admin\CatalogToolsController::class, 'settings'])->name('admin.settings.index')->middleware('can:settings.manage');
         $r->post('/impostazioni', [Admin\CatalogToolsController::class, 'saveSettings'])->name('admin.settings.update')->middleware('can:settings.manage');
@@ -124,6 +126,36 @@ return static function (Router $r): void {
         $r->group(['prefix' => '/area-riservata', 'middleware' => ['session', 'csrf', 'auth:portal'], 'area' => 'portal'], static function (Router $r): void {
             $r->get('', [Portal\DashboardController::class, 'index'])->name('portal.dashboard');
             $r->get('/mediatori', [Portal\MediatorController::class, 'index'])->name('portal.mediators');
+
+            // Gestione dei contenuti della propria organizzazione: stessi servizi di dominio dell'admin (D-034),
+            // lettura limitata alle proprie organizzazioni, scrittura verificata dal Gate
+            $r->get('/organizzazioni/{id}', [Portal\OrganizationController::class, 'show'])->name('portal.organizations.show');
+            $r->post('/organizzazioni/{id}', [Portal\OrganizationController::class, 'update'])->name('portal.organizations.update');
+            $r->post('/organizzazioni/{id}/testi', [Portal\OrganizationController::class, 'saveTexts'])->name('portal.organizations.texts');
+            $r->post('/organizzazioni/{id}/collegamenti', [Portal\OrganizationController::class, 'saveLinks'])->name('portal.organizations.links');
+            $r->post('/organizzazioni/{id}/recapiti', [Portal\OrganizationController::class, 'saveContacts'])->name('portal.organizations.contacts');
+
+            $r->get('/organizzazioni/{id}/sedi/nuova', [Portal\SiteController::class, 'create'])->name('portal.sites.create');
+            $r->post('/organizzazioni/{id}/sedi', [Portal\SiteController::class, 'store'])->name('portal.sites.store');
+            $r->get('/sedi/{id}', [Portal\SiteController::class, 'show'])->name('portal.sites.show');
+            $r->post('/sedi/{id}', [Portal\SiteController::class, 'update'])->name('portal.sites.update');
+            $r->post('/sedi/{id}/orari', [Portal\SiteController::class, 'saveHours'])->name('portal.sites.hours');
+            $r->post('/sedi/{id}/recapiti', [Portal\SiteController::class, 'saveContacts'])->name('portal.sites.contacts');
+            $r->post('/sedi/{id}/testi', [Portal\SiteController::class, 'saveTexts'])->name('portal.sites.texts');
+
+            $r->get('/organizzazioni/{id}/servizi/nuovo', [Portal\ServiceController::class, 'create'])->name('portal.services.create');
+            $r->post('/organizzazioni/{id}/servizi', [Portal\ServiceController::class, 'store'])->name('portal.services.store');
+            $r->get('/servizi/{id}', [Portal\ServiceController::class, 'show'])->name('portal.services.show');
+            $r->post('/servizi/{id}', [Portal\ServiceController::class, 'update'])->name('portal.services.update');
+            $r->post('/servizi/{id}/testi', [Portal\ServiceController::class, 'saveTexts'])->name('portal.services.texts');
+
+            $r->get('/gestione-mediatori/nuovo', [Portal\ManagedMediatorController::class, 'create'])->name('portal.mediators.create');
+            $r->post('/gestione-mediatori', [Portal\ManagedMediatorController::class, 'store'])->name('portal.mediators.store');
+            $r->get('/gestione-mediatori/{id}', [Portal\ManagedMediatorController::class, 'show'])->name('portal.mediators.show');
+            $r->post('/gestione-mediatori/{id}', [Portal\ManagedMediatorController::class, 'update'])->name('portal.mediators.update');
+            $r->post('/gestione-mediatori/{id}/testi', [Portal\ManagedMediatorController::class, 'saveTexts'])->name('portal.mediators.texts');
+            $r->post('/gestione-mediatori/{id}/recapiti', [Portal\ManagedMediatorController::class, 'saveContacts'])->name('portal.mediators.contacts');
+            $r->post('/gestione-mediatori/{id}/consenso/revoca', [Portal\ManagedMediatorController::class, 'revokeConsent'])->name('portal.mediators.revoke');
         });
 
         // Area pubblica: nessuna sessione, nessun cookie

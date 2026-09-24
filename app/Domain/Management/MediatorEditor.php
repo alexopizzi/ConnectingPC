@@ -157,6 +157,36 @@ final class MediatorEditor
     }
 
     /**
+     * Revoca del consenso alla pubblicazione (diritto dell'interessato): sempre possibile per chi gestisce
+     * il mediatore, anche se la sua organizzazione pubblica con revisione. Il profilo e i recapiti smettono
+     * subito di essere pubblici.
+     *
+     * @param array<string, mixed> $actor
+     */
+    public function revokeConsent(array $actor, int $id): void
+    {
+        $mediator = $this->find($id);
+        $organizationId = $mediator['organization_id'] === null ? null : (int) $mediator['organization_id'];
+        if (!$this->guard->allows($actor, 'mediators.manage')) {
+            if ($organizationId === null) {
+                throw new DomainException('manage.error.forbidden');
+            }
+            $this->guard->authorize($actor, 'org.mediators.edit', $organizationId);
+        }
+
+        $this->database->transaction(function () use ($actor, $id, $mediator, $organizationId): void {
+            $this->database->update('mediators', [
+                'public_consent_at' => null,
+                'consent_reference' => null,
+                'profile_visibility' => $mediator['profile_visibility'] === 'public' ? 'operators' : $mediator['profile_visibility'],
+                'updated_by' => (int) $actor['id'],
+            ], ['id' => $id]);
+            $this->database->execute("UPDATE contact_points SET visibility = 'operators' WHERE owner_type = 'mediator' AND owner_id = ? AND visibility = 'public'", [$id]);
+            $this->audit->log('mediator.consent_revoked', 'mediator', $id, null, ['organization_id' => $organizationId]);
+        });
+    }
+
+    /**
      * @param array<string, mixed> $actor
      * @param array<string, ?string> $texts
      */

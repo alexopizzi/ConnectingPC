@@ -15,6 +15,7 @@ $items = [
     ['admin.services.index', 'admin.nav.services', 'organizations.view_all'],
     ['admin.mediators.index', 'admin.nav.mediators', 'mediators.manage'],
     ['admin.synonyms.index', 'admin.nav.synonyms', 'taxonomy.manage'],
+    ['admin.recent.index', 'admin.nav.recent', 'content.review'],
     ['admin.quality.index', 'admin.nav.quality', 'quality.view'],
     ['admin.users.index', 'admin.nav.users', 'users.manage'],
     ['admin.roles.index', 'admin.nav.roles', 'users.manage'],

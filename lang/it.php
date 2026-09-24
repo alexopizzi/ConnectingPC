@@ -132,7 +132,6 @@ return [
     'portal.dashboard.welcome' => 'Ciao {name}.',
     'portal.dashboard.organizations' => 'Le tue organizzazioni',
     'portal.dashboard.no_organizations' => 'Non sei collegato a nessuna organizzazione abilitata.',
-    'portal.dashboard.coming_soon' => 'A breve potrai gestire da qui profilo, sedi, orari e servizi della tua organizzazione.',
     'portal.policy.direct' => 'Pubblicazione diretta: le modifiche sono visibili subito.',
     'portal.policy.review' => 'Le modifiche vengono controllate dai gestori prima della pubblicazione.',
     'portal.edit_disabled' => 'Modifica non ancora abilitata',
