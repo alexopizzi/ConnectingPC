@@ -11,9 +11,15 @@ $gate = $this->shared('gate');
 $current = $this->shared('route_name');
 $items = [
     ['admin.dashboard', 'admin.nav.dashboard', 'admin.access'],
+    ['admin.organizations.index', 'admin.nav.organizations', 'organizations.view_all'],
+    ['admin.services.index', 'admin.nav.services', 'organizations.view_all'],
+    ['admin.mediators.index', 'admin.nav.mediators', 'mediators.manage'],
+    ['admin.synonyms.index', 'admin.nav.synonyms', 'taxonomy.manage'],
+    ['admin.quality.index', 'admin.nav.quality', 'quality.view'],
     ['admin.users.index', 'admin.nav.users', 'users.manage'],
     ['admin.roles.index', 'admin.nav.roles', 'users.manage'],
     ['admin.audit.index', 'admin.nav.audit', 'audit.view'],
+    ['admin.settings.index', 'admin.nav.settings', 'settings.manage'],
 ];
 $title = (isset($pageTitle) && $pageTitle !== '' ? $pageTitle . ' — ' : '') . $this->t('admin.title');
 ?>

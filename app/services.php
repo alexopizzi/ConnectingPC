@@ -14,6 +14,14 @@ use App\Core\App;
 use App\Core\Mailer;
 use App\Domain\Catalog\CatalogRepository;
 use App\Domain\Communities\CommunityRepository;
+use App\Domain\Management\EditorialGuard;
+use App\Domain\Management\ManagementRepository;
+use App\Domain\Management\MediatorEditor;
+use App\Domain\Management\OrganizationEditor;
+use App\Domain\Management\RelatedRecords;
+use App\Domain\Management\ServiceEditor;
+use App\Domain\Management\SiteEditor;
+use App\Domain\Management\SynonymEditor;
 use App\Domain\Mediators\MediatorRepository;
 use App\Domain\Users\UserRepository;
 use App\Domain\Users\UserService;
@@ -193,6 +201,18 @@ return static function (Container $c): void {
     $c->set(CatalogRepository::class, static fn (Container $c) => new CatalogRepository($c->get(Database::class)));
     $c->set(CommunityRepository::class, static fn (Container $c) => new CommunityRepository($c->get(Database::class)));
     $c->set(MediatorRepository::class, static fn (Container $c) => new MediatorRepository($c->get(Database::class)));
+
+    // Gestione dei contenuti (admin e area riservata): permessi verificati nei servizi di dominio
+    $c->set(EditorialGuard::class, static fn (Container $c) => new EditorialGuard($c->get(Gate::class), $c->get(Database::class)));
+    $c->set(RelatedRecords::class, static fn (Container $c) => new RelatedRecords($c->get(Database::class)));
+    $c->set(ManagementRepository::class, static fn (Container $c) => new ManagementRepository($c->get(Database::class), $c->get(RelatedRecords::class)));
+    $c->set(OrganizationEditor::class, static fn (Container $c) => new OrganizationEditor(
+        $c->get(Database::class), $c->get(EditorialGuard::class), $c->get(RelatedRecords::class), $c->get(AuditLogger::class), $c->get(DatabaseAuthorizationData::class),
+    ));
+    foreach ([SiteEditor::class, ServiceEditor::class, MediatorEditor::class] as $editor) {
+        $c->set($editor, static fn (Container $c) => new $editor($c->get(Database::class), $c->get(EditorialGuard::class), $c->get(RelatedRecords::class), $c->get(AuditLogger::class)));
+    }
+    $c->set(SynonymEditor::class, static fn (Container $c) => new SynonymEditor($c->get(Database::class), $c->get(Gate::class), $c->get(AuditLogger::class)));
 
     $c->set(UserService::class, static fn (Container $c) => new UserService(
         $c->get(Database::class),

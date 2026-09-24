@@ -329,3 +329,14 @@ code { font-size: .9em; }
 .facts dt { font-weight: 700; }
 .facts dd { margin: 0; }
 @media (max-width: 30rem) { .facts { grid-template-columns: 1fr; } .facts dd { margin-block-end: var(--space-2); } }
+
+/* Moduli di gestione dei contenuti (v0.8.0) */
+.form--wide { max-inline-size: 60rem; }
+.form-grid { display: grid; gap: var(--space-3) var(--space-4); grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr)); }
+.checkbox-grid { display: grid; gap: 0 var(--space-3); grid-template-columns: repeat(auto-fill, minmax(14rem, 1fr)); }
+fieldset.field { border: 1px solid var(--line); border-radius: var(--radius); padding: var(--space-3); margin: 0; }
+.site-choice { display: flex; flex-wrap: wrap; gap: 0 var(--space-4); }
+.toc ul, .plain-list { list-style: none; padding: 0; margin: 0; display: grid; gap: var(--space-2); }
+.toc ul { display: flex; flex-wrap: wrap; gap: var(--space-2) var(--space-4); }
+.table input[type="text"], .table select { inline-size: 100%; min-inline-size: 8rem; }
+textarea { font: inherit; }

@@ -5,6 +5,23 @@ Formato: [Keep a Changelog](https://keepachangelog.com/it/1.1.0/) · Versioni: [
 
 ## [Non rilasciato]
 
+## [0.8.0] - 2026-09-24
+### Aggiunto
+- Area amministrativa del catalogo:
+  - organizzazioni: elenco con filtri, creazione, profilo, assi di stato, abilitazione, politica di pubblicazione, testi in 4 lingue, lingue, comunità, paesi, recapiti con visibilità;
+  - sedi: indirizzo, comune, coordinate (avviso fuori provincia), accessibilità, orari, recapiti, testi;
+  - servizi: elenco con filtri (area, stato, revisione scaduta), dati di accesso, categorie, bisogni, lingue, sedi, conferma di verifica, testi e traduzioni;
+  - mediatori: consenso e visibilità, lingue con livello, ambiti, zone, dati riservati agli amministratori, testi, recapiti;
+  - sinonimi della ricerca, cruscotto qualità dei dati, impostazioni dei recapiti dei gestori.
+- Servizi di dominio condivisi (`App\Domain\Management`) con permessi nell'ambito dell'organizzazione, stato di pubblicazione secondo la politica, audit con differenze; pronti per l'area riservata.
+- Traduzioni: stato per lingua, approvazione solo con `translations.approve`, traduzioni "da aggiornare" quando cambia il testo originale.
+- Moduli condivisi in `templates/partials/manage` (recapiti, testi e traduzioni, pubblicazione); stringhe `lang/admin` e `lang/manage` (italiano).
+- Test di integrazione sulla gestione (47 test).
+
+### Sicurezza
+- Chi pubblica con revisione non può modificare un contenuto già pubblicato finché non saranno disponibili le richieste di modifica: la versione online resta invariata.
+- La revoca del consenso di un mediatore rende subito non pubblici profilo e recapiti.
+
 ## [0.7.0] - 2026-09-24
 ### Aggiunto
 - Migrazione `0005_communities_mediators`: comunità con traduzioni e paesi, collegamenti organizzazione–comunità e organizzazione–paese, ambiti di mediazione, mediatori con traduzioni, lingue con livello, ambiti e territori.

@@ -57,6 +57,53 @@ return static function (Router $r): void {
         });
 
         $r->get('/audit', [Admin\AuditController::class, 'index'])->name('admin.audit.index')->middleware('can:audit.view');
+
+        // Catalogo: lettura con organizations.view_all; le modifiche sono verificate dai servizi di dominio
+        $r->group(['middleware' => ['can:organizations.view_all']], static function (Router $r): void {
+            $r->get('/organizzazioni', [Admin\OrganizationController::class, 'index'])->name('admin.organizations.index');
+            $r->get('/organizzazioni/nuova', [Admin\OrganizationController::class, 'create'])->name('admin.organizations.create');
+            $r->post('/organizzazioni', [Admin\OrganizationController::class, 'store'])->name('admin.organizations.store');
+            $r->get('/organizzazioni/{id}', [Admin\OrganizationController::class, 'show'])->name('admin.organizations.show');
+            $r->post('/organizzazioni/{id}', [Admin\OrganizationController::class, 'update'])->name('admin.organizations.update');
+            $r->post('/organizzazioni/{id}/stato', [Admin\OrganizationController::class, 'updateStatus'])->name('admin.organizations.status');
+            $r->post('/organizzazioni/{id}/testi', [Admin\OrganizationController::class, 'saveTexts'])->name('admin.organizations.texts');
+            $r->post('/organizzazioni/{id}/collegamenti', [Admin\OrganizationController::class, 'saveLinks'])->name('admin.organizations.links');
+            $r->post('/organizzazioni/{id}/recapiti', [Admin\OrganizationController::class, 'saveContacts'])->name('admin.organizations.contacts');
+
+            $r->get('/organizzazioni/{id}/sedi/nuova', [Admin\SiteController::class, 'create'])->name('admin.sites.create');
+            $r->post('/organizzazioni/{id}/sedi', [Admin\SiteController::class, 'store'])->name('admin.sites.store');
+            $r->get('/sedi/{id}', [Admin\SiteController::class, 'show'])->name('admin.sites.show');
+            $r->post('/sedi/{id}', [Admin\SiteController::class, 'update'])->name('admin.sites.update');
+            $r->post('/sedi/{id}/orari', [Admin\SiteController::class, 'saveHours'])->name('admin.sites.hours');
+            $r->post('/sedi/{id}/recapiti', [Admin\SiteController::class, 'saveContacts'])->name('admin.sites.contacts');
+            $r->post('/sedi/{id}/testi', [Admin\SiteController::class, 'saveTexts'])->name('admin.sites.texts');
+
+            $r->get('/servizi', [Admin\ServiceController::class, 'index'])->name('admin.services.index');
+            $r->get('/organizzazioni/{id}/servizi/nuovo', [Admin\ServiceController::class, 'create'])->name('admin.services.create');
+            $r->post('/organizzazioni/{id}/servizi', [Admin\ServiceController::class, 'store'])->name('admin.services.store');
+            $r->get('/servizi/{id}', [Admin\ServiceController::class, 'show'])->name('admin.services.show');
+            $r->post('/servizi/{id}', [Admin\ServiceController::class, 'update'])->name('admin.services.update');
+            $r->post('/servizi/{id}/testi', [Admin\ServiceController::class, 'saveTexts'])->name('admin.services.texts');
+        });
+
+        $r->group(['prefix' => '/mediatori', 'middleware' => ['can:mediators.manage']], static function (Router $r): void {
+            $r->get('', [Admin\MediatorController::class, 'index'])->name('admin.mediators.index');
+            $r->get('/nuovo', [Admin\MediatorController::class, 'create'])->name('admin.mediators.create');
+            $r->post('', [Admin\MediatorController::class, 'store'])->name('admin.mediators.store');
+            $r->get('/{id}', [Admin\MediatorController::class, 'show'])->name('admin.mediators.show');
+            $r->post('/{id}', [Admin\MediatorController::class, 'update'])->name('admin.mediators.update');
+            $r->post('/{id}/testi', [Admin\MediatorController::class, 'saveTexts'])->name('admin.mediators.texts');
+            $r->post('/{id}/recapiti', [Admin\MediatorController::class, 'saveContacts'])->name('admin.mediators.contacts');
+        });
+
+        $r->group(['middleware' => ['can:taxonomy.manage']], static function (Router $r): void {
+            $r->get('/sinonimi', [Admin\CatalogToolsController::class, 'synonyms'])->name('admin.synonyms.index');
+            $r->post('/sinonimi', [Admin\CatalogToolsController::class, 'addSynonym'])->name('admin.synonyms.store');
+            $r->post('/sinonimi/{id}/elimina', [Admin\CatalogToolsController::class, 'deleteSynonym'])->name('admin.synonyms.delete');
+        });
+        $r->get('/qualita', [Admin\CatalogToolsController::class, 'quality'])->name('admin.quality.index')->middleware('can:quality.view');
+        $r->get('/impostazioni', [Admin\CatalogToolsController::class, 'settings'])->name('admin.settings.index')->middleware('can:settings.manage');
+        $r->post('/impostazioni', [Admin\CatalogToolsController::class, 'saveSettings'])->name('admin.settings.update')->middleware('can:settings.manage');
     });
 
     $r->group(['prefix' => '/{locale}', 'middleware' => ['locale']], static function (Router $r): void {
