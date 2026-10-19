@@ -74,4 +74,9 @@ return [
     'ui.map.fullscreen' => 'الخريطة بملء الشاشة',
     'ui.map.fullscreen_exit' => 'الخروج من ملء الشاشة',
     'ui.map.wheel_hint' => 'للتكبير استخدم Ctrl مع عجلة الفأرة، أو الزرين + و −، أو المس الخريطة',
+
+    // v0.14.0 (D-040)
+    'ui.mediators.quick_title' => 'ابحث حسب اللغة',
+    'ui.mediators.try_groups' => 'انظر أدناه الوسطاء المتاحين عبر الجهات.',
+    'ui.mediators.privacy_title' => 'خصوصية الوسطاء',
 ];

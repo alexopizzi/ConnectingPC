@@ -5,6 +5,11 @@ Formato: [Keep a Changelog](https://keepachangelog.com/it/1.1.0/) · Versioni: [
 
 ## [Non rilasciato]
 
+## [0.14.0] - 2026-10-19
+### Modificato
+- Pagina "Mediatori" (pubblica e per operatori) nel nuovo stile: intestazione con scorciatoie per lingua (anche nella grafia della lingua), filtri nella colonna laterale, filtri attivi rimovibili, profili in schede a griglia con iniziali, disponibilità con icona, lingue con livello, ambiti, zona, organizzazione e recapiti; organizzazioni con mediatori in forma aggregata nelle stesse schede.
+- Freccia del pannello dei filtri corretta in arabo (RTL).
+
 ## [0.13.0] - 2026-10-19
 ### Aggiunto
 - Associazioni e comunità: scorciatoie per le comunità più presenti (con il numero di realtà), filtri attivi come etichette rimovibili, schede in griglia con icona per tipo di realtà, comunità riassunte ("e altre N"), lingue in evidenza.

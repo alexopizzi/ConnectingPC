@@ -482,7 +482,7 @@ fieldset.field { border: 1px solid var(--line); border-radius: var(--radius); pa
 }
 .filters-panel > summary::-webkit-details-marker { display: none; }
 .filters-panel > summary .icon { color: var(--primary); }
-.filters-panel > summary::after { content: ""; margin-inline-start: auto; inline-size: .55rem; block-size: .55rem; border-block-end: 2px solid currentColor; border-inline-end: 2px solid currentColor; transform: rotate(45deg); }
+.filters-panel > summary::after { content: ""; margin-inline-start: auto; inline-size: .55rem; block-size: .55rem; border-bottom: 2px solid currentColor; border-right: 2px solid currentColor; transform: rotate(45deg); }
 .filters-panel[open] > summary::after { transform: rotate(-135deg); }
 .filters-panel[open] > summary { border-block-end: 1px solid var(--line); border-end-start-radius: 0; border-end-end-radius: 0; }
 .filters-panel .count-pill { display: inline-grid; place-items: center; min-inline-size: 1.6rem; block-size: 1.6rem; padding-inline: .4rem; border-radius: var(--radius-pill); background: var(--primary); color: #fff; font-size: .85rem; }
@@ -561,6 +561,26 @@ fieldset.field { border: 1px solid var(--line); border-radius: var(--radius); pa
 .org-card .badges { margin: 0; }
 .org-card__languages { display: flex; align-items: flex-start; gap: var(--space-2); margin: auto 0 0; padding-block-start: var(--space-3); border-block-start: 1px solid var(--line); color: var(--text-muted); font-size: .95rem; }
 .org-card__languages .icon { color: var(--primary); margin-block-start: .15em; }
+
+/* ---------- Mediatori (v0.14.0) ---------- */
+.list-section { margin-block-end: var(--space-6); }
+.list-section .section-head .results-count { margin-block-start: var(--space-1); }
+.chip__native { color: var(--text-muted); font-weight: 600; }
+.mediator-card__avatar {
+  display: grid; place-items: center; inline-size: 3rem; block-size: 3rem; border-radius: 50%; flex: none;
+  background: var(--primary); color: #fff; font-weight: 800; font-size: 1.1rem; letter-spacing: .02em;
+}
+.org-grid > li:nth-child(4n+2) .mediator-card__avatar { background: #0f6b63; }
+.org-grid > li:nth-child(4n+3) .mediator-card__avatar { background: #6527c9; }
+.org-grid > li:nth-child(4n+4) .mediator-card__avatar { background: #8a5300; }
+.mediator-card__label { font-size: .9rem; font-weight: 750; color: var(--text-muted); margin: 0 0 var(--space-1); }
+.mediator-card__facts { display: grid; gap: var(--space-2); margin: 0; }
+.mediator-card__facts > div { display: flex; gap: var(--space-2); align-items: flex-start; }
+.mediator-card__facts dt { color: var(--primary); flex: none; }
+.mediator-card__facts dt .icon { margin-block-start: .15em; }
+.mediator-card__facts dd { margin: 0; }
+.mediator-card__contacts { margin-block-start: auto; padding-block-start: var(--space-3); border-block-start: 1px solid var(--line); }
+.mediator-card__contacts .contact-list { margin: 0; }
 
 /* ---------- Vicino a me ---------- */
 .near-me { padding: var(--space-4); border: 1px solid var(--line); border-radius: var(--radius-lg); margin-block: 0 var(--space-4); background: var(--bg-soft); }

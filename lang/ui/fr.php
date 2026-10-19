@@ -74,4 +74,9 @@ return [
     'ui.map.fullscreen' => 'Carte en plein écran',
     'ui.map.fullscreen_exit' => 'Quitter le plein écran',
     'ui.map.wheel_hint' => 'Pour zoomer, utilisez Ctrl + molette, les boutons + et − ou touchez la carte',
+
+    // v0.14.0 (D-040)
+    'ui.mediators.quick_title' => 'Chercher par langue',
+    'ui.mediators.try_groups' => 'Voir ci-dessous les médiateurs disponibles par l’intermédiaire des organismes.',
+    'ui.mediators.privacy_title' => 'Confidentialité des médiateurs',
 ];

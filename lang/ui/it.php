@@ -74,4 +74,9 @@ return [
     'ui.map.fullscreen' => 'Mappa a schermo intero',
     'ui.map.fullscreen_exit' => 'Esci dallo schermo intero',
     'ui.map.wheel_hint' => 'Per ingrandire usa Ctrl + rotella, i pulsanti + e − oppure tocca la mappa',
+
+    // v0.14.0 (D-040)
+    'ui.mediators.quick_title' => 'Cerca per lingua',
+    'ui.mediators.try_groups' => 'Guarda qui sotto i mediatori disponibili tramite le organizzazioni.',
+    'ui.mediators.privacy_title' => 'Privacy dei mediatori',
 ];

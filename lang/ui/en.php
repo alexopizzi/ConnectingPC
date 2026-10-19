@@ -74,4 +74,9 @@ return [
     'ui.map.fullscreen' => 'Full-screen map',
     'ui.map.fullscreen_exit' => 'Exit full screen',
     'ui.map.wheel_hint' => 'To zoom use Ctrl + scroll wheel, the + and − buttons, or tap the map',
+
+    // v0.14.0 (D-040)
+    'ui.mediators.quick_title' => 'Search by language',
+    'ui.mediators.try_groups' => 'See below the mediators available through organisations.',
+    'ui.mediators.privacy_title' => 'Mediators’ privacy',
 ];
