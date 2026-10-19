@@ -48,9 +48,15 @@ final class MaintenanceController extends Controller
         $superAdmin = null;
         try {
             $migrations = $this->container->get(Installer::class)->migrationStatus();
-            $superAdmin = $this->container->get(SuperAdminCreator::class)->exists();
         } catch (Throwable $e) {
             $dbError = $e->getMessage();
+        }
+        if ($dbError === null) {
+            try {
+                $superAdmin = $this->container->get(SuperAdminCreator::class)->exists();
+            } catch (Throwable) {
+                $superAdmin = null; // tabelle non ancora create: prima si installa
+            }
         }
 
         return $this->page('system/maintenance', [

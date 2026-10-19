@@ -5,6 +5,12 @@ Formato: [Keep a Changelog](https://keepachangelog.com/it/1.1.0/) · Versioni: [
 
 ## [Non rilasciato]
 
+## [0.15.1] - 2026-10-19
+### Corretto
+- Con la document root sulla radice del progetto (inoltro a `public/` dal `.htaccess`) link, asset e cookie di sessione ricevevano il prefisso `/public`: la sessione non funzionava (CSRF respinto). `App::baseUrl()` ora riconosce il caso.
+- Su LiteSpeed `Header setifempty` si comporta come `set`: le pagine ricevevano una seconda Content-Security-Policy (quella dei file statici) e gli script venivano bloccati. Gli header dei file statici sono ora limitati alle estensioni statiche in `public/.htaccess`.
+- Pagina di manutenzione: prima dell'installazione non segnala più "database non raggiungibile" quando mancano solo le tabelle.
+
 ## [0.15.0] - 2026-10-19
 ### Aggiunto
 - Comando `release:build`: crea `dist/connectingpc-vX.Y.Z.zip` (codice, asset, `vendor/` di produzione, cartelle di `storage/` vuote, istruzioni `INSTALLAZIONE.md`), `dist/SHA256SUMS` e un modello di `.env` di produzione con `APP_KEY`, `HEALTH_TOKEN` e `MAINTENANCE_TOKEN` già generati.

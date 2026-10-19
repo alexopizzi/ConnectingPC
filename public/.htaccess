@@ -25,11 +25,15 @@ DirectoryIndex index.php
 </FilesMatch>
 
 # Le risposte dinamiche ricevono gli header di sicurezza da PHP (App\Security\SecurityHeaders);
-# qui si coprono i file statici. "setifempty" evita duplicati sulle risposte di PHP.
+# qui si coprono SOLO i file statici, scelti per estensione: le richieste riscritte verso index.php
+# non corrispondono, quindi niente header duplicati. ("setifempty" non basta: LiteSpeed lo tratta come "set"
+# e due Content-Security-Policy sulla stessa pagina bloccano gli script, P-013.)
 <IfModule mod_headers.c>
-    Header setifempty X-Content-Type-Options "nosniff"
-    Header setifempty X-Frame-Options "DENY"
-    Header setifempty Referrer-Policy "strict-origin-when-cross-origin"
-    Header setifempty Content-Security-Policy "default-src 'none'; img-src 'self'; style-src 'self'; font-src 'self'; frame-ancestors 'none'"
+    <FilesMatch "\.(css|js|mjs|json|svg|png|jpe?g|gif|webp|ico|woff2?|ttf|txt|xml|map)$">
+        Header set X-Content-Type-Options "nosniff"
+        Header set X-Frame-Options "DENY"
+        Header set Referrer-Policy "strict-origin-when-cross-origin"
+        Header set Content-Security-Policy "default-src 'none'; img-src 'self'; style-src 'self'; font-src 'self'; frame-ancestors 'none'"
+    </FilesMatch>
     Header unset X-Powered-By
 </IfModule>

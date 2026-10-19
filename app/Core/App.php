@@ -55,9 +55,19 @@ final class App
     /** Prefisso URL dell'installazione ('' se l'app è nella radice del dominio). */
     public static function baseUrl(): string
     {
-        $dir = str_replace('\\', '/', dirname($_SERVER['SCRIPT_NAME'] ?? '/'));
+        $dir = rtrim(str_replace('\\', '/', dirname($_SERVER['SCRIPT_NAME'] ?? '/')), '/.');
 
-        return rtrim($dir, '/.');
+        // Document root sulla radice del progetto: il .htaccess inoltra a public/ (vault "81"), ma l'URL
+        // visto dal visitatore non contiene "/public". In quel caso il prefisso è la cartella superiore.
+        if (str_ends_with($dir, '/public')) {
+            $uri = parse_url((string) ($_SERVER['REQUEST_URI'] ?? '/'), PHP_URL_PATH);
+            $uri = is_string($uri) ? rawurldecode($uri) : '/';
+            if ($uri !== $dir && !str_starts_with($uri, $dir . '/')) {
+                $dir = substr($dir, 0, -strlen('/public'));
+            }
+        }
+
+        return $dir;
     }
 
     public static function healthTokenMatches(string $given): bool
