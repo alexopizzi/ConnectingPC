@@ -40,12 +40,11 @@
   // --- Mappa di base -------------------------------------------------------------------------------
   var center = (el.dataset.center || '45.0526,9.6930').split(',').map(Number);
   var province = L.latLngBounds([44.45, 9.0], [45.30, 10.25]); // D-024, con margine
-  var map = L.map(el, { scrollWheelZoom: false, keyboard: true, minZoom: 9, maxBounds: province.pad(0.1), maxBoundsViscosity: 0.8, zoomSnap: 0.5 })
+  var map = L.map(el, { scrollWheelZoom: false, keyboard: true, zoomControl: false, minZoom: 9, maxBounds: province.pad(0.1), maxBoundsViscosity: 0.8, zoomSnap: 0.5 })
     .setView(center, Math.max(9, Number(el.dataset.zoom || 10)));
   L.tileLayer(el.dataset.tiles, { maxZoom: 18, minZoom: 9, attribution: el.dataset.attribution }).addTo(map);
-  // La rotella zooma solo dopo un clic sulla mappa (evita di "intrappolare" lo scorrimento della pagina)
-  map.on('click', function () { map.scrollWheelZoom.enable(); });
-  map.on('mouseout', function () { map.scrollWheelZoom.disable(); });
+  // Pulsanti + e − con nomi tradotti (Leaflet li chiamerebbe "Zoom in"/"Zoom out")
+  L.control.zoom({ position: 'topleft', zoomInTitle: el.dataset.msgZoomIn, zoomOutTitle: el.dataset.msgZoomOut }).addTo(map);
 
   var svgIcon = function (name, cls) {
     var ns = 'http://www.w3.org/2000/svg';
@@ -69,6 +68,73 @@
     announcer.textContent = '';
     window.setTimeout(function () { announcer.textContent = text; }, 60);
   };
+
+  // --- Controlli di zoom e schermo intero (D-039) ----------------------------------------------------
+  // Rotella: zooma dopo un clic o quando la mappa ha il focus; con Ctrl (o Cmd) zooma sempre.
+  // Senza Ctrl la pagina continua a scorrere e compare un suggerimento.
+  var canvas = el.closest('.map-app__canvas') || el.parentNode;
+  var hint = node('p', el.dataset.msgWheelHint, { 'class': 'map-hint', 'aria-hidden': 'true' });
+  canvas.appendChild(hint);
+  var hintTimer = null;
+  var showHint = function () {
+    hint.classList.add('is-visible');
+    clearTimeout(hintTimer);
+    hintTimer = setTimeout(function () { hint.classList.remove('is-visible'); }, 1600);
+  };
+  map.on('click', function () { map.scrollWheelZoom.enable(); });
+  map.on('mouseout', function () { if (!canvas.classList.contains('is-fullscreen')) { map.scrollWheelZoom.disable(); } });
+  el.addEventListener('focus', function () { map.scrollWheelZoom.enable(); });
+  el.addEventListener('blur', function () { if (!canvas.classList.contains('is-fullscreen')) { map.scrollWheelZoom.disable(); } });
+  el.addEventListener('wheel', function (e) {
+    if (map.scrollWheelZoom.enabled()) { return; }
+    if (e.ctrlKey || e.metaKey) {
+      e.preventDefault();
+      map.setZoom(map.getZoom() + (e.deltaY < 0 ? 1 : -1));
+    } else {
+      showHint();
+    }
+  }, { passive: false });
+
+  var button = function (icon, label, onClick) {
+    var b = node('button', null, { type: 'button', 'class': 'map-ctrl', title: label, 'aria-label': label });
+    b.appendChild(svgIcon(icon));
+    L.DomEvent.on(b, 'click', function (e) { L.DomEvent.stop(e); onClick(b); });
+    return b;
+  };
+  var setFullscreen = function (on, b) {
+    canvas.classList.toggle('is-fullscreen', on);
+    document.documentElement.classList.toggle('has-map-fullscreen', on);
+    // Il resto della pagina, coperto dalla mappa, esce dal percorso del focus (WCAG 2.4.11)
+    document.querySelectorAll('.skip-link, .site-header, .site-footer, .map-app__intro, .map-app__results, .map-app > .skip-link--inline').forEach(function (n) {
+      if (on) { n.setAttribute('inert', ''); } else { n.removeAttribute('inert'); }
+    });
+    b.setAttribute('aria-pressed', on ? 'true' : 'false');
+    var label = on ? el.dataset.msgFullscreenExit : el.dataset.msgFullscreen;
+    b.setAttribute('aria-label', label);
+    b.title = label;
+    b.querySelector('use').setAttribute('href', sprite + '#i-' + (on ? 'minimize' : 'maximize'));
+    if (on) { map.scrollWheelZoom.enable(); } else { map.scrollWheelZoom.disable(); }
+    setTimeout(function () { map.invalidateSize(); }, 50);
+    b.focus();
+  };
+  var Tools = L.Control.extend({
+    options: { position: 'topleft' },
+    onAdd: function () {
+      var box = L.DomUtil.create('div', 'leaflet-bar map-ctrl-group');
+      L.DomEvent.disableClickPropagation(box);
+      box.appendChild(button('house', el.dataset.msgResetView, function () {
+        map.fitBounds(townsLayer ? townsLayer.getBounds() : province, { padding: [12, 12] });
+      }));
+      var full = button('maximize', el.dataset.msgFullscreen, function (b) { setFullscreen(!canvas.classList.contains('is-fullscreen'), b); });
+      full.setAttribute('aria-pressed', 'false');
+      box.appendChild(full);
+      document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape' && canvas.classList.contains('is-fullscreen')) { setFullscreen(false, full); }
+      });
+      return box;
+    }
+  });
+  map.addControl(new Tools());
 
   // --- Livello dei comuni --------------------------------------------------------------------------
   var palette = ['#f1f4fa', '#d6e1fa', '#a9c0f3', '#6f92e6', '#2f5bd3'];

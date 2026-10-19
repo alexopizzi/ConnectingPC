@@ -5,6 +5,16 @@ Formato: [Keep a Changelog](https://keepachangelog.com/it/1.1.0/) · Versioni: [
 
 ## [Non rilasciato]
 
+## [0.13.0] - 2026-10-19
+### Aggiunto
+- Associazioni e comunità: scorciatoie per le comunità più presenti (con il numero di realtà), filtri attivi come etichette rimovibili, schede in griglia con icona per tipo di realtà, comunità riassunte ("e altre N"), lingue in evidenza.
+- Mappa: pulsante "Mostra tutta la provincia", mappa a schermo intero (Esc per uscire, resto della pagina fuori dal percorso del focus), zoom con Ctrl + rotella e suggerimento quando si usa la sola rotella; istruzioni da tastiera per il lettore di schermo.
+- Partial `filter-chips` condiviso fra catalogo e associazioni; test sulle scorciatoie delle comunità (63 test).
+
+### Modificato
+- Pagina "Associazioni e comunità" con la stessa struttura degli elenchi dei servizi (intestazione con ricerca, filtri nella colonna laterale su desktop).
+- Pulsanti + e − della mappa da 44 px con nomi tradotti (prima "Zoom in"/"Zoom out" in inglese e da 30 px).
+
 ## [0.12.0] - 2026-10-19
 ### Aggiunto
 - Mappa divisa nei 46 comuni della provincia (confini ISTAT 2026, openpolis/geojson-italy, CC BY 4.0): i comuni sono colorati secondo i servizi raggiungibili, un clic su un comune (o la scelta dal menu "Il tuo comune") filtra elenco e punti senza ricaricare la pagina, con URL condivisibile, tasto Indietro e annuncio per i lettori di schermo; proposta "Allarga a tutto il distretto"; livelli Comuni/Sedi e legenda.

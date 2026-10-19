@@ -95,6 +95,26 @@ final class CommunityRepository
         ], $rows);
     }
 
+    /**
+     * Comunità rappresentate nella directory, dalla più presente: scorciatoie della pagina pubblica (D-039).
+     *
+     * @return array<string, int> codice della comunità => numero di realtà pubblicate
+     */
+    public function communityCounts(): array
+    {
+        $rows = $this->database->fetchAll(
+            'SELECT c.code, COUNT(DISTINCT o.id) AS n FROM organization_communities oc
+               JOIN communities c ON c.id = oc.community_id AND c.is_active = 1
+               JOIN organizations o ON o.id = oc.organization_id
+               JOIN organization_types t ON t.id = o.organization_type_id
+              WHERE ' . self::PUBLIC_ORGANIZATION . ' AND ' . $this->directoryCondition() . '
+              GROUP BY c.code ORDER BY n DESC, c.code',
+            self::ASSOCIATION_TYPES,
+        );
+
+        return array_map('intval', array_column($rows, 'n', 'code'));
+    }
+
     /** @return list<string> paesi collegati alle organizzazioni della directory (direttamente o tramite comunità) */
     public function countries(): array
     {
@@ -206,7 +226,8 @@ final class CommunityRepository
         $in = implode(',', array_fill(0, count($ids), '?'));
         $rows = [];
         foreach ($this->database->fetchAll(
-            "SELECT id, name, is_community_based, organization_type_id, source_locale FROM organizations WHERE id IN ($in)",
+            "SELECT o.id, o.name, o.is_community_based, o.organization_type_id, o.source_locale, t.code AS type_code
+               FROM organizations o JOIN organization_types t ON t.id = o.organization_type_id WHERE o.id IN ($in)",
             $ids,
         ) as $row) {
             $rows[(int) $row['id']] = $row;
@@ -231,6 +252,7 @@ final class CommunityRepository
                 'name' => (string) $rows[$id]['name'],
                 'is_community_based' => (bool) $rows[$id]['is_community_based'],
                 'type' => $types[(int) $rows[$id]['organization_type_id']],
+                'type_code' => (string) $rows[$id]['type_code'],
                 'description' => $texts[$id]['description'],
                 'activities' => $texts[$id]['activities'],
                 'communities' => $communities[$id] ?? [],

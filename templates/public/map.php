@@ -97,10 +97,16 @@ $otherFilters = array_diff_key($query, ['comune' => true]);
              data-msg-town-count="<?= $this->e($this->t('ui.map.town_count')) ?>"
              data-msg-select-town="<?= $this->e($this->t('ui.map.select_town')) ?>"
              data-msg-loading="<?= $this->e($this->t('ui.map.loading')) ?>"
-             data-msg-updated="<?= $this->e($this->t('ui.map.updated')) ?>">
+             data-msg-updated="<?= $this->e($this->t('ui.map.updated')) ?>"
+             data-msg-zoom-in="<?= $this->e($this->t('ui.map.zoom_in')) ?>"
+             data-msg-zoom-out="<?= $this->e($this->t('ui.map.zoom_out')) ?>"
+             data-msg-reset-view="<?= $this->e($this->t('ui.map.reset_view')) ?>"
+             data-msg-fullscreen="<?= $this->e($this->t('ui.map.fullscreen')) ?>"
+             data-msg-fullscreen-exit="<?= $this->e($this->t('ui.map.fullscreen_exit')) ?>"
+             data-msg-wheel-hint="<?= $this->e($this->t('ui.map.wheel_hint')) ?>">
             <noscript><p class="callout"><?= $this->e($this->t('map.noscript')) ?></p></noscript>
         </div>
-        <p id="map-help" class="visually-hidden"><?= $this->e($this->t('ui.map.help')) ?></p>
+        <p id="map-help" class="visually-hidden"><?= $this->e($this->t('ui.map.help')) ?> <?= $this->e($this->t('ui.map.keyboard_help')) ?></p>
         <div class="map-toolbar" data-map-toolbar hidden>
             <label class="checkbox"><input type="checkbox" checked data-toggle-towns> <?= $this->e($this->t('ui.map.show_towns')) ?></label>
             <label class="checkbox"><input type="checkbox" checked data-toggle-points> <?= $this->e($this->t('ui.map.show_points')) ?></label>

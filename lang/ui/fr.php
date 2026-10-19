@@ -61,4 +61,17 @@ return [
     'ui.service.where_title' => 'Où et quand',
     'ui.service.contacts_title' => 'Contacts',
     'ui.service.category' => 'Thème',
+
+    // v0.13.0 (D-039)
+    'ui.map.keyboard_help' => 'Carte sélectionnée : + et − pour agrandir et réduire, flèches pour se déplacer.',
+    'ui.communities.quick_title' => 'Communautés présentes',
+    'ui.communities.count' => '{count}',
+    'ui.communities.more' => '{count, plural, one {et une autre communauté} other {et # autres communautés}}',
+    'ui.communities.join_title' => 'Vous faites partie d’une association ?',
+    'ui.map.zoom_in' => 'Agrandir la carte',
+    'ui.map.zoom_out' => 'Réduire la carte',
+    'ui.map.reset_view' => 'Afficher toute la province',
+    'ui.map.fullscreen' => 'Carte en plein écran',
+    'ui.map.fullscreen_exit' => 'Quitter le plein écran',
+    'ui.map.wheel_hint' => 'Pour zoomer, utilisez Ctrl + molette, les boutons + et − ou touchez la carte',
 ];

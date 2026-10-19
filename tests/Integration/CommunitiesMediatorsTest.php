@@ -126,4 +126,19 @@ final class CommunitiesMediatorsTest extends DatabaseTestCase
         self::assertSame('Albanian community', $profile['communities'][0]['name']['text']);
         self::assertSame(['AL', 'XK'], $profile['countries']);
     }
+
+    public function testCommunityShortcutsCountOnlyPublishedDirectoryEntries(): void
+    {
+        $counts = $this->communities()->communityCounts();
+        self::assertNotEmpty($counts);
+        $previous = PHP_INT_MAX;
+        foreach ($counts as $code => $count) {
+            self::assertLessThanOrEqual($previous, $count, 'Ordinate dalla più presente');
+            $previous = $count;
+            $filters = ['q' => '', 'language' => null, 'community' => (string) $code, 'country' => null, 'territory' => null, 'type' => null, 'community_based' => false];
+            self::assertCount($count, $this->communities()->searchOrganizationIds($filters, 'it'));
+        }
+        $summary = $this->communities()->summaries(array_slice($this->communities()->searchOrganizationIds(['q' => '', 'language' => null, 'community' => null, 'country' => null, 'territory' => null, 'type' => null, 'community_based' => false], 'it'), 0, 1), 'it');
+        self::assertNotSame('', $summary[0]['type_code']);
+    }
 }

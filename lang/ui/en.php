@@ -61,4 +61,17 @@ return [
     'ui.service.where_title' => 'Where and when',
     'ui.service.contacts_title' => 'Contacts',
     'ui.service.category' => 'Topic',
+
+    // v0.13.0 (D-039)
+    'ui.map.keyboard_help' => 'With the map selected: + and − to zoom in and out, arrow keys to move.',
+    'ui.communities.quick_title' => 'Communities in the directory',
+    'ui.communities.count' => '{count}',
+    'ui.communities.more' => '{count, plural, one {and one more community} other {and # more communities}}',
+    'ui.communities.join_title' => 'Are you part of an association?',
+    'ui.map.zoom_in' => 'Zoom in on the map',
+    'ui.map.zoom_out' => 'Zoom out on the map',
+    'ui.map.reset_view' => 'Show the whole province',
+    'ui.map.fullscreen' => 'Full-screen map',
+    'ui.map.fullscreen_exit' => 'Exit full screen',
+    'ui.map.wheel_hint' => 'To zoom use Ctrl + scroll wheel, the + and − buttons, or tap the map',
 ];

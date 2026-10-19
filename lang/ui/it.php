@@ -61,4 +61,17 @@ return [
     'ui.service.where_title' => 'Dove e quando',
     'ui.service.contacts_title' => 'Contatti',
     'ui.service.category' => 'Argomento',
+
+    // v0.13.0 (D-039)
+    'ui.map.keyboard_help' => 'Con la mappa selezionata: + e − per ingrandire e rimpicciolire, frecce per spostarti.',
+    'ui.communities.quick_title' => 'Comunità presenti',
+    'ui.communities.count' => '{count}',
+    'ui.communities.more' => '{count, plural, one {e un’altra comunità} other {e altre # comunità}}',
+    'ui.communities.join_title' => 'Fai parte di un’associazione?',
+    'ui.map.zoom_in' => 'Ingrandisci la mappa',
+    'ui.map.zoom_out' => 'Rimpicciolisci la mappa',
+    'ui.map.reset_view' => 'Mostra tutta la provincia',
+    'ui.map.fullscreen' => 'Mappa a schermo intero',
+    'ui.map.fullscreen_exit' => 'Esci dallo schermo intero',
+    'ui.map.wheel_hint' => 'Per ingrandire usa Ctrl + rotella, i pulsanti + e − oppure tocca la mappa',
 ];

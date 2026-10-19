@@ -37,6 +37,7 @@ final class CommunityController extends Controller
             'filters' => $filters,
             'query' => CommunityRepository::filtersToQuery($filters),
             'communities' => $repository->communities($locale),
+            'communityCounts' => $repository->communityCounts(),
             'countries' => $repository->countries(),
             'languages' => $repository->languages(),
             'types' => $repository->types($locale),

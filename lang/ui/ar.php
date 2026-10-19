@@ -61,4 +61,17 @@ return [
     'ui.service.where_title' => 'أين ومتى',
     'ui.service.contacts_title' => 'جهات الاتصال',
     'ui.service.category' => 'الموضوع',
+
+    // v0.13.0 (D-039)
+    'ui.map.keyboard_help' => 'عند تحديد الخريطة: + و − للتكبير والتصغير، والأسهم للتحرك.',
+    'ui.communities.quick_title' => 'الجاليات الموجودة',
+    'ui.communities.count' => '{count}',
+    'ui.communities.more' => '{count, plural, zero {} one {وجالية أخرى} two {وجاليتان أخريان} few {و# جاليات أخرى} many {و# جالية أخرى} other {و# جالية أخرى}}',
+    'ui.communities.join_title' => 'هل أنت عضو في جمعية؟',
+    'ui.map.zoom_in' => 'تكبير الخريطة',
+    'ui.map.zoom_out' => 'تصغير الخريطة',
+    'ui.map.reset_view' => 'اعرض المقاطعة كاملة',
+    'ui.map.fullscreen' => 'الخريطة بملء الشاشة',
+    'ui.map.fullscreen_exit' => 'الخروج من ملء الشاشة',
+    'ui.map.wheel_hint' => 'للتكبير استخدم Ctrl مع عجلة الفأرة، أو الزرين + و −، أو المس الخريطة',
 ];
