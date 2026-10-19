@@ -213,4 +213,8 @@ return [
     'admin.maintenance.logout' => 'Esci dalla manutenzione',
     'admin.maintenance.failed' => 'Operazione non riuscita: vedi il dettaglio qui sotto.',
     'admin.maintenance.log' => 'Dettaglio dell’ultima operazione',
+    'admin.maintenance.demo_title' => 'Dati dimostrativi',
+    'admin.maintenance.demo_hint' => 'Carica enti, sedi, servizi, associazioni e mediatori FITTIZI (nomi "Esempio", telefoni 0523 000…, domini example.org), visibili al pubblico. Gli utenti dimostrativi non vengono creati. Si può ripetere senza duplicare. Dopo l’uso togliere DEMO_DATA_ALLOWED dal file .env.',
+    'admin.maintenance.demo' => 'Carica i dati dimostrativi',
+    'admin.maintenance.demo_done' => 'Dati dimostrativi caricati.',
 ];

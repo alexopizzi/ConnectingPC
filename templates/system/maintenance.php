@@ -10,6 +10,7 @@
  * @var string|null $dbError
  * @var bool|null $superAdmin
  * @var bool $down
+ * @var bool $demoAllowed
  * @var list<string> $log
  * @var string|null $activationLink
  * @var int $expiresAt
@@ -76,6 +77,14 @@ $action = function (string $name, string $label, string $class = 'button', strin
         <p class="field__hint"><?= $this->e($this->t('admin.maintenance.install_hint')) ?></p>
         <p><?= $action('install', $this->t('admin.maintenance.install'), 'button', 'rotate-ccw') ?></p>
     </section>
+
+    <?php if ($demoAllowed && $dbError === null): ?>
+        <section class="service-section" aria-labelledby="demo-title">
+            <h2 id="demo-title"><?= $this->icon('layers') ?><?= $this->e($this->t('admin.maintenance.demo_title')) ?></h2>
+            <p class="alert alert--warning"><?= $this->e($this->t('admin.maintenance.demo_hint')) ?></p>
+            <p><?= $action('demo', $this->t('admin.maintenance.demo'), 'button button--secondary', 'layers') ?></p>
+        </section>
+    <?php endif; ?>
 
     <?php if ($superAdmin === false): ?>
         <section class="service-section" aria-labelledby="admin-title">

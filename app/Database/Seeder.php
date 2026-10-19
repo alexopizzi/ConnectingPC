@@ -20,9 +20,10 @@ final class Seeder
 
     /**
      * @param callable(string): void|null $output
+     * @param list<string> $except nomi dei seed da saltare (es. gli utenti dimostrativi in produzione, D-042)
      * @return list<string>
      */
-    public function run(bool $demo = false, ?callable $output = null): array
+    public function run(bool $demo = false, ?callable $output = null, array $except = []): array
     {
         $files = glob($this->directory . '/*.php') ?: [];
         sort($files, SORT_STRING);
@@ -30,7 +31,7 @@ final class Seeder
 
         foreach ($files as $file) {
             $name = basename($file, '.php');
-            if (str_contains($name, 'demo') && !$demo) {
+            if ((str_contains($name, 'demo') && !$demo) || in_array($name, $except, true)) {
                 continue;
             }
             $seed = require $file;

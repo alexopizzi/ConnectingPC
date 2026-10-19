@@ -5,6 +5,11 @@ Formato: [Keep a Changelog](https://keepachangelog.com/it/1.1.0/) · Versioni: [
 
 ## [Non rilasciato]
 
+## [0.16.0] - 2026-10-19
+### Aggiunto
+- Pagina di manutenzione: azione "Carica i dati dimostrativi", attiva solo con `DEMO_DATA_ALLOWED=true` nel `.env` (D-042). Gli utenti dimostrativi non vengono mai caricati in produzione.
+- `Seeder::run()` accetta un elenco di seed da saltare.
+
 ## [0.15.1] - 2026-10-19
 ### Corretto
 - Con la document root sulla radice del progetto (inoltro a `public/` dal `.htaccess`) link, asset e cookie di sessione ricevevano il prefisso `/public`: la sessione non funzionava (CSRF respinto). `App::baseUrl()` ora riconosce il caso.

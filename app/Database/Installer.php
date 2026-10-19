@@ -6,9 +6,11 @@ namespace App\Database;
 
 use App\Core\Container;
 use App\Core\Database;
+use App\Core\Env;
 use App\Core\FileCache;
 use App\I18n\LocaleRegistry;
 use App\I18n\TranslationImporter;
+use DomainException;
 
 /**
  * Prima installazione o aggiornamento (vault "80", "81"): migrazioni → dati di base → stringhe dell'interfaccia
@@ -17,6 +19,9 @@ use App\I18n\TranslationImporter;
  */
 final class Installer
 {
+    /** Seed dimostrativi esclusi dal caricamento in produzione. */
+    private const NEVER_IN_PRODUCTION = ['910_demo_users'];
+
     public function __construct(private readonly Container $container)
     {
     }
@@ -42,6 +47,40 @@ final class Installer
 
         $this->container->get(FileCache::class)->clear();
         $log('Cache svuotata.');
+    }
+
+    /**
+     * Dati dimostrativi FITTIZI su un'installazione di produzione, su richiesta esplicita del committente (D-042).
+     * Serve DEMO_DATA_ALLOWED=true nel .env. I seed dimostrativi rifiutano APP_ENV=production: l'ambiente
+     * viene cambiato solo per la durata del caricamento e poi ripristinato. Gli utenti dimostrativi non si
+     * caricano mai in produzione (la loro password è pubblica nel repository).
+     *
+     * @param callable(string): void $log
+     */
+    public function loadDemoData(callable $log): void
+    {
+        if (!self::demoDataAllowed()) {
+            throw new DomainException('Dati dimostrativi non abilitati: impostare DEMO_DATA_ALLOWED=true nel file .env.');
+        }
+        $previous = $_ENV['APP_ENV'] ?? null;
+        $_ENV['APP_ENV'] = 'demo';
+        try {
+            (new Seeder($this->container, APP_BASE_PATH . '/database/seeds'))->run(true, $log, self::NEVER_IN_PRODUCTION);
+        } finally {
+            if ($previous === null) {
+                unset($_ENV['APP_ENV']);
+            } else {
+                $_ENV['APP_ENV'] = $previous;
+            }
+        }
+        $log('Saltati: ' . implode(', ', self::NEVER_IN_PRODUCTION) . ' (utenti dimostrativi con password pubblica).');
+        $this->container->get(FileCache::class)->clear();
+        $log('Cache svuotata.');
+    }
+
+    public static function demoDataAllowed(): bool
+    {
+        return Env::bool('DEMO_DATA_ALLOWED');
     }
 
     /**

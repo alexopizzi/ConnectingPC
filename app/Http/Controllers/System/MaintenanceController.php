@@ -68,6 +68,7 @@ final class MaintenanceController extends Controller
             'dbError' => $dbError,
             'superAdmin' => $superAdmin,
             'down' => is_file($this->downFile()),
+            'demoAllowed' => Installer::demoDataAllowed(),
             'log' => $session->getFlash('maintenance_log', []),
             'activationLink' => $session->getFlash('maintenance_link'),
             'expiresAt' => (int) $session->get(self::SESSION_KEY),
@@ -116,6 +117,13 @@ final class MaintenanceController extends Controller
                     });
                     $this->resetOpcache();
                     $this->flash('success', $this->t('admin.maintenance.install_done'));
+                    break;
+                case 'demo':
+                    $this->container->get(Installer::class)->loadDemoData(static function (string $line) use (&$log): void {
+                        $log[] = $line;
+                    });
+                    $this->resetOpcache();
+                    $this->flash('success', $this->t('admin.maintenance.demo_done'));
                     break;
                 case 'create_admin':
                     $creator = $this->container->get(SuperAdminCreator::class);
