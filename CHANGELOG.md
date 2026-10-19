@@ -5,6 +5,16 @@ Formato: [Keep a Changelog](https://keepachangelog.com/it/1.1.0/) · Versioni: [
 
 ## [Non rilasciato]
 
+## [0.15.0] - 2026-10-19
+### Aggiunto
+- Comando `release:build`: crea `dist/connectingpc-vX.Y.Z.zip` (codice, asset, `vendor/` di produzione, cartelle di `storage/` vuote, istruzioni `INSTALLAZIONE.md`), `dist/SHA256SUMS` e un modello di `.env` di produzione con `APP_KEY`, `HEALTH_TOKEN` e `MAINTENANCE_TOKEN` già generati.
+- Pagina di manutenzione `/manutenzione` per hosting senza SSH, attiva solo con `MAINTENANCE_TOKEN` (≥ 32 caratteri): requisiti dell'ambiente, stato delle migrazioni, installazione e aggiornamento del database, primo super amministratore con link di attivazione, cache e OPcache, modalità manutenzione. Token inserito in un modulo, accesso di 30 minuti, massimo 10 tentativi errati in 15 minuti, raggiungibile anche a sito fermo e prima dell'installazione.
+- `.env.production.example` per connectingpc.alexopizzi.it; `deploy/INSTALLAZIONE.md` con la procedura Plesk.
+- Test sull'installazione (66 test).
+
+### Modificato
+- `setup` e `user:create-admin` usano i nuovi servizi `App\Database\Installer` e `App\Domain\Users\SuperAdminCreator`, condivisi con la pagina di manutenzione.
+
 ## [0.14.0] - 2026-10-19
 ### Modificato
 - Pagina "Mediatori" (pubblica e per operatori) nel nuovo stile: intestazione con scorciatoie per lingua (anche nella grafia della lingua), filtri nella colonna laterale, filtri attivi rimovibili, profili in schede a griglia con iniziali, disponibilità con icona, lingue con livello, ambiti, zona, organizzazione e recapiti; organizzazioni con mediatori in forma aggregata nelle stesse schede.

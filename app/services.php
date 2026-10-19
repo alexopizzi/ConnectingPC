@@ -12,6 +12,7 @@ use App\Authorization\DatabaseAuthorizationData;
 use App\Authorization\Gate;
 use App\Core\App;
 use App\Core\Mailer;
+use App\Database\Installer;
 use App\Domain\Catalog\CatalogRepository;
 use App\Domain\Communities\CommunityRepository;
 use App\Domain\Management\EditorialGuard;
@@ -29,6 +30,7 @@ use App\Domain\Management\UiStringEditor;
 use App\Domain\Geo\Geocoder;
 use App\Domain\Geo\MunicipalityShapes;
 use App\Domain\Mediators\MediatorRepository;
+use App\Domain\Users\SuperAdminCreator;
 use App\Domain\Users\UserRepository;
 use App\Domain\Users\UserService;
 use App\Security\PasswordHasher;
@@ -205,6 +207,10 @@ return static function (Container $c): void {
     ));
 
     $c->set(CatalogRepository::class, static fn (Container $c) => new CatalogRepository($c->get(Database::class)));
+    $c->set(Installer::class, static fn (Container $c) => new Installer($c));
+    $c->set(SuperAdminCreator::class, static fn (Container $c) => new SuperAdminCreator(
+        $c->get(Database::class), $c->get(AuditLogger::class), $c->get(TokenService::class), $c->get(UrlGenerator::class),
+    ));
     $c->set(MunicipalityShapes::class, static fn () => new MunicipalityShapes(APP_BASE_PATH . '/public/assets/data/comuni-piacenza.json'));
     $c->set(CommunityRepository::class, static fn (Container $c) => new CommunityRepository($c->get(Database::class)));
     $c->set(MediatorRepository::class, static fn (Container $c) => new MediatorRepository($c->get(Database::class)));

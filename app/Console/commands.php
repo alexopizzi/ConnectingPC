@@ -2,20 +2,20 @@
 
 declare(strict_types=1);
 
-use App\Audit\AuditLogger;
-use App\Auth\TokenService;
 use App\Console\Application;
 use App\Console\Input;
 use App\Console\Output;
+use App\Console\ReleaseBuilder;
 use App\Core\App;
 use App\Core\Container;
 use App\Core\Database;
 use App\Core\EnvironmentCheck;
 use App\Core\FileCache;
-use App\Core\UrlGenerator;
 use App\Database\Migrator;
+use App\Database\Installer;
 use App\Database\Seeder;
 use App\Domain\Management\InboundRequestService;
+use App\Domain\Users\SuperAdminCreator;
 use App\Domain\Users\UserRepository;
 use App\I18n\LocaleRegistry;
 use App\I18n\TranslationImporter;
@@ -118,27 +118,14 @@ return static function (Application $console): void {
 
             return 1;
         }
-        $db = $c->get(Database::class);
-        if ($db->fetchValue('SELECT id FROM users WHERE email = ?', [$email]) !== null) {
-            $out->error('Esiste già un utente con questa email.');
+        try {
+            $link = $c->get(SuperAdminCreator::class)->create($email, $name, $locale, 'console');
+        } catch (DomainException | RuntimeException $e) {
+            $out->error($e->getMessage());
 
             return 1;
         }
 
-        $token = $db->transaction(static function (Database $db) use ($c, $email, $name, $locale): string {
-            $id = $db->insert('users', ['email' => $email, 'display_name' => $name, 'preferred_locale' => $locale, 'status' => 'invited']);
-            $roleId = (int) $db->fetchValue("SELECT id FROM roles WHERE code = 'super_admin'");
-            if ($roleId === 0) {
-                throw new RuntimeException('Ruoli non presenti: eseguire prima `php bin/console setup`.');
-            }
-            $db->insert('role_assignments', ['user_id' => $id, 'role_id' => $roleId, 'scope_type' => 'global', 'scope_key' => '']);
-            $audit = $c->get(AuditLogger::class);
-            $audit->log('user.created', 'user', $id, ['email' => $email, 'role' => 'super_admin', 'via' => 'console']);
-
-            return $c->get(TokenService::class)->issue($id, 'invite', TokenService::INVITE_TTL);
-        });
-
-        $link = $c->get(UrlGenerator::class)->absoluteRoute('auth.invitation', ['locale' => $locale, 'token' => $token]);
         $out->line('Super amministratore creato. Link di attivazione (valido 72 ore, uso singolo):');
         $out->line($link);
         $out->line('Il link è un segreto: trasmetterlo solo alla persona interessata.');
@@ -146,14 +133,17 @@ return static function (Application $console): void {
         return 0;
     });
 
-    $console->register('setup', 'Prima installazione o aggiornamento: migrate + seed + i18n:import', static function (Input $in, Output $out, Container $c) use ($console): int {
-        foreach (['migrate', 'seed', 'i18n:import'] as $command) {
-            $out->line("== $command");
-            $argv = ['console', $command, ...($command === 'seed' && $in->flag('demo') ? ['--demo'] : [])];
-            if ($console->run($argv) !== 0) {
-                return 1;
-            }
-        }
+    $console->register('release:build', 'Crea il pacchetto di produzione dist/connectingpc-vX.Y.Z.zip (vault "81")', static function (Input $in, Output $out): int {
+        $result = (new ReleaseBuilder(APP_BASE_PATH))->build(App::version(), static fn (string $line) => $out->line($line));
+        $out->line('Pacchetto: dist/' . basename($result['zip']));
+        $out->line('Impronta:  dist/' . basename($result['sums']));
+        $out->line('Modello .env con segreti generati: dist/' . basename($result['env']) . ' (non condividerlo; completare database e SMTP)');
+
+        return 0;
+    });
+
+    $console->register('setup', 'Prima installazione o aggiornamento: migrate + seed + i18n:import', static function (Input $in, Output $out, Container $c): int {
+        $c->get(Installer::class)->run(static fn (string $line) => $out->line($line), $in->flag('demo'));
 
         return 0;
     });

@@ -14,6 +14,7 @@ use App\Http\Controllers\Public\HomeController;
 use App\Http\Controllers\Public\MediatorController;
 use App\Http\Controllers\Public\PageController;
 use App\Http\Controllers\System\HealthController;
+use App\Http\Controllers\System\MaintenanceController;
 use App\Http\Controllers\System\TileController;
 use App\Http\Router;
 
@@ -36,6 +37,14 @@ return static function (Router $r): void {
         $r->get('/search/suggest', [CatalogApiController::class, 'suggest'])->name('api.search.suggest');
         $r->get('/needs', [CatalogApiController::class, 'needs'])->name('api.needs');
         $r->get('/services', [CatalogApiController::class, 'services'])->name('api.services');
+    });
+
+    // Manutenzione per hosting senza SSH (D-041): attiva solo con MAINTENANCE_TOKEN, raggiungibile anche a sito fermo.
+    // Niente middleware throttle (usa il database, che prima dell'installazione non c'è): limite tentativi su file nel controller.
+    $r->group(['prefix' => '/manutenzione', 'middleware' => ['locale:it', 'session', 'csrf'], 'area' => 'auth'], static function (Router $r): void {
+        $r->get('', [MaintenanceController::class, 'show'])->name('system.maintenance');
+        $r->post('/accesso', [MaintenanceController::class, 'login'])->name('system.maintenance.login');
+        $r->post('/azione', [MaintenanceController::class, 'action'])->name('system.maintenance.action');
     });
 
     // "/" → lingua preferita del browser tra quelle pubbliche

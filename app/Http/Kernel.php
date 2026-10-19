@@ -52,7 +52,7 @@ final class Kernel
 
     private function dispatch(Request $request): Response
     {
-        if ($this->inMaintenance() && $request->path !== '/health') {
+        if ($this->inMaintenance() && $request->path !== '/health' && !str_starts_with($request->path, '/manutenzione')) {
             throw new HttpException(503, '', ['Retry-After' => '600']);
         }
 
