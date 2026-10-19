@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Controllers\Public;
 
 use App\Domain\Catalog\CatalogRepository;
+use App\Domain\Geo\MunicipalityShapes;
 use App\Http\Controller;
 use App\Http\Request;
 use App\Http\Response;
@@ -22,6 +23,7 @@ final class HomeController extends Controller
             ->withHeader('Cache-Control', 'private, no-cache');
     }
 
+    /** Pagina iniziale riepilogativa (D-038): ricerca, scelta del comune sulla mappa, argomenti, altre strade. */
     public function index(Request $request): Response
     {
         $catalog = $this->container->get(CatalogRepository::class);
@@ -30,6 +32,9 @@ final class HomeController extends Controller
         return $this->render('public/home', [
             'pageTitle' => null,
             'needs' => $catalog->needs($this->view()->locale(), true),
+            'municipalities' => $catalog->municipalityGroups(),
+            'towns' => $catalog->municipalityDirectory(),
+            'shapes' => $this->container->get(MunicipalityShapes::class)->svg(),
         ]);
     }
 }

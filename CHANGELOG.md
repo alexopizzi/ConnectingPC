@@ -5,6 +5,25 @@ Formato: [Keep a Changelog](https://keepachangelog.com/it/1.1.0/) · Versioni: [
 
 ## [Non rilasciato]
 
+## [0.12.0] - 2026-10-19
+### Aggiunto
+- Mappa divisa nei 46 comuni della provincia (confini ISTAT 2026, openpolis/geojson-italy, CC BY 4.0): i comuni sono colorati secondo i servizi raggiungibili, un clic su un comune (o la scelta dal menu "Il tuo comune") filtra elenco e punti senza ricaricare la pagina, con URL condivisibile, tasto Indietro e annuncio per i lettori di schermo; proposta "Allarga a tutto il distretto"; livelli Comuni/Sedi e legenda.
+- API `GET /api/v1/map/municipalities`: numero di servizi raggiungibili per comune, secondo gli altri filtri.
+- Home riepilogativa: ricerca con esempi, "Cerca nel tuo comune" con la sagoma SVG della provincia, argomenti a riquadri, tre strade (lingua, mediatori, associazioni), emergenza 112 e "Partecipa".
+- Filtri attivi come etichette rimovibili, commutatore Elenco/Mappa, briciole di pane, stati vuoti con suggerimenti.
+- Scheda servizio con azioni immediate (Chiama, Portami qui, Scrivi, Online) e "Dove e quando" a lato.
+- Icone Lucide (sprite SVG locale, licenza ISC) e font Atkinson Hyperlegible Next e Noto Sans Arabic ospitati in locale (licenza OFL); favicon.
+- Stringhe `lang/ui` in 4 lingue (en, fr, ar da revisionare); test sulla mappa per comuni (62 test).
+
+### Modificato
+- Interfaccia pubblica riprogettata da zero con tema chiaro unico (rimossa la variante scura automatica), nuovo design system nei token CSS, supporto a contrasto elevato, colori forzati e movimento ridotto.
+- Filtri degli elenchi nella colonna laterale su desktop; navigazione principale con icone e menu a pulsante sugli schermi piccoli (Esc chiude).
+- Il filtro `comune` (pagine e API) comprende anche i servizi il cui territorio servito dichiarato include il comune, il suo distretto o la provincia; i menu dei comuni elencano tutti i 46 comuni.
+- Le emoji dell'area pubblica sono sostituite da icone SVG decorative.
+
+### Rimosso
+- Partial `language-filter-form` e metodo `municipalitiesWithServices()`, non più usati.
+
 ## [0.11.0] - 2026-09-24
 ### Aggiunto
 - Admin: gestione delle tassonomie (bisogni, aree e sottocategorie, tipi di ente, comunità, ambiti di mediazione) con etichette nelle 4 lingue.

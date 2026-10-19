@@ -107,13 +107,13 @@ asort($countryNames, SORT_LOCALE_STRING);
                         <?php endif; ?>
                         <ul class="badges">
                             <?php if ($organization['is_community_based']): ?>
-                                <li class="badge"><span aria-hidden="true">👥</span> <?= $this->e($this->t('catalog.organization.community_based')) ?></li>
+                                <li class="badge"><?= $this->icon('users-round') ?><?= $this->e($this->t('catalog.organization.community_based')) ?></li>
                             <?php endif; ?>
                             <?php foreach ($organization['communities'] as $community): ?>
                                 <li class="badge"><?= $this->localized($community['name']) ?></li>
                             <?php endforeach; ?>
                             <?php if ($organization['languages'] !== []): ?>
-                                <li class="badge"><span aria-hidden="true">🗣️</span> <?= $this->e(implode(', ', array_map($this->languageName(...), $organization['languages']))) ?></li>
+                                <li class="badge"><?= $this->icon('languages') ?><?= $this->e(implode(', ', array_map($this->languageName(...), $organization['languages']))) ?></li>
                             <?php endif; ?>
                         </ul>
                     </article>

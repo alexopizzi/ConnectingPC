@@ -26,7 +26,18 @@
       items.forEach(function (item) {
         var li = document.createElement('li');
         var a = document.createElement('a');
-        a.textContent = (item.type === 'need' ? '➜ ' : '') + item.label;
+        if (form.dataset.sprite) {
+          var ns = 'http://www.w3.org/2000/svg';
+          var svg = document.createElementNS(ns, 'svg');
+          svg.setAttribute('class', 'icon');
+          svg.setAttribute('aria-hidden', 'true');
+          svg.setAttribute('focusable', 'false');
+          var use = document.createElementNS(ns, 'use');
+          use.setAttribute('href', form.dataset.sprite + '#i-' + (item.type === 'need' ? 'compass' : 'file-text'));
+          svg.appendChild(use);
+          a.appendChild(svg);
+        }
+        a.appendChild(document.createTextNode(item.label));
         a.href = item.type === 'need'
           ? form.dataset.needUrl.replace('__code__', encodeURIComponent(item.code))
           : form.dataset.serviceUrl.replace(/\/0$/, '/' + encodeURIComponent(item.id));

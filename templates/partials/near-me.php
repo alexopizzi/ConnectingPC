@@ -14,9 +14,9 @@ $centroids = array_values(array_filter((array) $this->shared('municipality_centr
      data-msg-sorted="<?= $this->e($this->t('geo.sorted')) ?>"
      data-msg-km="<?= $this->e($this->t('geo.km')) ?>"
      data-msg-searching="<?= $this->e($this->t('geo.searching')) ?>">
-    <p class="near-me__intro"><?= $this->e($this->t('geo.intro')) ?></p>
+    <p class="near-me__intro"><?= $this->icon('locate-fixed') ?><?= $this->e($this->t('geo.intro')) ?></p>
     <div class="near-me__actions">
-        <button class="button button--secondary" type="button" data-near-me-locate><span aria-hidden="true">📍</span> <?= $this->e($this->t('geo.use_location')) ?></button>
+        <button class="button button--secondary button--small" type="button" data-near-me-locate><?= $this->icon('navigation') ?><?= $this->e($this->t('geo.use_location')) ?></button>
         <label class="near-me__town">
             <span><?= $this->e($this->t('geo.or_choose_town')) ?></span>
             <select data-near-me-town>

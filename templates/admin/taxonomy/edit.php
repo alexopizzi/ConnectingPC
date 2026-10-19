@@ -36,7 +36,7 @@ $action = $item === null ? $this->route('admin.taxonomy.store', ['type' => $type
                 <select id="f-icon" name="icon">
                     <option value=""><?= $this->e($this->t('admin.common.none')) ?></option>
                     <?php foreach ($icons as $icon): ?>
-                        <option value="<?= $this->e($icon) ?>"<?= $value('icon') === $icon ? ' selected' : '' ?>><?= $this->icon($icon) ?> <?= $this->e($icon) ?></option>
+                        <option value="<?= $this->e($icon) ?>"<?= $value('icon') === $icon ? ' selected' : '' ?>><?= $this->e($icon) ?></option>
                     <?php endforeach; ?>
                 </select>
             </div>

@@ -64,39 +64,16 @@ final class CatalogRepository
     /** @return list<array{id: int, code: string, parent_id: ?int, name: Localized}> */
     public function categories(string $locale): array
     {
-        $rows = $this->database->fetchAll('SELECT id, code, parent_id FROM categories WHERE is_active = 1 ORDER BY sort_order');
+        $rows = $this->database->fetchAll('SELECT id, code, parent_id, icon FROM categories WHERE is_active = 1 ORDER BY sort_order');
         $names = $this->taxonomyLabels('category_translations', 'category_id', 'name', array_column($rows, 'id'), $locale);
+        $icons = array_column($rows, 'icon', 'id');
 
         return array_map(static fn (array $r): array => [
             'id' => (int) $r['id'], 'code' => (string) $r['code'],
             'parent_id' => $r['parent_id'] === null ? null : (int) $r['parent_id'], 'name' => $names[(int) $r['id']],
+            // Icona propria o dell'area di appartenenza
+            'icon' => (string) ($r['icon'] ?? ($r['parent_id'] !== null ? ($icons[$r['parent_id']] ?? null) : null) ?? 'default'),
         ], $rows);
-    }
-
-    /**
-     * Distretti con i rispettivi comuni che hanno almeno una sede pubblicata.
-     *
-     * @return list<array{id: int, name: string, municipalities: list<array{id: int, name: string}>}>
-     */
-    public function municipalitiesWithServices(): array
-    {
-        $rows = $this->database->fetchAll(
-            "SELECT DISTINCT t.id, t.name, d.id AS district_id, d.name AS district_name FROM territories t
-               JOIN territories d ON d.id = t.parent_id AND d.type = 'district'
-               JOIN sites si ON si.territory_id = t.id AND si.publication_status = 'published'
-               JOIN service_sites ss ON ss.site_id = si.id
-               JOIN services s ON s.id = ss.service_id
-               JOIN organizations o ON o.id = s.organization_id
-              WHERE " . self::PUBLIC_SERVICE . ' ORDER BY d.id, t.name'
-        );
-        $districts = [];
-        foreach ($rows as $row) {
-            $id = (int) $row['district_id'];
-            $districts[$id] ??= ['id' => $id, 'name' => (string) $row['district_name'], 'municipalities' => []];
-            $districts[$id]['municipalities'][] = ['id' => (int) $row['id'], 'name' => (string) $row['name']];
-        }
-
-        return array_values($districts);
     }
 
     /** @return list<array{id: int, name: string, lat: ?float, lng: ?float}> comuni della provincia con centroide */
@@ -107,6 +84,96 @@ final class CatalogRepository
             'lat' => $r['centroid_lat'] === null ? null : (float) $r['centroid_lat'],
             'lng' => $r['centroid_lng'] === null ? null : (float) $r['centroid_lng'],
         ], $this->database->fetchAll("SELECT id, name, centroid_lat, centroid_lng FROM territories WHERE type = 'municipality' ORDER BY name"));
+    }
+
+    /**
+     * Tutti i comuni della provincia con codice ISTAT e distretto, per la mappa dei comuni (D-038).
+     *
+     * @return list<array{id: int, istat: string, name: string, district_id: int, district_name: string, lat: ?float, lng: ?float}>
+     */
+    public function municipalityDirectory(): array
+    {
+        return array_map(static fn (array $r): array => [
+            'id' => (int) $r['id'],
+            'istat' => (string) $r['istat_code'],
+            'name' => (string) $r['name'],
+            'district_id' => (int) $r['district_id'],
+            'district_name' => (string) $r['district_name'],
+            'lat' => $r['centroid_lat'] === null ? null : (float) $r['centroid_lat'],
+            'lng' => $r['centroid_lng'] === null ? null : (float) $r['centroid_lng'],
+        ], $this->database->fetchAll(
+            "SELECT t.id, t.istat_code, t.name, t.centroid_lat, t.centroid_lng, d.id AS district_id, d.name AS district_name
+               FROM territories t JOIN territories d ON d.id = t.parent_id AND d.type = 'district'
+              WHERE t.type = 'municipality' AND t.istat_code IS NOT NULL ORDER BY t.name"
+        ));
+    }
+
+    /**
+     * Tutti i comuni raggruppati per distretto, per i menu "comune o distretto" del catalogo e della mappa.
+     *
+     * @return list<array{id: int, name: string, municipalities: list<array{id: int, name: string}>}>
+     */
+    public function municipalityGroups(): array
+    {
+        $districts = [];
+        foreach ($this->municipalityDirectory() as $m) {
+            $districts[$m['district_id']] ??= ['id' => $m['district_id'], 'name' => $m['district_name'], 'municipalities' => []];
+            $districts[$m['district_id']]['municipalities'][] = ['id' => $m['id'], 'name' => $m['name']];
+        }
+        ksort($districts);
+
+        return array_values($districts);
+    }
+
+    /**
+     * Numero di servizi raggiungibili da ogni comune (stessa regola del filtro "comune"), per colorare la mappa.
+     *
+     * @param list<int> $serviceIds servizi che rispondono agli altri filtri
+     * @return array<int, int> id del comune => numero di servizi
+     */
+    public function municipalityCounts(array $serviceIds): array
+    {
+        if ($serviceIds === []) {
+            return [];
+        }
+        $municipalities = $this->database->fetchAll("SELECT id, parent_id FROM territories WHERE type = 'municipality'");
+        $byParent = [];
+        foreach ($municipalities as $m) {
+            $byParent[(int) $m['parent_id']][] = (int) $m['id'];
+        }
+        $all = array_map(static fn (array $m): int => (int) $m['id'], $municipalities);
+
+        $in = implode(',', array_fill(0, count($serviceIds), '?'));
+        $reach = [];
+        foreach ($this->database->fetchAll(
+            "SELECT DISTINCT ss.service_id, si.territory_id FROM service_sites ss JOIN sites si ON si.id = ss.site_id WHERE ss.service_id IN ($in)",
+            $serviceIds,
+        ) as $row) {
+            $reach[(int) $row['service_id']][(int) $row['territory_id']] = true;
+        }
+        foreach ($this->database->fetchAll(
+            "SELECT st.service_id, t.id, t.type FROM service_territories st JOIN territories t ON t.id = st.territory_id WHERE st.service_id IN ($in)",
+            $serviceIds,
+        ) as $row) {
+            $covered = match ((string) $row['type']) {
+                'municipality' => [(int) $row['id']],
+                'district' => $byParent[(int) $row['id']] ?? [],
+                'province', 'region' => $all,
+                default => [],
+            };
+            foreach ($covered as $id) {
+                $reach[(int) $row['service_id']][$id] = true;
+            }
+        }
+
+        $counts = [];
+        foreach ($reach as $territories) {
+            foreach (array_keys($territories) as $id) {
+                $counts[$id] = ($counts[$id] ?? 0) + 1;
+            }
+        }
+
+        return $counts;
     }
 
     /** @return list<array{code: string, name: array{text: string, lang: string, fallback: bool}}> tipi di ente con servizi pubblicati */
@@ -160,11 +227,16 @@ final class CatalogRepository
             $params[] = $filters['category'];
         }
         if (!empty($filters['territory'])) {
-            // Comune oppure distretto (i comuni del distretto sono figli nella gerarchia dei territori)
-            $where[] = 's.id IN (SELECT ss.service_id FROM service_sites ss JOIN sites si ON si.id = ss.site_id
-                                   JOIN territories t ON t.id = si.territory_id WHERE t.id = ? OR t.parent_id = ?)';
-            $params[] = (int) $filters['territory'];
-            $params[] = (int) $filters['territory'];
+            // Servizi "raggiungibili" dal comune o distretto scelto (D-038): sede nel territorio (i comuni del
+            // distretto sono figli nella gerarchia) oppure territorio servito dichiarato che lo comprende
+            // (lo stesso territorio, il distretto o la provincia di appartenenza, i comuni di un distretto scelto).
+            $territory = (int) $filters['territory'];
+            $scope = $this->territoryScope($territory);
+            $where[] = '(s.id IN (SELECT ss.service_id FROM service_sites ss JOIN sites si ON si.id = ss.site_id
+                                    JOIN territories t ON t.id = si.territory_id WHERE t.id = ? OR t.parent_id = ?)
+                         OR s.id IN (SELECT st.service_id FROM service_territories st
+                                      WHERE st.territory_id IN (' . implode(',', array_fill(0, count($scope), '?')) . ')))';
+            array_push($params, $territory, $territory, ...$scope);
         }
         if (!empty($filters['language'])) {
             $where[] = '(s.id IN (SELECT service_id FROM service_languages WHERE language_code = ?)
@@ -243,6 +315,7 @@ final class CatalogRepository
         }
         $categories = $this->categories($locale);
         $categoryNames = array_column($categories, 'name', 'id');
+        $categoryIcons = array_column($categories, 'icon', 'id');
 
         $result = [];
         foreach ($ids as $id) {
@@ -257,6 +330,7 @@ final class CatalogRepository
                 'organization_id' => (int) $row['organization_id'],
                 'organization_name' => (string) $row['organization_name'],
                 'category' => $categoryNames[(int) $row['primary_category_id']] ?? null,
+                'category_icon' => $categoryIcons[(int) $row['primary_category_id']] ?? 'default',
                 'cost_type' => (string) $row['cost_type'],
                 'mediation' => (string) $row['mediation'],
                 'towns' => $towns[$id] ?? [],
@@ -540,6 +614,31 @@ final class CatalogRepository
      * @param list<int> $ids
      * @return list<int>
      */
+    /**
+     * Territori il cui "territorio servito" comprende quello scelto: sé stesso, gli antenati (distretto, provincia,
+     * regione) e, per un distretto, i suoi comuni.
+     *
+     * @return list<int>
+     */
+    private function territoryScope(int $territoryId): array
+    {
+        $scope = [$territoryId];
+        $current = $territoryId;
+        for ($depth = 0; $depth < 5; $depth++) {
+            $parent = $this->database->fetchValue('SELECT parent_id FROM territories WHERE id = ?', [$current]);
+            if ($parent === null || $parent === false) {
+                break;
+            }
+            $current = (int) $parent;
+            $scope[] = $current;
+        }
+        foreach ($this->database->fetchColumn('SELECT id FROM territories WHERE parent_id = ?', [$territoryId]) as $child) {
+            $scope[] = (int) $child;
+        }
+
+        return array_values(array_unique($scope));
+    }
+
     private function sortByName(array $ids, string $locale): array
     {
         if ($ids === []) {

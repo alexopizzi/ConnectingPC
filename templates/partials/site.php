@@ -14,14 +14,14 @@ foreach ($site['hours'] as $slot) {
 <div class="site-card">
     <h3><?= $this->e($site['name'] ?? $site['town']) ?></h3>
     <?php if ($site['address_line'] !== null): ?>
-        <p class="site-card__address"><span aria-hidden="true">📍</span> <?= $this->e($site['address_line']) ?>, <?= $this->e(trim(($site['postal_code'] ?? '') . ' ' . $site['town'])) ?></p>
+        <p class="site-card__address"><?= $this->icon('map-pin') ?><span><?= $this->e($site['address_line']) ?>, <?= $this->e(trim(($site['postal_code'] ?? '') . ' ' . $site['town'])) ?></span></p>
     <?php else: ?>
-        <p class="site-card__address"><span aria-hidden="true">📍</span> <?= $this->e($site['town']) ?> — <?= $this->e($this->t('catalog.site.address_on_request')) ?></p>
+        <p class="site-card__address"><?= $this->icon('map-pin') ?><span><?= $this->e($site['town']) ?> — <?= $this->e($this->t('catalog.site.address_on_request')) ?></span></p>
     <?php endif; ?>
 
     <?php if ($status !== null): ?>
         <p class="opening-status <?= $status['open'] ? 'is-open' : 'is-closed' ?>">
-            <?= $this->e($status['open'] ? $this->t('catalog.hours.open_until', ['time' => $status['until']]) : $this->t('catalog.hours.closed_now')) ?>
+            <?= $this->icon('clock') ?><?= $this->e($status['open'] ? $this->t('catalog.hours.open_until', ['time' => $status['until']]) : $this->t('catalog.hours.closed_now')) ?>
         </p>
     <?php endif; ?>
 
@@ -45,10 +45,10 @@ foreach ($site['hours'] as $slot) {
     <?php endif; ?>
 
     <?php if (($site['texts']['directions'] ?? null) !== null): ?>
-        <p><strong><?= $this->e($this->t('catalog.site.directions')) ?>:</strong> <?= $this->localized($site['texts']['directions']) ?></p>
+        <p class="site-card__line"><?= $this->icon('compass') ?><span><strong><?= $this->e($this->t('catalog.site.directions')) ?>:</strong> <?= $this->localized($site['texts']['directions']) ?></span></p>
     <?php endif; ?>
     <?php if ($site['step_free_access'] !== 'unknown'): ?>
-        <p><span aria-hidden="true">♿</span> <?= $this->e($this->t('catalog.site.step_free.' . $site['step_free_access'])) ?></p>
+        <p class="site-card__line"><?= $this->icon('accessibility') ?><span><?= $this->e($this->t('catalog.site.step_free.' . $site['step_free_access'])) ?></span></p>
     <?php endif; ?>
 
     <?= $this->partial('contact-list', ['contacts' => $site['contacts']]) ?>
@@ -56,8 +56,8 @@ foreach ($site['hours'] as $slot) {
     <?php if ($site['lat'] !== null && $site['lng'] !== null):
         $coords = sprintf('%.6F,%.6F', $site['lat'], $site['lng']); ?>
         <p class="site-card__actions">
-            <a class="button" href="<?= $this->e('https://www.openstreetmap.org/directions?route=%3B' . rawurlencode($coords)) ?>" rel="noopener noreferrer" target="_blank"><span aria-hidden="true">🧭</span> <?= $this->e($this->t('catalog.site.take_me')) ?></a>
-            <a class="button button--secondary" href="<?= $this->e('geo:' . $coords . '?q=' . rawurlencode($coords)) ?>"><?= $this->e($this->t('catalog.site.open_maps_app')) ?></a>
+            <a class="button button--small" href="<?= $this->e('https://www.openstreetmap.org/directions?route=%3B' . rawurlencode($coords)) ?>" rel="noopener noreferrer" target="_blank"><?= $this->icon('navigation') ?><?= $this->e($this->t('catalog.site.take_me')) ?></a>
+            <a class="button button--ghost button--small" href="<?= $this->e('geo:' . $coords . '?q=' . rawurlencode($coords)) ?>"><?= $this->icon('map') ?><?= $this->e($this->t('catalog.site.open_maps_app')) ?></a>
         </p>
     <?php endif; ?>
 </div>

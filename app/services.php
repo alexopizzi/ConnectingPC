@@ -27,6 +27,7 @@ use App\Domain\Management\SynonymEditor;
 use App\Domain\Management\TaxonomyEditor;
 use App\Domain\Management\UiStringEditor;
 use App\Domain\Geo\Geocoder;
+use App\Domain\Geo\MunicipalityShapes;
 use App\Domain\Mediators\MediatorRepository;
 use App\Domain\Users\UserRepository;
 use App\Domain\Users\UserService;
@@ -204,6 +205,7 @@ return static function (Container $c): void {
     ));
 
     $c->set(CatalogRepository::class, static fn (Container $c) => new CatalogRepository($c->get(Database::class)));
+    $c->set(MunicipalityShapes::class, static fn () => new MunicipalityShapes(APP_BASE_PATH . '/public/assets/data/comuni-piacenza.json'));
     $c->set(CommunityRepository::class, static fn (Container $c) => new CommunityRepository($c->get(Database::class)));
     $c->set(MediatorRepository::class, static fn (Container $c) => new MediatorRepository($c->get(Database::class)));
 

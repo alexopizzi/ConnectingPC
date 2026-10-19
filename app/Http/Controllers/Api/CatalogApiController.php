@@ -28,6 +28,26 @@ final class CatalogApiController extends Controller
         return $this->json(['locale' => $locale, 'points' => $catalog->mapPoints($ids, $locale)]);
     }
 
+    /**
+     * GET /api/v1/map/municipalities — per ogni comune, quanti servizi raggiungibili rispondono agli altri filtri
+     * (il filtro "comune" è ignorato: serve a colorare la mappa dei comuni, D-038).
+     */
+    public function mapMunicipalities(Request $request): Response
+    {
+        $locale = $this->locale($request);
+        $catalog = $this->container->get(CatalogRepository::class);
+        $filters = [...CatalogFilters::fromRequest($request), 'territory' => null];
+        $counts = $catalog->municipalityCounts($catalog->searchServiceIds($filters, $locale));
+
+        return $this->json(['locale' => $locale, 'municipalities' => array_map(static fn (array $m): array => [
+            'id' => $m['id'],
+            'istat' => $m['istat'],
+            'name' => $m['name'],
+            'district' => ['id' => $m['district_id'], 'name' => $m['district_name']],
+            'count' => $counts[$m['id']] ?? 0,
+        ], $catalog->municipalityDirectory())]);
+    }
+
     /** GET /api/v1/search/suggest?q= — bisogni e servizi suggeriti durante la digitazione. */
     public function suggest(Request $request): Response
     {

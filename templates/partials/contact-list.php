@@ -13,16 +13,16 @@ if ($contacts === []) {
     <?php foreach ($contacts as $contact):
         $value = $contact['value'];
         [$href, $icon, $label] = match ($contact['kind']) {
-            'phone', 'mobile' => ['tel:' . preg_replace('/[^0-9+]/', '', $value), '📞', 'catalog.contact.call'],
-            'whatsapp' => ['https://wa.me/' . preg_replace('/[^0-9]/', '', $value), '💬', 'catalog.contact.whatsapp'],
-            'email', 'pec' => ['mailto:' . $value, '✉️', 'catalog.contact.write'],
-            'website', 'social' => [$value, '🌐', 'catalog.contact.website'],
-            default => [null, '•', 'catalog.contact.other'],
+            'phone', 'mobile' => ['tel:' . preg_replace('/[^0-9+]/', '', $value), 'phone', 'catalog.contact.call'],
+            'whatsapp' => ['https://wa.me/' . preg_replace('/[^0-9]/', '', $value), 'message-circle', 'catalog.contact.whatsapp'],
+            'email', 'pec' => ['mailto:' . $value, 'mail', 'catalog.contact.write'],
+            'website', 'social' => [$value, 'globe', 'catalog.contact.website'],
+            default => [null, 'info', 'catalog.contact.other'],
         };
         $safeHref = $href !== null && preg_match('#^(tel:|mailto:|https?://)#', $href) ? $href : null; ?>
         <li>
-            <span aria-hidden="true"><?= $icon ?></span>
-            <?= $this->e($this->t($label)) ?>:
+            <?= $this->icon($icon) ?>
+            <span><?= $this->e($this->t($label)) ?>:</span>
             <?php if ($safeHref !== null): ?>
                 <a class="ltr" href="<?= $this->e($safeHref) ?>"<?= str_starts_with($safeHref, 'http') ? ' rel="noopener noreferrer" target="_blank"' : '' ?>><?= $this->e($value) ?></a>
             <?php else: ?>

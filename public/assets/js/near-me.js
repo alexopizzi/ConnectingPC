@@ -2,17 +2,18 @@
  * "Vicino a me" (D-006): la posizione è letta una sola volta, solo dopo il clic, e resta nel browser.
  * Nessuna richiesta al server, nessun salvataggio (niente cookie o localStorage).
  * Alternativa senza geolocalizzazione: scelta del comune (centroide).
+ * L'elenco si cerca a ogni ordinamento: sulla mappa viene sostituito quando cambiano i filtri (map.js).
  */
 (function () {
   'use strict';
 
   var box = document.querySelector('[data-near-me]');
-  var list = document.querySelector('[data-near-me-list]');
-  if (!box || !list) {
+  if (!box || !document.querySelector('[data-near-me-list]')) {
     return;
   }
   box.hidden = false;
   var status = box.querySelector('[data-near-me-status]');
+  var last = null;
 
   var haversine = function (a, b) {
     var rad = Math.PI / 180;
@@ -28,7 +29,9 @@
     return new Intl.NumberFormat(lang, { maximumFractionDigits: km < 10 ? 1 : 0 }).format(km) + ' ' + box.dataset.msgKm;
   };
 
-  var sortBy = function (lat, lng) {
+  var sortList = function (lat, lng) {
+    var list = document.querySelector('[data-near-me-list]');
+    if (!list) { return; }
     var items = Array.prototype.slice.call(list.children);
     items.forEach(function (item) {
       var hasCoords = item.dataset.lat !== '' && item.dataset.lng !== '';
@@ -40,9 +43,19 @@
     });
     items.sort(function (a, b) { return Number(a.dataset.distance) - Number(b.dataset.distance); });
     items.forEach(function (item) { list.appendChild(item); });
+  };
+
+  var sortBy = function (lat, lng) {
+    last = [lat, lng];
+    sortList(lat, lng);
     status.textContent = box.dataset.msgSorted;
     document.dispatchEvent(new CustomEvent('nearme:position', { detail: { lat: lat, lng: lng } }));
   };
+
+  // Elenco aggiornato dalla mappa: si mantiene l'ordinamento scelto
+  document.addEventListener('catalog:updated', function () {
+    if (last) { sortList(last[0], last[1]); }
+  });
 
   var locate = box.querySelector('[data-near-me-locate]');
   if (!('geolocation' in navigator)) {

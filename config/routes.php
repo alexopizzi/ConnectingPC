@@ -32,6 +32,7 @@ return static function (Router $r): void {
     // API pubbliche in sola lettura (vault "36")
     $r->group(['prefix' => '/api/v1', 'middleware' => ['throttle:240,60'], 'area' => 'api'], static function (Router $r): void {
         $r->get('/map/points', [CatalogApiController::class, 'mapPoints'])->name('api.map.points');
+        $r->get('/map/municipalities', [CatalogApiController::class, 'mapMunicipalities'])->name('api.map.municipalities');
         $r->get('/search/suggest', [CatalogApiController::class, 'suggest'])->name('api.search.suggest');
         $r->get('/needs', [CatalogApiController::class, 'needs'])->name('api.needs');
         $r->get('/services', [CatalogApiController::class, 'services'])->name('api.services');

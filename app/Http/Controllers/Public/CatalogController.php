@@ -50,12 +50,17 @@ final class CatalogController extends Controller
         $catalog = $this->catalog();
         $filters = CatalogFilters::fromRequest($request);
         $ids = $catalog->searchServiceIds($filters, $locale);
+        $towns = $catalog->municipalityDirectory();
 
         return $this->render('public/map', [
             'pageTitle' => $this->t('nav.map'),
+            'bodyClass' => 'page-map',
             'filters' => $filters,
             'query' => CatalogFilters::toQuery($filters),
             'total' => count($ids),
+            'towns' => $towns,
+            'selection' => $this->territorySelection($filters, $towns, $locale),
+            'icons' => require APP_BASE_PATH . '/config/icons.php',
             'services' => $catalog->serviceSummaries(array_slice($ids, 0, self::MAP_LIST_LIMIT), $locale),
             'map' => [
                 'tiles' => (string) Env::get('MAP_TILE_URL', 'https://tile.openstreetmap.org/{z}/{x}/{y}.png'),
@@ -123,6 +128,41 @@ final class CatalogController extends Controller
         ]);
     }
 
+    /**
+     * Comune o distretto scelto sulla mappa, con il numero di servizi dell'intero distretto
+     * per proporre di allargare la ricerca quando nel comune ce ne sono pochi (D-038).
+     *
+     * @param array<string, mixed> $filters
+     * @param list<array{id: int, istat: string, name: string, district_id: int, district_name: string}> $towns
+     * @return array{id: int, name: string, is_district: bool, district: ?array{id: int, name: string, count: int}}|null
+     */
+    private function territorySelection(array $filters, array $towns, string $locale): ?array
+    {
+        $id = (int) ($filters['territory'] ?? 0);
+        if ($id === 0) {
+            return null;
+        }
+        foreach ($towns as $town) {
+            if ($town['id'] === $id) {
+                return [
+                    'id' => $id,
+                    'name' => $town['name'],
+                    'is_district' => false,
+                    'district' => [
+                        'id' => $town['district_id'],
+                        'name' => $town['district_name'],
+                        'count' => count($this->catalog()->searchServiceIds([...$filters, 'territory' => $town['district_id']], $locale)),
+                    ],
+                ];
+            }
+            if ($town['district_id'] === $id) {
+                return ['id' => $id, 'name' => $town['district_name'], 'is_district' => true, 'district' => null];
+            }
+        }
+
+        return null;
+    }
+
     /** @return array<string, mixed> */
     private function filterOptions(string $locale): array
     {
@@ -131,7 +171,7 @@ final class CatalogController extends Controller
 
         return [
             'categories' => array_values(array_filter($catalog->categories($locale), static fn (array $c): bool => $c['parent_id'] === null)),
-            'municipalities' => $catalog->municipalitiesWithServices(),
+            'municipalities' => $catalog->municipalityGroups(),
             'languages' => $catalog->spokenLanguages(),
             'orgTypes' => $catalog->organizationTypesWithServices($locale),
             'needs' => $catalog->needs($locale, true),

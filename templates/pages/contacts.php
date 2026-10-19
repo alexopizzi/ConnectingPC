@@ -13,7 +13,7 @@ $numbers = ['112' => 'page.contacts.n112', '1522' => 'page.contacts.n1522', '800
     <h2><?= $this->e($this->t('page.contacts.useful_title')) ?></h2>
     <ul class="contact-list">
         <?php foreach ($numbers as $number => $label): ?>
-            <li><span aria-hidden="true">📞</span> <?= $this->e($this->t($label)) ?>: <a class="ltr" href="tel:<?= $number ?>"><?= $number ?></a></li>
+            <li><?= $this->icon('phone') ?><?= $this->e($this->t($label)) ?>: <a class="ltr" href="tel:<?= $number ?>"><?= $number ?></a></li>
         <?php endforeach; ?>
     </ul>
     <p class="muted"><?= $this->e($this->t('page.contacts.numbers_note')) ?></p>

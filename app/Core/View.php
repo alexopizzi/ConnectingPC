@@ -279,12 +279,30 @@ final class View
         return ['open' => false, 'until' => null];
     }
 
-    public function icon(string $name): string
+    /**
+     * Icona SVG decorativa dallo sprite (D-038): accetta un codice di tassonomia (config/icons.php)
+     * oppure il nome di un simbolo dello sprite. È sempre aria-hidden: il significato lo porta il testo accanto.
+     */
+    public function icon(string $name, string $class = ''): string
     {
         static $icons = null;
         $icons ??= require APP_BASE_PATH . '/config/icons.php';
+        $symbol = $icons[$name] ?? (in_array($name, $this->spriteSymbols(), true) ? $name : $icons['default']);
 
-        return $icons[$name] ?? $icons['default'];
+        return '<svg class="icon' . ($class !== '' ? ' ' . $this->e($class) : '') . '" aria-hidden="true" focusable="false">'
+            . '<use href="' . $this->e($this->asset('icons/sprite.svg')) . '#i-' . $symbol . '"></use></svg>';
+    }
+
+    /** @return list<string> simboli disponibili nello sprite */
+    private function spriteSymbols(): array
+    {
+        static $symbols = null;
+        if ($symbols === null) {
+            preg_match_all('/<symbol id="i-([a-z0-9-]+)"/', (string) @file_get_contents(APP_BASE_PATH . '/public/assets/icons/sprite.svg'), $m);
+            $symbols = $m[1];
+        }
+
+        return $symbols;
     }
 
     // --- Interni --------------------------------------------------------------------------
